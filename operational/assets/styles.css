@@ -977,10 +977,11 @@ input[type="radio"] {
 
 .menu-wrap { position: relative; }
 .action-menu {
-  position: absolute;
-  z-index: 50;
-  top: calc(100% + 6px);
-  right: 0;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: auto;
   width: 164px;
   padding: 6px;
   border: 1px solid #dce2e8;
@@ -1044,6 +1045,82 @@ input[type="radio"] {
 .data-table td:last-child > div > .button.ghost:first-child,
 .data-table td:last-child > div > a.button.ghost:first-child {
   padding-left: 0;
+}
+.data-table .table-action-cell > .button,
+.data-table .table-action-cell > a.button,
+.data-table .table-action-cell > .menu-wrap {
+  margin-right: 6px;
+}
+.data-table .table-action-cell > .button:last-child,
+.data-table .table-action-cell > a.button:last-child,
+.data-table .table-action-cell > .menu-wrap:last-child {
+  margin-right: 0;
+}
+.table-action-group:not(td) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.data-table .table-action-cell [data-row-primary-action].button {
+  min-height: 30px;
+  padding: 0 8px;
+  border: 0;
+  color: var(--orange-dark);
+  background: transparent;
+  box-shadow: none;
+  font-weight: 850;
+}
+.data-table .table-action-cell [data-row-primary-action].button:hover {
+  color: var(--orange);
+  background: #fff6ec;
+  transform: none;
+}
+.data-table .table-action-cell [data-menu-toggle] {
+  gap: 5px;
+  padding: 0 8px;
+  border: 0;
+  color: #697787;
+  background: transparent;
+  box-shadow: none;
+}
+.data-table .table-action-cell [data-menu-toggle]::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+.data-table .table-action-cell [data-menu-toggle]:hover {
+  color: var(--orange-dark);
+  background: #fff6ec;
+  transform: none;
+}
+.action-menu .button,
+.action-menu a.button,
+.action-menu button.button {
+  justify-content: flex-start;
+  border: 0;
+  color: #3b4c5e;
+  background: transparent;
+  box-shadow: none;
+}
+body[data-page="stock-traintype-list"] .page-header {
+  padding-inline: 16px;
+}
+body[data-page="stock-traintype-list"] #trainTypeTable th:nth-child(3),
+body[data-page="stock-traintype-list"] #trainTypeTable th:nth-child(4),
+body[data-page="stock-traintype-list"] #trainTypeTable th:nth-child(5),
+body[data-page="stock-traintype-list"] #trainTypeTable th:nth-child(6),
+body[data-page="stock-traintype-list"] #trainTypeTable th:nth-child(7),
+body[data-page="stock-traintype-list"] #trainTypeTable td:nth-child(3),
+body[data-page="stock-traintype-list"] #trainTypeTable td:nth-child(4),
+body[data-page="stock-traintype-list"] #trainTypeTable td:nth-child(5),
+body[data-page="stock-traintype-list"] #trainTypeTable td:nth-child(6),
+body[data-page="stock-traintype-list"] #trainTypeTable td:nth-child(7) {
+  text-align: center;
 }
 .policy-table td { height: 46px; }
 .policy-notes { padding: 10px 14px 13px; border-top: 1px solid #edf0f3; color: #8995a1; font-size: 8px; line-height: 1.65; }

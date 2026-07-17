@@ -142,6 +142,72 @@
     ]}
   ];
 
+  var tableActionRules = {
+    "bi-report": [["查看", "导出"]],
+    "bi-sales": [["查看"]],
+    "channel-list": [["结算价", "授信"]],
+    "channel-order-log": [["查看"]],
+    "channel-price": [["编辑"]],
+    "channel-reconcile": [["查看"]],
+    "distribution-account": [["授权", "编辑"]],
+    "distribution-audit": [["通过", "驳回"]],
+    "fin-aging": [["查看明细", "催收"]],
+    "fin-auto-match": [["确认", "手动匹配"]],
+    "fin-channel-analysis": [["查看"]],
+    "fin-channel-reconcile": [["核销", "催款", "明细", "提醒"], ["明细", "处理", "付款"], ["处理", "认领"]],
+    "fin-integration": [["同步"]],
+    "fin-integration-log": [["详情"]],
+    "fin-invoice": [["开票", "查看"]],
+    "fin-payable": [["付款"], ["催审"], ["核销"]],
+    "fin-payable-other": [["付款"]],
+    "fin-profit": [["详情"], ["催收"], ["查看"]],
+    "fin-receivable": [["核销", "催收"]],
+    "fin-reconcile-doc": [["发送对方确认"]],
+    "fin-writeoff": [["订单核销"], ["查看"]],
+    "ops-change-collab": [["处理"]],
+    "ops-dispatch-board": [["处理异常", "发送提醒"], ["催办", "标记通过"], ["再次发送"]],
+    "ops-dmc-list": [["结算价", "编辑"]],
+    "ops-dmc-plan": [["下达地接", "附名单"]],
+    "ops-dmc-settle": [["生成结算单", "付款"]],
+    "ops-group-list": [["查看", "调整分团"]],
+    "ops-namelist": [["查看"]],
+    "order-after-sales": [["处理", "费用"]],
+    "order-create": [["AI识别上传"]],
+    "order-detail": [["查看"]],
+    "order-doc-check": [["催办"]],
+    "order-list": [["查看", "收款"]],
+    "order-ocr": [["编辑", "重试"]],
+    "order-online-pay": [["查看"]],
+    "order-payment": [["核销"]],
+    "order-traveler-list": [["编辑", "查看证件"]],
+    "price-headcount": [["编辑"], ["编辑"], ["编辑"]],
+    "price-multi-system": [["编辑"]],
+    "price-plan": [["配置规则", "编辑范围"]],
+    "product-list": [["编辑", "班期"]],
+    "promo-activity-list": [["编辑"]],
+    "promo-commission": [["编辑"]],
+    "promo-earlybird": [["编辑"]],
+    "refund-anti-abuse": [["编辑"]],
+    "refund-ladder": [["编辑"]],
+    "refund-special": [["编辑"]],
+    "sale-customer-list": [["建单", "查看"]],
+    "sale-customer-tag": [["编辑"]],
+    "stock-cabin-config": [["铺位规则", "编辑"], ["编辑"]],
+    "stock-cut-manage": [["回收剩余"]],
+    "stock-facility": [["编辑"]],
+    "stock-hold-apply": [["转订单", "延期"]],
+    "stock-hold-expire": [["转订单", "延期"]],
+    "stock-schedule-list": [["查看", "发团"]],
+    "stock-traintype-list": [["列车编组"]],
+    "stock-warning": [["去处理"], ["编辑"]],
+    "sys-dept": [["编辑"]],
+    "sys-dict": [["编辑"]],
+    "sys-log": [["查看详情"]],
+    "sys-msg-template": [["编辑", "预览"]],
+    "sys-role": [["编辑"]],
+    "sys-user": [["编辑", "分配角色"]]
+  };
+
   var secondaryRoutes = {
     "stock-carriage-config": {
       id: "stock-carriage-config",
@@ -732,17 +798,192 @@
     });
   }
 
+  function getCompactText(element) {
+    return (element.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function getOperationColumnIndex(table) {
+    var headerCells = Array.prototype.slice.call(table.querySelectorAll("thead tr:first-child th"));
+    for (var i = 0; i < headerCells.length; i += 1) {
+      if (getCompactText(headerCells[i]) === "操作") return i;
+    }
+    return -1;
+  }
+
+  function getActionRoot(cell) {
+    var children = Array.prototype.slice.call(cell.children);
+    var wrapped = children.find(function (child) {
+      return child.tagName === "DIV" && child.querySelector("a, button");
+    });
+    return wrapped || cell;
+  }
+
+  function ensureActionMenu(actionRoot) {
+    var menuWrap = actionRoot.querySelector(":scope > .menu-wrap");
+    if (!menuWrap) {
+      menuWrap = document.createElement("span");
+      menuWrap.className = "menu-wrap";
+      var toggle = document.createElement("button");
+      toggle.className = "button ghost small";
+      toggle.type = "button";
+      toggle.setAttribute("data-menu-toggle", "");
+      toggle.textContent = "更多";
+      var menu = document.createElement("span");
+      menu.className = "action-menu";
+      menu.hidden = true;
+      menuWrap.appendChild(toggle);
+      menuWrap.appendChild(menu);
+      actionRoot.appendChild(menuWrap);
+    }
+    var button = menuWrap.querySelector("[data-menu-toggle]");
+    if (button) {
+      button.classList.add("button", "ghost", "small");
+      if (button.tagName === "BUTTON" && !button.getAttribute("type")) button.type = "button";
+      button.textContent = "更多";
+    }
+    var actionMenu = menuWrap.querySelector(".action-menu");
+    if (!actionMenu) {
+      actionMenu = document.createElement("span");
+      actionMenu.className = "action-menu";
+      actionMenu.hidden = true;
+      menuWrap.appendChild(actionMenu);
+    }
+    return { wrap: menuWrap, menu: actionMenu };
+  }
+
+  function makeMenuAction(action) {
+    action.classList.remove("button", "primary", "orange", "secondary", "ghost", "danger", "small");
+    if (!action.getAttribute("class")) action.removeAttribute("class");
+    if (action.tagName === "BUTTON" && !action.getAttribute("type")) action.type = "button";
+  }
+
+  function normalizeTableActions() {
+    var pageId = document.body.getAttribute("data-page") || "";
+    var pageRules = tableActionRules[pageId];
+    var actionTables = Array.prototype.filter.call(document.querySelectorAll("table"), function (table) {
+      return getOperationColumnIndex(table) !== -1;
+    });
+
+    actionTables.forEach(function (table, tableIndex) {
+      var primaryLabels = pageRules && pageRules[tableIndex] ? pageRules[tableIndex] : null;
+      if (!primaryLabels) return;
+      var primaryOrder = {};
+      primaryLabels.forEach(function (label, index) { primaryOrder[label] = index; });
+      var operationIndex = getOperationColumnIndex(table);
+
+      table.querySelectorAll("tbody tr").forEach(function (row) {
+        var cell = row.children[operationIndex];
+        if (!cell) return;
+        cell.classList.add("table-action-cell");
+        var actionRoot = getActionRoot(cell);
+        actionRoot.classList.add("table-action-group");
+
+        var rowActions = Array.prototype.filter.call(cell.querySelectorAll("a, button"), function (action) {
+          return !action.closest(".action-menu") && !action.hasAttribute("data-menu-toggle");
+        });
+        if (!rowActions.length) return;
+
+        var primaryActions = [];
+        var secondaryActions = [];
+        rowActions.forEach(function (action, originalIndex) {
+          var label = getCompactText(action);
+          if (Object.prototype.hasOwnProperty.call(primaryOrder, label) && primaryActions.length < 2) {
+            action.setAttribute("data-row-primary-action", "");
+            primaryActions.push({ action: action, order: primaryOrder[label], originalIndex: originalIndex });
+          } else {
+            action.removeAttribute("data-row-primary-action");
+            secondaryActions.push(action);
+          }
+        });
+
+        if (!primaryActions.length && rowActions.length) {
+          rowActions[0].setAttribute("data-row-primary-action", "");
+          primaryActions.push({ action: rowActions[0], order: 0, originalIndex: 0 });
+          secondaryActions = rowActions.slice(1);
+        }
+
+        var menuParts = secondaryActions.length || actionRoot.querySelector(":scope > .menu-wrap")
+          ? ensureActionMenu(actionRoot)
+          : null;
+        if (menuParts) {
+          secondaryActions.forEach(function (action) {
+            makeMenuAction(action);
+            menuParts.menu.appendChild(action);
+          });
+        }
+
+        primaryActions
+          .sort(function (a, b) { return a.order === b.order ? a.originalIndex - b.originalIndex : a.order - b.order; })
+          .forEach(function (item) {
+            actionRoot.insertBefore(item.action, menuParts ? menuParts.wrap : null);
+          });
+      });
+    });
+  }
+
+  function closeActionMenus(exceptMenu) {
+    document.querySelectorAll(".action-menu").forEach(function (menu) {
+      if (menu === exceptMenu) return;
+      menu.hidden = true;
+    });
+  }
+
+  function positionActionMenu(button, menu) {
+    var gap = 6;
+    var edge = 8;
+    menu.hidden = false;
+    menu.style.visibility = "hidden";
+    menu.style.left = "0px";
+    menu.style.top = "0px";
+
+    var buttonRect = button.getBoundingClientRect();
+    var menuRect = menu.getBoundingClientRect();
+    var top = buttonRect.bottom + gap;
+    var left = buttonRect.right - menuRect.width;
+    var hasRoomBelow = top + menuRect.height <= window.innerHeight - edge;
+    var hasRoomAbove = buttonRect.top - gap - menuRect.height >= edge;
+
+    if (!hasRoomBelow && hasRoomAbove) {
+      top = buttonRect.top - gap - menuRect.height;
+    } else if (!hasRoomBelow) {
+      top = Math.max(edge, window.innerHeight - menuRect.height - edge);
+    }
+
+    if (left < edge) left = edge;
+    if (left + menuRect.width > window.innerWidth - edge) {
+      left = Math.max(edge, window.innerWidth - menuRect.width - edge);
+    }
+
+    menu.style.left = left + "px";
+    menu.style.top = top + "px";
+    menu.style.visibility = "";
+  }
+
   function bindMenus() {
     document.querySelectorAll("[data-menu-toggle]").forEach(function (button) {
       button.addEventListener("click", function (event) {
         event.stopPropagation();
         var menu = button.parentElement.querySelector(".action-menu");
         if (!menu) return;
-        menu.hidden = !menu.hidden;
+        if (!menu.hidden) {
+          menu.hidden = true;
+          return;
+        }
+        closeActionMenus(menu);
+        positionActionMenu(button, menu);
       });
     });
     document.addEventListener("click", function () {
-      document.querySelectorAll(".action-menu").forEach(function (menu) { menu.hidden = true; });
+      closeActionMenus();
+    });
+    window.addEventListener("resize", function () {
+      closeActionMenus();
+    });
+    window.addEventListener("scroll", function () {
+      closeActionMenus();
+    }, true);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeActionMenus();
     });
   }
 
@@ -893,6 +1134,7 @@
 
   ensureFavicon();
   injectShell();
+  normalizeTableActions();
   bindMenus();
   bindToasts();
   bindConfirmations();
