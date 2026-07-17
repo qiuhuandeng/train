@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>渠道返佣 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="promo-commission" data-title="渠道返佣">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">CHANNEL COMMISSION</div>
+      <h1>渠道返佣</h1>
+      <p>按渠道、产品和周期维护固定金额或比例返佣规则，支持月结与单结。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button primary" type="button" data-modal-open="commissionModal">新增返佣规则</button>
+    </div>
+  </header>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon blue">规</span><div><span>返佣规则</span><strong>5</strong><small>签约渠道规则</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">启</span><div><span>启用规则</span><strong>5</strong><small>当前全部有效</small></div></article>
+    <article class="metric-card"><span class="metric-icon orange">月</span><div><span>月结渠道</span><strong>3</strong><small>康辉 / 众信 / 中青旅</small></div></article>
+    <article class="metric-card"><span class="metric-icon purple">比</span><div><span>比例返佣</span><strong>2</strong><small>按订单实收计算</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>返佣规则列表</h2><p>返佣值支持固定金额/单或按订单比例计算。</p></div>
+      <span class="badge green">启用</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="commissionTable">
+        <thead><tr><th>规则名称</th><th>适用渠道</th><th>返佣方式</th><th>返佣值</th><th>结算方式</th><th>适用产品</th><th>生效期</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td><b>康辉专属返佣</b></td><td>康辉旅行社</td><td><span class="badge blue">固定金额</span></td><td>¥300/单</td><td>月结</td><td>环云南9天</td><td>2026-09至12</td><td><span class="badge green">启用</span></td><td><button class="button ghost small" data-modal-open="commissionModal">编辑</button><button class="button ghost small" data-confirm="确认停用康辉专属返佣？" data-confirm-success="返佣规则已停用">停用</button></td></tr>
+          <tr><td><b>旺季渠道返佣</b></td><td>众信旅游</td><td><span class="badge purple">比例</span></td><td>5%</td><td>月结</td><td>环云南9天</td><td>2026-09至12</td><td><span class="badge green">启用</span></td><td><button class="button ghost small" data-modal-open="commissionModal">编辑</button><button class="button ghost small" data-confirm="确认停用旺季渠道返佣？" data-confirm-success="返佣规则已停用">停用</button></td></tr>
+          <tr><td><b>中青旅阶梯返佣</b></td><td>中青旅</td><td><span class="badge blue">固定金额</span></td><td>¥300/单</td><td>单结</td><td>环云南9天</td><td>2026-09至12</td><td><span class="badge green">启用</span></td><td><button class="button ghost small" data-modal-open="commissionModal">编辑</button><button class="button ghost small" data-confirm="确认停用中青旅阶梯返佣？" data-confirm-success="返佣规则已停用">停用</button></td></tr>
+          <tr><td><b>银发渠道返佣</b></td><td>康辉旅行社/众信旅游</td><td><span class="badge purple">比例</span></td><td>5%</td><td>月结</td><td>环云南9天</td><td>2026-09至12</td><td><span class="badge green">启用</span></td><td><button class="button ghost small" data-modal-open="commissionModal">编辑</button><button class="button ghost small" data-confirm="确认停用银发渠道返佣？" data-confirm-success="返佣规则已停用">停用</button></td></tr>
+          <tr><td><b>首发班返佣</b></td><td>康辉旅行社</td><td><span class="badge blue">固定金额</span></td><td>¥300/单</td><td>单结</td><td>环云南9天</td><td>2026-09至12</td><td><span class="badge green">启用</span></td><td><button class="button ghost small" data-modal-open="commissionModal">编辑</button><button class="button ghost small" data-confirm="确认停用首发班返佣？" data-confirm-success="返佣规则已停用">停用</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 5 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="commissionModal" hidden>
+    <form class="modal-card" data-success="返佣规则已保存">
+      <div class="modal-head"><div><h2>返佣规则编辑</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <label class="field full"><span>规则名称*</span><input value="康辉专属返佣" required></label>
+        <div class="field full"><span>适用渠道</span><label class="check-row"><input type="checkbox" checked><div><b>康辉旅行社</b><span>签约渠道</span></div></label><label class="check-row"><input type="checkbox"><div><b>众信旅游</b><span>签约渠道</span></div></label><label class="check-row"><input type="checkbox"><div><b>中青旅</b><span>签约渠道</span></div></label></div>
+        <div class="field full"><span>返佣方式*</span><label class="check-row"><input type="radio" name="commissionType" checked><div><b>固定金额</b><span>按单固定金额</span></div></label><label class="check-row"><input type="radio" name="commissionType"><div><b>比例</b><span>按订单实收比例</span></div></label></div>
+        <label class="field"><span>返佣值</span><input type="number" value="300"></label>
+        <div class="field"><span>适用产品</span><label class="check-row"><input type="checkbox" checked><div><b>环云南9天</b><span>CP-YN09</span></div></label></div>
+        <label class="field"><span>结算周期</span><select><option>月结</option><option>单结</option></select></label>
+        <label class="field"><span>生效开始</span><input type="date" value="2026-09-01"></label>
+        <label class="field"><span>生效结束</span><input type="date" value="2026-12-31"></label>
+      </div>
+      <div class="modal-foot"><button class="button secondary" type="button" data-modal-close>取消</button><button class="button primary" type="submit">保存</button></div>
+    </form>
+  </div>
+</body>
+</html>

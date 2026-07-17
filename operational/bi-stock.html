@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>库存分析 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="bi-stock" data-title="库存分析">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">INVENTORY ANALYSIS</div>
+      <h1>库存分析</h1>
+      <p>分析班期售罄率、房型结构、售卖节奏与守仓/切位转化效果。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="库存分析已导出">导出</button>
+      <button class="button primary" type="button" data-toast="库存数据已刷新">刷新数据</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="toolbar">
+      <label class="field">
+        <span>车型筛选</span>
+        <select>
+          <option>全部车型</option>
+          <option>昆明号</option>
+          <option>丽江号</option>
+          <option>香格里拉号</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>时间筛选</span>
+        <input type="text" value="2026-09-01 至 2026-12-31">
+      </label>
+      <button class="button secondary" type="button" data-toast="库存筛选已应用">查询</button>
+    </div>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon blue">座</span><div><span>平均上座率</span><strong>78%</strong><small>重点班期平均</small></div></article>
+    <article class="metric-card"><span class="metric-icon purple">位</span><div><span>总可售位</span><strong>13,200</strong><small>本周期总库存</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">售</span><div><span>已售</span><strong>10,296</strong><small>含已付款订单</small></div></article>
+    <article class="metric-card"><span class="metric-icon orange">仓</span><div><span>守仓转化率</span><strong>82%</strong><small>守仓转订单</small></div></article>
+  </section>
+
+  <section class="grid gap-4 lg:grid-cols-2">
+    <article class="panel">
+      <div class="panel-header"><div><h2>各班期售罄率柱状图</h2><p>按已售位 / 可售总位计算，观察班期库存消化强弱。</p></div><span class="badge blue">售罄率</span></div>
+      <div class="chart-bars h-64">
+        <div class="chart-col blue"><i style="height:71%"></i><b>09-25</b><span>71%</span></div>
+        <div class="chart-col"><i style="height:100%"></i><b>10-17</b><span>100%</span></div>
+        <div class="chart-col blue"><i style="height:36%"></i><b>11-14</b><span>36%</span></div>
+        <div class="chart-col"><i style="height:15%"></i><b>12-19</b><span>15%</span></div>
+        <div class="chart-col blue"><i style="height:5%"></i><b>12-28</b><span>5%</span></div>
+        <div class="chart-col"><i style="height:88%"></i><b>LJ10-02</b><span>88%</span></div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header"><div><h2>房型销售结构</h2><p>尊享房 / 品质房销售占比，用于观察高端房型拉动。</p></div><span class="badge green">房型</span></div>
+      <div class="flex flex-col items-center justify-center gap-6 py-7 sm:flex-row">
+        <div class="h-56 w-56 rounded-full shadow-inner" style="background:conic-gradient(#3478e5 0 32%, #e88b2b 32% 100%);"></div>
+        <div class="space-y-4 text-sm text-slate-600">
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#3478e5]"></span>尊享房 32%</p>
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#e88b2b]"></span>品质房 68%</p>
+          <p class="rounded-xl bg-blue-50 p-3 text-blue-900">尊享房售罄更早，是旺季利润主要来源。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header"><div><h2>售卖节奏曲线</h2><p>距发车天数 vs 累计售出，展示越近发车库存消化越快。</p></div><span class="badge purple">节奏</span></div>
+      <div class="relative h-72 rounded-xl border border-slate-200 bg-[linear-gradient(#eef2f6_1px,transparent_1px),linear-gradient(90deg,#eef2f6_1px,transparent_1px)] bg-[length:100%_25%,16.66%_100%] p-4">
+        <div class="absolute left-[8%] top-[78%] h-1 w-[14%] rotate-[-7deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[20%] top-[72%] h-1 w-[14%] rotate-[-11deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[32%] top-[63%] h-1 w-[14%] rotate-[-15deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[44%] top-[50%] h-1 w-[14%] rotate-[-19deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[56%] top-[34%] h-1 w-[14%] rotate-[-22deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[68%] top-[18%] h-1 w-[14%] rotate-[-8deg] rounded bg-[#239665]"></div>
+        <div class="absolute right-4 top-4 rounded-lg bg-white/90 px-3 py-2 text-xs text-green-700 shadow-sm">发车前30天后加速</div>
+        <div class="absolute bottom-3 left-4 right-4 grid grid-cols-6 text-center text-[10px] text-slate-400">
+          <span>90天</span><span>60天</span><span>45天</span><span>30天</span><span>15天</span><span>发车</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-header"><div><h2>守仓/切位 转化漏斗</h2><p>从守仓申请到转订单、支付和最终出行的转化链路。</p></div><span class="badge orange">转化率82%</span></div>
+      <div class="space-y-3 py-5 text-center text-sm font-semibold">
+        <div class="mx-auto w-full rounded-xl bg-blue-50 p-4 text-blue-700">守仓/切位 1,860位</div>
+        <div class="mx-auto w-[86%] rounded-xl bg-orange-50 p-4 text-orange-700">转订单 1,525位</div>
+        <div class="mx-auto w-[70%] rounded-xl bg-green-50 p-4 text-green-700">已付款 1,302位</div>
+        <div class="mx-auto w-[58%] rounded-xl bg-purple-50 p-4 text-purple-700">最终出行 1,080位</div>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>班期库存明细</h2><p>按班期查看可售总位、已售、余量、守仓和转化率。</p></div>
+      <span class="badge blue">8行</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="stockAnalysisTable">
+        <thead><tr><th>班期</th><th>出发日期</th><th>可售总位</th><th>已售</th><th>可售余量</th><th>上座率</th><th>守仓数</th><th>守仓转化率</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td><b>KM20260925</b></td><td>2026-09-25</td><td>264</td><td>188</td><td>76</td><td><div class="progress-line"><div class="progress blue"><i style="width:71%"></i></div><span>71%</span></div></td><td>30</td><td>82%</td><td><span class="badge green">在售</span></td></tr>
+          <tr><td><b>KM20261017</b></td><td>2026-10-17</td><td>264</td><td>264</td><td>0</td><td><div class="progress-line"><div class="progress green"><i style="width:100%"></i></div><span>100%</span></div></td><td>24</td><td>92%</td><td><span class="badge red">售罄</span></td></tr>
+          <tr><td><b>KM20261114</b></td><td>2026-11-14</td><td>264</td><td>96</td><td>168</td><td><div class="progress-line"><div class="progress blue"><i style="width:36%"></i></div><span>36%</span></div></td><td>18</td><td>67%</td><td><span class="badge green">在售</span></td></tr>
+          <tr><td><b>KM20261219</b></td><td>2026-12-19</td><td>264</td><td>40</td><td>224</td><td><div class="progress-line"><div class="progress"><i style="width:15%"></i></div><span>15%</span></div></td><td>12</td><td>50%</td><td><span class="badge blue">预售</span></td></tr>
+          <tr><td><b>KM20261228</b></td><td>2026-12-28</td><td>264</td><td>12</td><td>252</td><td><div class="progress-line"><div class="progress"><i style="width:5%"></i></div><span>5%</span></div></td><td>8</td><td>38%</td><td><span class="badge blue">预售</span></td></tr>
+          <tr><td><b>LJ20261002</b></td><td>2026-10-02</td><td>180</td><td>158</td><td>22</td><td><div class="progress-line"><div class="progress green"><i style="width:88%"></i></div><span>88%</span></div></td><td>16</td><td>88%</td><td><span class="badge orange">低库存</span></td></tr>
+          <tr><td><b>DL20261120</b></td><td>2026-11-20</td><td>220</td><td>126</td><td>94</td><td><div class="progress-line"><div class="progress blue"><i style="width:57%"></i></div><span>57%</span></div></td><td>20</td><td>76%</td><td><span class="badge green">在售</span></td></tr>
+          <tr><td><b>BN20261208</b></td><td>2026-12-08</td><td>198</td><td>142</td><td>56</td><td><div class="progress-line"><div class="progress blue"><i style="width:72%"></i></div><span>72%</span></div></td><td>22</td><td>85%</td><td><span class="badge green">在售</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+</body>
+</html>

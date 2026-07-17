@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>订单核销 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+  <style>
+    .writeoff-workspace { display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:16px; align-items:start; }
+    .match-grid { display:grid; grid-template-columns:minmax(0, 1fr) 76px minmax(0, 1fr); gap:12px; align-items:start; }
+    .match-action { display:flex; align-items:center; justify-content:center; padding-top:88px; }
+    .match-action .button { width:68px; min-height:64px; padding:0 10px; white-space:normal; line-height:1.35; }
+    .confirm-panel { position:sticky; top:70px; }
+    .confirm-body { display:grid; gap:12px; padding:16px; }
+    .confirm-block { display:grid; gap:7px; padding-bottom:12px; border-bottom:1px solid #edf0f3; }
+    .confirm-block:last-child { padding-bottom:0; border-bottom:0; }
+    .confirm-block span { color:#7c8998; font-size:11px; }
+    .confirm-block b { color:#18314a; font-size:14px; }
+    .confirm-pair { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .confirm-total { padding:14px; border:1px solid #f3d2aa; border-radius:10px; background:#fff8ef; }
+    .confirm-total b { font-size:22px; }
+    .confirm-actions { display:flex; justify-content:flex-end; gap:8px; padding:13px 16px; border-top:1px solid var(--line); }
+    @media (max-width: 1280px) { .writeoff-workspace { grid-template-columns:1fr; } .confirm-panel { position:static; } }
+    @media (max-width: 980px) { .match-grid { grid-template-columns:1fr; } .match-action { padding-top:0; } .match-action .button { width:auto; min-height:34px; white-space:nowrap; } }
+  </style>
+</head>
+<body data-page="fin-writeoff-detail" data-title="订单核销">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">WRITEOFF DETAIL</div>
+      <h1>订单核销</h1>
+      <p>选择收款流水与业务单据，确认本次核销金额。</p>
+    </div>
+    <div class="page-actions">
+      <a class="button secondary" href="fin-writeoff.html">返回列表</a>
+    </div>
+  </header>
+
+  <section class="writeoff-workspace">
+    <div class="match-grid">
+      <div class="panel">
+        <div class="panel-header"><div><h2>待核销收款</h2><p>选择到账收款流水。</p></div></div>
+        <div class="table-wrap">
+          <table class="data-table selectable" id="receiptWriteoffTable">
+            <thead><tr><th><input type="checkbox"></th><th>收款单号</th><th>客户</th><th>收款金额</th><th>收款时间</th><th>收款方式</th></tr></thead>
+            <tbody>
+              <tr class="selected"><td><input type="checkbox" checked></td><td>SK20260601</td><td><b>王建国</b></td><td>¥5000</td><td>2026-06-16</td><td>微信支付</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260602</td><td><b>康辉旅行社</b></td><td>¥10000</td><td>2026-06-17</td><td>对公转账</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260603</td><td><b>众信旅游</b></td><td>¥30000</td><td>2026-06-18</td><td>对公转账</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260604</td><td><b>李秀兰</b></td><td>¥20000</td><td>2026-06-19</td><td>微信支付</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260605</td><td><b>夕阳红俱乐部</b></td><td>¥30000</td><td>2026-06-20</td><td>对公转账</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260606</td><td><b>张伟</b></td><td>¥5000</td><td>2026-06-21</td><td>微信支付</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260607</td><td><b>中青旅</b></td><td>¥15000</td><td>2026-06-22</td><td>对公转账</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260608</td><td><b>周玉芬</b></td><td>¥8000</td><td>2026-06-23</td><td>微信支付</td></tr>
+              <tr><td><input type="checkbox"></td><td>SK20260609</td><td><b>乐龄会</b></td><td>¥26000</td><td>2026-06-24</td><td>对公转账</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="match-action">
+        <button class="button primary" type="button" data-toast="已生成核销预览">匹配预览</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><div><h2>业务单据</h2><p>选择对应订单、渠道账单、押金或退款冲减。</p></div></div>
+        <div class="table-wrap">
+          <table class="data-table selectable" id="receivableWriteoffTable">
+            <thead><tr><th><input type="checkbox"></th><th>业务单号</th><th>对象</th><th>类型</th><th>可核销金额</th></tr></thead>
+            <tbody>
+              <tr class="selected"><td><input type="checkbox" checked></td><td>YS20260901</td><td><b>王建国</b></td><td><span class="badge blue">订单应收</span></td><td>¥20998</td></tr>
+              <tr><td><input type="checkbox"></td><td>ZD202607-KH</td><td><b>康辉旅行社</b></td><td><span class="badge purple">渠道账单</span></td><td>¥20000</td></tr>
+              <tr><td><input type="checkbox"></td><td>YJ20260925</td><td><b>夕阳红俱乐部</b></td><td><span class="badge orange">渠道押金</span></td><td>¥30000</td></tr>
+              <tr><td><input type="checkbox"></td><td>TKCJ20260703</td><td><b>李秀兰</b></td><td><span class="badge red">退款冲减</span></td><td>¥6199</td></tr>
+              <tr><td><input type="checkbox"></td><td>YS20261001</td><td><b>众信旅游</b></td><td><span class="badge blue">订单应收</span></td><td>¥73992</td></tr>
+              <tr><td><input type="checkbox"></td><td>YS20261002</td><td><b>张伟</b></td><td><span class="badge blue">订单应收</span></td><td>¥7798</td></tr>
+              <tr><td><input type="checkbox"></td><td>YS20261003</td><td><b>中青旅</b></td><td><span class="badge blue">订单应收</span></td><td>¥35998</td></tr>
+              <tr><td><input type="checkbox"></td><td>ZD202607-ZX</td><td><b>众信旅游</b></td><td><span class="badge purple">渠道账单</span></td><td>¥42000</td></tr>
+              <tr><td><input type="checkbox"></td><td>YJ20261017</td><td><b>乐龄会</b></td><td><span class="badge orange">渠道押金</span></td><td>¥26000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel confirm-panel">
+      <div class="panel-header"><div><h2>核销确认</h2><p>确认后将本次收款冲抵应收余额。</p></div></div>
+      <div class="confirm-body">
+        <div class="confirm-block">
+          <span>收款流水</span>
+          <div class="confirm-pair"><b>SK20260601</b><span>王建国</span></div>
+          <div class="confirm-pair"><span>微信支付</span><b>¥5000</b></div>
+        </div>
+        <div class="confirm-block">
+          <span>匹配业务单据</span>
+          <div class="confirm-pair"><b>YS20260901</b><span>订单应收</span></div>
+          <div class="confirm-pair"><span>DD20260901</span><b>¥20998</b></div>
+        </div>
+        <div class="confirm-block confirm-total">
+          <span>本次核销金额</span>
+          <b>¥5000</b>
+        </div>
+        <div class="confirm-block">
+          <div class="confirm-pair"><span>核销后剩余应收</span><b>¥15998</b></div>
+          <div class="confirm-pair"><span>差异处理</span><b>无差异</b></div>
+        </div>
+        <label class="field"><span>核销备注</span><textarea rows="3" placeholder="填写核销说明或凭证备注"></textarea></label>
+      </div>
+      <div class="confirm-actions">
+        <button class="button secondary" type="button" data-toast="已清空当前选择">清空选择</button>
+        <button class="button primary" type="button" data-toast="核销已确认">确认核销</button>
+      </div>
+    </aside>
+  </section>
+</body>
+</html>

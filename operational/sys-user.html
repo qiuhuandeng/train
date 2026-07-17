@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>员工账号 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="sys-user" data-title="员工账号">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">EMPLOYEE ACCOUNT</div>
+      <h1>员工账号</h1>
+      <p>管理员工登录账号、所属部门、角色权限和账号状态。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="员工模板已下载">批量导入</button>
+      <button class="button primary" type="button" data-modal-open="userModal">新增员工</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#userTable">
+      <label class="field"><span>姓名/账号</span><input data-table-search="#userTable" placeholder="李销售 / lixiaoshou"></label>
+      <label class="field"><span>部门</span><select data-table-filter="#userTable" data-filter-key="dept"><option value="">全部部门</option><option>销售部</option><option>计调部</option><option>财务部</option><option>车队</option><option>信息部</option><option>市场部</option></select></label>
+      <label class="field"><span>角色</span><select data-table-filter="#userTable" data-filter-key="role"><option value="">全部角色</option><option>销售</option><option>计调</option><option>财务</option><option>车队长</option><option>管理员</option></select></label>
+      <label class="field"><span>状态</span><select data-table-filter="#userTable" data-filter-key="status"><option value="">全部状态</option><option>启用</option><option>停用</option></select></label>
+      <div class="filter-actions"><button class="button secondary small" type="button" data-apply-filters="#userTable">查询</button><button class="button ghost small" type="button" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>员工账号列表</h2><p>支持编辑、重置密码、停用和分配角色。</p></div>
+      <span class="badge blue">8条</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="userTable">
+        <thead><tr><th>员工编号</th><th>姓名</th><th>登录账号</th><th>所属部门</th><th>角色</th><th>手机号</th><th>账号状态</th><th>最近登录</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-dept="销售部" data-role="销售" data-status="启用"><td>EMP001</td><td><b>李销售</b></td><td>lixiaoshou</td><td>销售部</td><td><span class="badge blue">销售</span></td><td>138****6688</td><td><span class="badge green">启用</span></td><td>2026-07-15 09:00</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置李销售密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用李销售？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="计调部" data-role="计调" data-status="启用"><td>EMP002</td><td><b>王计调</b></td><td>wangjidiao</td><td>计调部</td><td><span class="badge orange">计调</span></td><td>139****7788</td><td><span class="badge green">启用</span></td><td>2026-07-15 08:42</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置王计调密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用王计调？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="财务部" data-role="财务" data-status="启用"><td>EMP003</td><td><b>赵财务</b></td><td>zhaocaiwu</td><td>财务部</td><td><span class="badge green">财务</span></td><td>137****8899</td><td><span class="badge green">启用</span></td><td>2026-07-15 09:18</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置赵财务密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用赵财务？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="车队" data-role="车队长" data-status="启用"><td>EMP004</td><td><b>张车队长</b></td><td>zhangchedui</td><td>车队</td><td><span class="badge purple">车队长</span></td><td>136****2233</td><td><span class="badge green">启用</span></td><td>2026-07-14 18:20</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置张车队长密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用张车队长？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="销售部" data-role="销售" data-status="启用"><td>EMP005</td><td><b>刘管家</b></td><td>liuguanjia</td><td>销售部</td><td><span class="badge blue">销售</span></td><td>135****1122</td><td><span class="badge green">启用</span></td><td>2026-07-14 16:05</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置刘管家密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用刘管家？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="市场部" data-role="销售" data-status="停用"><td>EMP006</td><td><b>陈市场</b></td><td>chenshichang</td><td>市场部</td><td><span class="badge blue">销售</span></td><td>134****9900</td><td><span class="badge">停用</span></td><td>2026-07-08 10:12</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置陈市场密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-toast="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="信息部" data-role="管理员" data-status="启用"><td>EMP007</td><td><b>周信息</b></td><td>zhouxinxi</td><td>信息部</td><td><span class="badge red">管理员</span></td><td>133****7788</td><td><span class="badge green">启用</span></td><td>2026-07-15 08:55</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置周信息密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用周信息？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+          <tr data-dept="总经办" data-role="管理员" data-status="启用"><td>EMP008</td><td><b>孙总</b></td><td>sunzong</td><td>总经办</td><td><span class="badge red">管理员</span></td><td>132****5566</td><td><span class="badge green">启用</span></td><td>2026-07-15 09:30</td><td><button class="button ghost small" data-modal-open="userModal">编辑</button><button class="button ghost small" data-confirm="确认重置孙总密码？" data-confirm-success="密码已重置">重置密码</button><button class="button ghost small" data-confirm="确认停用孙总？" data-confirm-success="账号已停用">停用</button><button class="button ghost small" data-modal-open="userModal">分配角色</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="userModal" hidden>
+    <form class="modal-card" data-success="员工账号已保存">
+      <div class="modal-head">
+        <div><span class="eyebrow">USER FORM</span><h2>员工编辑</h2></div>
+        <button class="modal-close" type="button" data-modal-close>×</button>
+      </div>
+      <div class="modal-body">
+        <label class="field"><span>姓名*</span><input value="李销售" required></label>
+        <label class="field"><span>登录账号*</span><input value="lixiaoshou" required></label>
+        <label class="field"><span>所属部门*</span><select required><option>销售部</option><option>计调部</option><option>财务部</option><option>车队</option><option>信息部</option><option>市场部</option></select></label>
+        <div class="field"><span>角色*</span><div class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:grid-cols-2"><label><input type="checkbox" checked required> 销售</label><label><input type="checkbox"> 计调</label><label><input type="checkbox"> 财务</label><label><input type="checkbox"> 管理员</label></div></div>
+        <label class="field"><span>手机号*</span><input value="138****6688" required></label>
+        <label class="field"><span>邮箱</span><input type="email" value="lixiaoshou@example.com"></label>
+        <label class="field"><span>初始密码</span><input type="password" value="123456"></label>
+        <div class="field"><span>账号状态</span><label class="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm"><input type="checkbox" checked> 启用</label></div>
+      </div>
+      <div class="modal-foot">
+        <button class="button secondary" type="button" data-modal-close>取消</button>
+        <button class="button primary" type="submit">保存</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

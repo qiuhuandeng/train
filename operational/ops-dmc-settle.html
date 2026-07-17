@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>地接结算 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+  <style>
+    .settle-note { padding:12px 14px; border:1px solid #f3d2aa; border-radius:12px; color:#7f4c17; background:#fff8ef; font-size:12px; }
+  </style>
+</head>
+<body data-page="ops-dmc-settle" data-title="地接结算">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">DMC SETTLEMENT</div>
+      <h1>地接结算</h1>
+      <p>专列靠站落地时给地接的缔结款结算。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="结算列表已导出">导出</button>
+      <button class="button primary" type="button" data-modal-open="settleModal">生成结算单</button>
+    </div>
+  </header>
+
+  <section class="panel"><div class="settle-note">专列靠站落地时给地接的缔结款结算</div></section>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon orange">待</span><div><span>待结算</span><strong>¥240000</strong><small>未付款结算单</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">结</span><div><span>本月已结</span><strong>¥560000</strong><small>已完成付款</small></div></article>
+    <article class="metric-card"><span class="metric-icon blue">单</span><div><span>结算单</span><strong>8笔</strong><small>本月地接结算</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#dmcSettleTable">
+      <label class="field"><span>地接社</span><select data-table-filter="#dmcSettleTable" data-filter-key="dmc"><option value="">全部地接社</option><option>昆明国旅地接</option><option>云南康辉地接</option><option>大理春城地接</option></select></label>
+      <label class="field"><span>班期</span><select data-table-filter="#dmcSettleTable" data-filter-key="schedule"><option value="">全部班期</option><option>KM20260925</option><option>KM20261017</option><option>KM20261114</option></select></label>
+      <label class="field"><span>结算状态</span><select data-table-filter="#dmcSettleTable" data-filter-key="status"><option value="">全部状态</option><option>待结算</option><option>部分结算</option><option>已结清</option></select></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#dmcSettleTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>地接结算明细</h2><p>支持生成结算单和付款登记。</p></div><span class="badge blue">6条</span></div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="dmcSettleTable">
+        <thead><tr><th>结算单号</th><th>地接社</th><th>所属班期/团</th><th>接待人数</th><th>结算单价</th><th>应付金额</th><th>已付金额</th><th>结算状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-dmc="昆明国旅地接" data-schedule="KM20260925" data-status="待结算"><td>DJ20260925</td><td>昆明国旅地接</td><td>KM20260925 1团</td><td>48</td><td>¥1580</td><td>¥75840</td><td>¥0</td><td><span class="badge orange">待结算</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="付款登记已打开">付款</button></td></tr>
+          <tr data-dmc="昆明国旅地接" data-schedule="KM20260925" data-status="部分结算"><td>DJ20260925-2</td><td>昆明国旅地接</td><td>KM20260925 2团</td><td>42</td><td>¥1580</td><td>¥66360</td><td>¥30000</td><td><span class="badge blue">部分结算</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="付款登记已打开">付款</button></td></tr>
+          <tr data-dmc="云南康辉地接" data-schedule="KM20260925" data-status="已结清"><td>DJ20260925-3</td><td>云南康辉地接</td><td>KM20260925 3团</td><td>60</td><td>¥1520</td><td>¥91200</td><td>¥91200</td><td><span class="badge green">已结清</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="已结清">付款</button></td></tr>
+          <tr data-dmc="大理春城地接" data-schedule="KM20261017" data-status="待结算"><td>DJ20261017</td><td>大理春城地接</td><td>KM20261017 1团</td><td>36</td><td>¥1460</td><td>¥52560</td><td>¥0</td><td><span class="badge orange">待结算</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="付款登记已打开">付款</button></td></tr>
+          <tr data-dmc="云南康辉地接" data-schedule="KM20261017" data-status="部分结算"><td>DJ20261017-2</td><td>云南康辉地接</td><td>KM20261017 2团</td><td>44</td><td>¥1520</td><td>¥66880</td><td>¥30000</td><td><span class="badge blue">部分结算</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="付款登记已打开">付款</button></td></tr>
+          <tr data-dmc="大理春城地接" data-schedule="KM20261114" data-status="已结清"><td>DJ20261114</td><td>大理春城地接</td><td>KM20261114 1团</td><td>50</td><td>¥1460</td><td>¥73000</td><td>¥73000</td><td><span class="badge green">已结清</span></td><td><button class="button ghost small" data-toast="结算详情已打开">查看</button><button class="button ghost small" data-modal-open="settleModal">生成结算单</button><button class="button ghost small" data-toast="已结清">付款</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 6 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="settleModal" hidden>
+    <form class="modal-card" data-success="结算单已生成">
+      <div class="modal-head"><div><span class="eyebrow">CREATE SETTLEMENT</span><h2>生成结算单</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <label class="field"><span>地接社</span><input value="昆明国旅地接"></label>
+        <label class="field"><span>班期团</span><input value="KM20260925 1团"></label>
+        <label class="field"><span>接待人数</span><input type="number" value="48"></label>
+        <label class="field"><span>结算单价</span><input type="number" value="1580"></label>
+        <div class="full table-wrap">
+          <table class="data-table">
+            <thead><tr><th>增减项</th><th>说明</th><th>金额</th></tr></thead>
+            <tbody><tr><td><select><option>加项</option><option>减项</option></select></td><td><input value="临时增加接驳车"></td><td><input value="¥1200"></td></tr><tr><td><select><option>减项</option><option>加项</option></select></td><td><input value="取消一桌宴"></td><td><input value="-¥800"></td></tr></tbody>
+          </table>
+        </div>
+        <label class="field full"><span>应付合计</span><input value="¥76240" readonly></label>
+      </div>
+      <div class="modal-foot"><button class="button secondary" type="button" data-modal-close>取消</button><button class="button primary" type="submit">生成</button></div>
+    </form>
+  </div>
+</body>
+</html>

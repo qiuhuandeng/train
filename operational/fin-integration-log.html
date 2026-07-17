@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>接口日志 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="fin-integration-log" data-title="接口日志">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">INTERFACE LOG</div>
+      <h1>接口日志</h1>
+      <p>查看财务接口、支付回调和凭证同步的调用结果。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="接口日志已刷新">刷新</button>
+      <button class="button primary" type="button" data-toast="失败任务已加入重试队列">重试失败</button>
+    </div>
+  </header>
+
+  <section class="summary-strip">
+    <div><span>今日调用</span><b>186</b></div>
+    <div><span>成功</span><b>181</b></div>
+    <div><span>失败</span><b>2</b></div>
+    <div><span>待重试</span><b>3</b></div>
+    <div><span>平均耗时</span><b>860ms</b></div>
+  </section>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#interfaceTable">
+      <label class="field wide"><span>接口名称/业务编号</span><input data-table-search="#interfaceTable" placeholder="搜索接口日志"></label>
+      <label class="field"><span>调用结果</span><select data-table-filter="#interfaceTable" data-filter-key="result"><option value="">全部结果</option><option>成功</option><option>失败</option><option>待重试</option></select></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#interfaceTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table class="data-table selectable" id="interfaceTable">
+        <thead><tr><th>时间</th><th>接口</th><th>业务对象</th><th>请求类型</th><th>耗时</th><th>结果</th><th>错误摘要</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-result="成功"><td>15:20:12</td><td>凭证同步</td><td>VC20260715009</td><td>POST</td><td>820ms</td><td><span class="badge green">成功</span></td><td>-</td><td><button class="button ghost small" data-toast="请求详情已打开">详情</button></td></tr>
+          <tr data-result="失败"><td>15:18:33</td><td>支付回调</td><td>ZF20260608</td><td>WEBHOOK</td><td>1200ms</td><td><span class="badge red">失败</span></td><td>签名过期</td><td><button class="button ghost small" data-toast="接口任务已重试">重试</button></td></tr>
+          <tr data-result="待重试"><td>14:10:05</td><td>退款凭证</td><td>RF20260715003</td><td>POST</td><td>980ms</td><td><span class="badge orange">待重试</span></td><td>凭证期间未开启</td><td><button class="button ghost small" data-toast="接口任务已重试">重试</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 3 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+</body>
+</html>

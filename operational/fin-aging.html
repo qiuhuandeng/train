@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>账龄分析 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+  <style>
+    .aging-switch { display:flex; gap:8px; flex-wrap:wrap; }
+    .aging-switch button { border:1px solid #dfe6ee; border-radius:999px; padding:8px 14px; color:#536476; background:#fff; font-size:12px; font-weight:850; }
+    .aging-switch button.active { color:#fff; border-color:#173955; background:#173955; }
+    .stacked-bar { display:flex; height:34px; overflow:hidden; border-radius:999px; background:#eef2f6; }
+    .stacked-bar i { display:block; }
+    .legend { display:flex; flex-wrap:wrap; gap:14px; color:#627385; font-size:12px; }
+    .legend span:before { content:""; display:inline-block; width:10px; height:10px; margin-right:6px; border-radius:3px; vertical-align:-1px; background:var(--c); }
+  </style>
+</head>
+<body data-page="fin-aging" data-title="账龄分析">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">AGING ANALYSIS</div>
+      <h1>账龄分析</h1>
+      <p>按客户、渠道或班期分析未收账款账龄分布。</p>
+    </div>
+    <div class="page-actions">
+      <label class="field" style="margin:0;min-width:240px;"><span>时间筛选</span><input type="text" value="2026-06-01 至 2026-09-30"></label>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>统计维度切换</h2><p>切换不同口径查看账龄结构。</p></div></div>
+    <div class="aging-switch">
+      <button class="active" type="button" data-toast="已切换按客户">按客户</button>
+      <button type="button" data-toast="已切换按渠道">按渠道</button>
+      <button type="button" data-toast="已切换按班期">按班期</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>账龄分布</h2><p>横向堆叠条形图占位。</p></div></div>
+    <div class="stacked-bar" aria-label="账龄分布">
+      <i style="width:69%;background:#239665"></i>
+      <i style="width:19%;background:#3478e5"></i>
+      <i style="width:8%;background:#e88b2b"></i>
+      <i style="width:3%;background:#7758c4"></i>
+      <i style="width:1%;background:#d84f58"></i>
+    </div>
+    <div class="legend mt-4">
+      <span style="--c:#239665">未到期</span>
+      <span style="--c:#3478e5">1-30天</span>
+      <span style="--c:#e88b2b">31-60天</span>
+      <span style="--c:#7758c4">61-90天</span>
+      <span style="--c:#d84f58">90天以上</span>
+    </div>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon green">未</span><div><span>未到期</span><strong>¥180000</strong><small>正常账期内</small></div></article>
+    <article class="metric-card"><span class="metric-icon blue">30</span><div><span>1-30天</span><strong>¥50000</strong><small>轻度逾期</small></div></article>
+    <article class="metric-card"><span class="metric-icon orange">60</span><div><span>31-60天</span><strong>¥20000</strong><small>需重点催收</small></div></article>
+    <article class="metric-card"><span class="metric-icon red">60+</span><div><span>60天以上</span><strong>¥10000</strong><small>高风险账款</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>账龄明细</h2><p>按当前维度汇总应收账龄。</p></div><span class="badge blue">8条</span></div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="agingTable">
+        <thead><tr><th>客户/渠道</th><th>应收总额</th><th>未到期</th><th>1-30天</th><th>31-60天</th><th>61-90天</th><th>90天以上</th><th>逾期占比</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td><b>康辉旅行社</b></td><td>¥180000</td><td>¥120000</td><td>¥40000</td><td>¥15000</td><td>¥5000</td><td>¥0</td><td><div class="progress"><i style="width:11%"></i></div><span>11%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>众信旅游</b></td><td>¥150000</td><td>¥90000</td><td>¥30000</td><td>¥20000</td><td>¥8000</td><td>¥2000</td><td><div class="progress"><i style="width:20%"></i></div><span>20%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>中青旅</b></td><td>¥167972</td><td>¥140000</td><td>¥27972</td><td>¥0</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:17%"></i></div><span>17%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>夕阳红俱乐部</b></td><td>¥103992</td><td>¥73992</td><td>¥30000</td><td>¥0</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:29%"></i></div><span>29%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>银发之家</b></td><td>¥71994</td><td>¥0</td><td>¥59986</td><td>¥12008</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:100%"></i></div><span>100%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>暖阳旅居</b></td><td>¥143988</td><td>¥120000</td><td>¥23988</td><td>¥0</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:17%"></i></div><span>17%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>王建国</b></td><td>¥25998</td><td>¥20998</td><td>¥5000</td><td>¥0</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:19%"></i></div><span>19%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+          <tr><td><b>李秀兰</b></td><td>¥25998</td><td>¥0</td><td>¥20000</td><td>¥5998</td><td>¥0</td><td>¥0</td><td><div class="progress"><i style="width:100%"></i></div><span>100%</span></td><td><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="明细已打开">查看明细</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+</body>
+</html>

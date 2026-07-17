@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>结算关账 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="fin-closeout" data-title="结算关账">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">DEPARTURE CLOSEOUT</div>
+      <h1>结算关账</h1>
+      <p>按班期完成收入确认、成本锁定、差异确认和最终关账审批。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="结算底稿已导出">导出底稿</button>
+      <button class="button primary" type="button" data-confirm="确认提交班期关账审批？" data-confirm-success="关账审批已提交">提交关账</button>
+    </div>
+  </header>
+
+  <section class="workflow-steps">
+    <div class="workflow-step done"><i>✓</i><div><b>业务完结</b><span>订单与名单锁定</span></div></div>
+    <div class="workflow-step done"><i>✓</i><div><b>收入确认</b><span>已确认 91.7%</span></div></div>
+    <div class="workflow-step active"><i>3</i><div><b>成本锁定</b><span>已锁定 82.4%</span></div></div>
+    <div class="workflow-step"><i>4</i><div><b>账单回收</b><span>13/18 家</span></div></div>
+    <div class="workflow-step"><i>5</i><div><b>差异确认</b><span>3 项待处理</span></div></div>
+    <div class="workflow-step"><i>6</i><div><b>审批关账</b><span>未提交</span></div></div>
+  </section>
+
+  <section class="summary-strip">
+    <div><span>确认收入</span><b>¥202.6万</b></div>
+    <div><span>预计成本</span><b>¥139.4万</b></div>
+    <div><span>预计毛利</span><b>¥63.3万</b></div>
+    <div><span>毛利率</span><b>31.2%</b></div>
+    <div><span>未确认成本</span><b>¥24.5万</b></div>
+  </section>
+
+  <section class="panel" id="closeoutPanels">
+    <div class="toolbar">
+      <div class="filter-tabs" data-tabs data-scope="#closeoutPanels">
+        <button class="active" type="button" data-tab="summary">利润总览</button>
+        <button type="button" data-tab="income">收入明细</button>
+        <button type="button" data-tab="cost">成本明细</button>
+        <button type="button" data-tab="difference">差异确认</button>
+        <button type="button" data-tab="check">关账检查</button>
+      </div>
+      <span class="badge orange">预计口径</span>
+    </div>
+
+    <div data-tab-panel="summary">
+      <div class="closeout-summary">
+        <div class="closeout-card"><span>直客收入</span><b>¥1053770</b><small>47 笔订单</small></div>
+        <div class="closeout-card"><span>渠道收入</span><b>¥972710</b><small>49 笔订单</small></div>
+        <div class="closeout-card"><span>退款冲减</span><b>-¥46820</b><small>8 笔售后</small></div>
+        <div class="closeout-card"><span>铁路成本</span><b>¥820000</b><small>58.8%</small></div>
+        <div class="closeout-card"><span>住宿地接</span><b>¥345840</b><small>24.8%</small></div>
+        <div class="closeout-card"><span>餐饮服务及其他</span><b>¥227800</b><small>16.4%</small></div>
+      </div>
+      <div class="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-900 mx-4 mb-4">当前不可正式关账：5 家供应商账单未回收、3 项差异未确认、渠道应收 ¥90000 未结清。</div>
+    </div>
+
+    <div data-tab-panel="income" hidden>
+      <div class="table-wrap">
+        <table class="data-table selectable">
+          <thead><tr><th>收入类别</th><th>订单数</th><th>旅客数</th><th>订单金额</th><th>退款冲减</th><th>已收</th><th>应收</th><th>确认状态</th></tr></thead>
+          <tbody>
+            <tr class="selected"><td><b>直客公开价</b></td><td>47</td><td>104</td><td>¥1072680</td><td>-¥18910</td><td>¥1053770</td><td>¥0</td><td><span class="badge green">已确认</span></td></tr>
+            <tr><td><b>B2B渠道结算</b></td><td>49</td><td>114</td><td>¥1000620</td><td>-¥27910</td><td>¥882710</td><td>¥90000</td><td><span class="badge orange">部分应收</span></td></tr>
+            <tr><td><b>附加服务</b></td><td>12</td><td>—</td><td>¥34000</td><td>¥0</td><td>¥34000</td><td>¥0</td><td><span class="badge green">已确认</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div data-tab-panel="cost" hidden>
+      <div class="table-wrap">
+        <table class="data-table selectable">
+          <thead><tr><th>成本类别</th><th>供应商数</th><th>预算</th><th>预计成本</th><th>已收账单</th><th>已付款</th><th>预算差异</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr class="selected"><td><b>铁路专列资源</b></td><td>1</td><td>¥820000</td><td>¥820000</td><td>¥820000</td><td>¥410000</td><td><span class="text-green-600 font-semibold">¥0</span></td><td><span class="badge green">已锁定</span></td></tr>
+            <tr><td><b>住宿与地接</b></td><td>11</td><td>¥338000</td><td>¥345840</td><td>¥276400</td><td>¥89300</td><td><span class="text-red-600 font-semibold">+¥7840</span></td><td><span class="badge orange">部分暂估</span></td></tr>
+            <tr><td><b>餐饮与车上服务</b></td><td>4</td><td>¥136000</td><td>¥139260</td><td>¥98600</td><td>¥26560</td><td><span class="text-red-600 font-semibold">+¥3260</span></td><td><span class="badge orange">部分暂估</span></td></tr>
+            <tr><td><b>保险与其他</b></td><td>2</td><td>¥90000</td><td>¥88540</td><td>¥88540</td><td>¥42000</td><td><span class="text-green-600 font-semibold">-¥1460</span></td><td><span class="badge green">已锁定</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div data-tab-panel="difference" hidden>
+      <div class="table-wrap">
+        <table class="data-table selectable">
+          <thead><tr><th>项目</th><th>预算</th><th>预计</th><th>实际</th><th>预计差异</th><th>实际差异</th><th>说明</th><th>确认状态</th></tr></thead>
+          <tbody>
+            <tr class="selected"><td><b>腾冲住宿</b></td><td>¥180000</td><td>¥186400</td><td>待账单</td><td><span class="text-red-600 font-semibold">+¥6400</span></td><td>—</td><td>增加无障碍房与备用房</td><td><span class="badge orange">待业务确认</span></td></tr>
+            <tr><td><b>特殊餐食</b></td><td>¥12000</td><td>¥14460</td><td>¥14460</td><td><span class="text-red-600 font-semibold">+¥2460</span></td><td><span class="text-red-600 font-semibold">+¥2460</span></td><td>新增 12 人特殊餐</td><td><span class="badge orange">待财务确认</span></td></tr>
+            <tr><td><b>保险</b></td><td>¥56000</td><td>¥54540</td><td>¥54540</td><td><span class="text-green-600 font-semibold">-¥1460</span></td><td><span class="text-green-600 font-semibold">-¥1460</span></td><td>实际投保人数减少</td><td><span class="badge green">已确认</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div data-tab-panel="check" hidden>
+      <div class="checklist">
+        <div class="check-row"><input type="checkbox" checked disabled><div><b>订单与售后全部终态</b><span>无支付锁、无未执行变更单</span></div><span class="badge green">通过</span></div>
+        <div class="check-row"><input type="checkbox" disabled><div><b>渠道应收全部结清或确认坏账</b><span>仍有应收 ¥90000</span></div><span class="badge red">未通过</span></div>
+        <div class="check-row"><input type="checkbox" disabled><div><b>供应商账单全部回收</b><span>13/18 家已回收</span></div><span class="badge orange">进行中</span></div>
+        <div class="check-row"><input type="checkbox" disabled><div><b>预计与实际差异确认</b><span>3 项差异待业务签字</span></div><span class="badge red">未通过</span></div>
+        <div class="check-row"><input type="checkbox" checked disabled><div><b>财务凭证同步</b><span>收款、付款、退款凭证均已同步</span></div><span class="badge green">通过</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>关账审批</h2><p>关账后仅允许通过反关账审批生成调整凭证。</p></div><span class="badge">未提交</span></div>
+    <div class="approval-track">
+      <div class="approval-node active"><i>1</i><b>计调确认</b><span>服务履约完成</span></div>
+      <div class="approval-node"><i>2</i><b>业务财务</b><span>收入成本确认</span></div>
+      <div class="approval-node"><i>3</i><b>财务负责人</b><span>差异与凭证</span></div>
+      <div class="approval-node"><i>4</i><b>总经理</b><span>利润确认</span></div>
+      <div class="approval-node"><i>5</i><b>正式关账</b><span>锁定班期</span></div>
+    </div>
+  </section>
+</body>
+</html>

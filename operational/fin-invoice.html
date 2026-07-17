@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>发票管理 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="fin-invoice" data-title="发票管理">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">INVOICE MANAGEMENT</div>
+      <h1>发票管理</h1>
+      <p>管理订单开票、发票下载、红冲与开票状态跟踪。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="发票列表已导出">导出</button>
+      <button class="button primary" type="button" data-modal-open="invoiceModal">开具发票</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#invoiceTable">
+      <label class="field"><span>订单号</span><input data-table-search="#invoiceTable" placeholder="DD20260901"></label>
+      <label class="field"><span>客户</span><input placeholder="王建国 / 康辉旅行社"></label>
+      <label class="field">
+        <span>发票类型</span>
+        <select data-table-filter="#invoiceTable" data-filter-key="type"><option value="">全部类型</option><option>增值税普票</option><option>专票</option></select>
+      </label>
+      <label class="field">
+        <span>开票状态</span>
+        <select data-table-filter="#invoiceTable" data-filter-key="status"><option value="">全部状态</option><option>待开</option><option>已开</option><option>已红冲</option></select>
+      </label>
+      <div class="filter-actions"><button class="button secondary small" type="button" data-apply-filters="#invoiceTable">查询</button><button class="button ghost small" type="button" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>发票列表</h2>
+        <p>支持开票、查看、红冲与下载操作。</p>
+      </div>
+      <span class="badge blue">8条</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="invoiceTable">
+        <thead>
+          <tr>
+            <th>发票单号</th>
+            <th>订单号</th>
+            <th>客户/抬头</th>
+            <th>发票类型</th>
+            <th>开票金额</th>
+            <th>税率</th>
+            <th>开票状态</th>
+            <th>开票时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="selected" data-type="增值税普票" data-status="已开"><td>FP20260601</td><td>DD20260901</td><td><b>王建国</b></td><td><span class="badge blue">增值税普票</span></td><td>¥25998</td><td>6%</td><td><span class="badge green">已开</span></td><td>2026-06-20</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="发票已下载">下载</button></td></tr>
+          <tr data-type="专票" data-status="待开"><td>FP20260602</td><td>DD20260902</td><td><b>康辉旅行社有限公司</b></td><td><span class="badge purple">专票</span></td><td>¥51996</td><td>6%</td><td><span class="badge orange">待开</span></td><td>—</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="暂无可下载发票">下载</button></td></tr>
+          <tr data-type="增值税普票" data-status="已开"><td>FP20260603</td><td>DD20260903</td><td><b>李秀兰</b></td><td><span class="badge blue">增值税普票</span></td><td>¥12999</td><td>6%</td><td><span class="badge green">已开</span></td><td>2026-06-22</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="发票已下载">下载</button></td></tr>
+          <tr data-type="专票" data-status="已红冲"><td>FP20260604</td><td>DD20260904</td><td><b>众信旅游集团</b></td><td><span class="badge purple">专票</span></td><td>¥77994</td><td>6%</td><td><span class="badge red">已红冲</span></td><td>2026-06-24</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="发票已下载">下载</button></td></tr>
+          <tr data-type="增值税普票" data-status="待开"><td>FP20260605</td><td>DD20260905</td><td><b>张伟</b></td><td><span class="badge blue">增值税普票</span></td><td>¥6399</td><td>6%</td><td><span class="badge orange">待开</span></td><td>—</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="暂无可下载发票">下载</button></td></tr>
+          <tr data-type="专票" data-status="已开"><td>FP20260606</td><td>DD20260906</td><td><b>中青旅控股股份有限公司</b></td><td><span class="badge purple">专票</span></td><td>¥95985</td><td>6%</td><td><span class="badge green">已开</span></td><td>2026-06-26</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="发票已下载">下载</button></td></tr>
+          <tr data-type="增值税普票" data-status="已开"><td>FP20260607</td><td>DD20260907</td><td><b>夕阳红俱乐部</b></td><td><span class="badge blue">增值税普票</span></td><td>¥47992</td><td>6%</td><td><span class="badge green">已开</span></td><td>2026-06-28</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="发票已下载">下载</button></td></tr>
+          <tr data-type="专票" data-status="待开"><td>FP20260608</td><td>DD20260908</td><td><b>银发之家旅行服务有限公司</b></td><td><span class="badge purple">专票</span></td><td>¥71994</td><td>6%</td><td><span class="badge orange">待开</span></td><td>—</td><td><button class="button ghost small" type="button" data-modal-open="invoiceModal">开票</button><button class="button ghost small" type="button" data-toast="发票详情已打开">查看</button><button class="button ghost small" type="button" data-confirm="确认红冲该发票？" data-confirm-success="红冲申请已提交">红冲</button><button class="button ghost small" type="button" data-toast="暂无可下载发票">下载</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="invoiceModal" hidden>
+    <form class="modal-card" data-success="发票已提交开具">
+      <div class="modal-head">
+        <div><span class="eyebrow">ISSUE INVOICE</span><h2>开具发票</h2></div>
+        <button class="modal-close" type="button" data-modal-close>×</button>
+      </div>
+      <div class="modal-body">
+        <label class="field"><span>订单号*</span><input value="DD20260901" required></label>
+        <div class="field">
+          <span>发票类型*</span>
+          <div class="flex gap-4 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+            <label class="flex items-center gap-2"><input type="radio" name="invoiceType" checked required> 增值税普票</label>
+            <label class="flex items-center gap-2"><input type="radio" name="invoiceType"> 专票</label>
+          </div>
+        </div>
+        <label class="field full"><span>发票抬头*</span><input value="王建国" required></label>
+        <label class="field"><span>税号</span><input placeholder="机构客户填写统一社会信用代码"></label>
+        <label class="field"><span>开票金额</span><input type="number" value="25998"></label>
+        <label class="field"><span>税率</span><input value="6%"></label>
+        <label class="field full"><span>收票邮箱</span><input type="email" value="customer@example.com"></label>
+      </div>
+      <div class="modal-foot">
+        <button class="button secondary" type="button" data-modal-close>取消</button>
+        <button class="button primary" type="submit">确认开票</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

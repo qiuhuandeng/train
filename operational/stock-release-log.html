@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>释放记录 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="stock-release-log" data-title="释放记录">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">RELEASE LOG</div>
+      <h1>释放记录</h1>
+      <p>记录守仓到期释放、手动释放和切位回收等库存回流事件。</p>
+    </div>
+    <div class="page-actions"><button class="button secondary" data-toast="释放记录已导出">导出记录</button></div>
+  </header>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#releaseTable">
+      <label class="field"><span>班期</span><select data-table-filter="#releaseTable" data-filter-key="schedule"><option value="">全部班期</option><option>KM20260925</option><option>KM20261017</option></select></label>
+      <label class="field"><span>释放类型</span><select data-table-filter="#releaseTable" data-filter-key="type"><option value="">全部类型</option><option>守仓到期释放</option><option>手动释放</option><option>切位回收</option></select></label>
+      <label class="field"><span>开始时间</span><input type="date" value="2026-07-01"></label>
+      <label class="field"><span>结束时间</span><input type="date" value="2026-07-31"></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#releaseTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>释放流水</h2><p>只读记录，释放后库存回到公共可售池。</p></div><span class="badge green">只读</span></div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="releaseTable">
+        <thead><tr><th>释放单号</th><th>班期</th><th>来源单号</th><th>释放房型</th><th>释放数量</th><th>释放类型</th><th>释放时间</th><th>操作人</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-schedule="KM20260925" data-type="守仓到期释放"><td>SF20260701</td><td>KM20260925</td><td>SC20260601</td><td>安途尊享房</td><td>5</td><td><span class="badge orange">守仓到期释放</span></td><td>2026-07-01 00:00</td><td>系统自动</td></tr>
+          <tr data-schedule="KM20260925" data-type="手动释放"><td>SF20260702</td><td>KM20260925</td><td>SC20260602</td><td>悦途品质房</td><td>3</td><td><span class="badge blue">手动释放</span></td><td>2026-07-02 14:20</td><td>李销售</td></tr>
+          <tr data-schedule="KM20260925" data-type="切位回收"><td>SF20260703</td><td>KM20260925</td><td>QW20260501</td><td>悦途品质房</td><td>8</td><td><span class="badge green">切位回收</span></td><td>2026-07-03 09:10</td><td>系统自动</td></tr>
+          <tr data-schedule="KM20261017" data-type="守仓到期释放"><td>SF20260704</td><td>KM20261017</td><td>SC20260604</td><td>安途尊享房</td><td>2</td><td><span class="badge orange">守仓到期释放</span></td><td>2026-07-04 00:00</td><td>系统自动</td></tr>
+          <tr data-schedule="KM20260925" data-type="手动释放"><td>SF20260705</td><td>KM20260925</td><td>SC20260605</td><td>悦途品质房</td><td>4</td><td><span class="badge blue">手动释放</span></td><td>2026-07-05 11:25</td><td>李销售</td></tr>
+          <tr data-schedule="KM20261017" data-type="切位回收"><td>SF20260706</td><td>KM20261017</td><td>QW20260503</td><td>安途尊享房</td><td>6</td><td><span class="badge green">切位回收</span></td><td>2026-07-06 18:00</td><td>系统自动</td></tr>
+          <tr data-schedule="KM20260925" data-type="守仓到期释放"><td>SF20260707</td><td>KM20260925</td><td>SC20260606</td><td>安途尊享房</td><td>5</td><td><span class="badge orange">守仓到期释放</span></td><td>2026-07-07 00:00</td><td>系统自动</td></tr>
+          <tr data-schedule="KM20260925" data-type="切位回收"><td>SF20260708</td><td>KM20260925</td><td>QW20260504</td><td>悦途品质房</td><td>10</td><td><span class="badge green">切位回收</span></td><td>2026-07-08 17:30</td><td>李销售</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+</body>
+</html>

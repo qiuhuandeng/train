@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>分销审核 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="distribution-audit" data-title="分销审核">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">DISTRIBUTION AUDIT</div>
+      <h1>分销审核</h1>
+      <p>渠道自助下单需审核放位，审核通过后才正式占用库存。</p>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>审核说明</h2><p>渠道自助下单需审核放位。</p></div>
+      <span class="badge orange">待审核 3</span>
+    </div>
+  </section>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon orange">待</span><div><span>待审核</span><strong>3</strong><small>需销售确认放位</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">通</span><div><span>已通过</span><strong>2</strong><small>已占用库存</small></div></article>
+    <article class="metric-card"><span class="metric-icon red">驳</span><div><span>已驳回</span><strong>1</strong><small>库存未占用</small></div></article>
+    <article class="metric-card"><span class="metric-icon blue">额</span><div><span>待审金额</span><strong>¥77,994</strong><small>3 笔待确认</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#auditTable">
+      <label class="field wide"><span>订单/渠道</span><input data-table-search="#auditTable" placeholder="DD20260915 / 康辉旅行社"></label>
+      <label class="field"><span>审核状态</span><select data-table-filter="#auditTable" data-filter-key="status"><option value="">全部状态</option><option>待审核</option><option>已通过</option><option>已驳回</option></select></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#auditTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>分销下单审核</h2><p>审核时同步提示库存是否充足，避免渠道超量占位。</p></div>
+      <span class="badge orange">放位审核</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="auditTable">
+        <thead><tr><th>订单号</th><th>渠道</th><th>产品班期</th><th>房型/人数</th><th>金额</th><th>提交时间</th><th>审核状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-status="待审核"><td>DD20260915</td><td>康辉旅行社</td><td>环云南9天 09-25</td><td>尊享房2人</td><td>¥25998</td><td>2026-07-12</td><td><span class="badge orange">待审核</span></td><td><button class="button ghost small" data-modal-open="auditModal">通过</button><button class="button ghost small" data-modal-open="auditModal">驳回</button><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+          <tr data-status="待审核"><td>DD20260916</td><td>众信旅游</td><td>环云南9天 09-25</td><td>尊享房2人</td><td>¥25998</td><td>2026-07-12</td><td><span class="badge orange">待审核</span></td><td><button class="button ghost small" data-modal-open="auditModal">通过</button><button class="button ghost small" data-modal-open="auditModal">驳回</button><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+          <tr data-status="待审核"><td>DD20260917</td><td>中青旅</td><td>环云南9天 10-17</td><td>品质房4人</td><td>¥23996</td><td>2026-07-12</td><td><span class="badge orange">待审核</span></td><td><button class="button ghost small" data-modal-open="auditModal">通过</button><button class="button ghost small" data-modal-open="auditModal">驳回</button><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+          <tr data-status="已通过"><td>DD20260918</td><td>夕阳红俱乐部</td><td>环云南9天 11-14</td><td>尊享房2人</td><td>¥25998</td><td>2026-07-11</td><td><span class="badge green">已通过</span></td><td><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+          <tr data-status="已通过"><td>DD20260919</td><td>银发之家</td><td>环云南9天 12-19</td><td>品质房4人</td><td>¥23996</td><td>2026-07-11</td><td><span class="badge green">已通过</span></td><td><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+          <tr data-status="已驳回"><td>DD20260920</td><td>乐龄会</td><td>环云南9天 12-28</td><td>尊享房2人</td><td>¥25998</td><td>2026-07-10</td><td><span class="badge red">已驳回</span></td><td><button class="button ghost small" data-modal-open="auditModal">查看</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 6 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="auditModal" hidden>
+    <form class="modal-card" data-success="审核结果已提交">
+      <div class="modal-head"><div><h2>审核</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <section class="panel full" style="margin:0;">
+          <div class="panel-header"><div><h2>订单摘要</h2><p>DD20260915 · 康辉旅行社 · 环云南9天 09-25 · 尊享房2人 · ¥25998</p></div><span class="badge orange">待审核</span></div>
+          <div class="record-meta"><span>渠道：康辉旅行社</span><span>房型/人数：尊享房2人</span><span>提交时间：2026-07-12</span></div>
+        </section>
+        <div class="field full"><span>库存是否充足提示</span><div class="notice-card success"><b>库存充足</b><p>当前尊享房内部可售 76 间，本订单审核通过后将锁定 1 间。</p></div></div>
+        <label class="field full"><span>审核意见</span><textarea>渠道授信额度充足，库存满足，建议通过放位。</textarea></label>
+      </div>
+      <div class="modal-foot"><button class="button danger" type="button" data-toast="订单已驳回" data-modal-close>驳回</button><button class="button primary" type="submit">通过</button></div>
+    </form>
+  </div>
+</body>
+</html>

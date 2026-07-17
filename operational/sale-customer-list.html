@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的客户 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+  <style>
+    .tag-group { display:flex; flex-wrap:wrap; gap:4px; }
+    .timeline { position:relative; display:grid; gap:12px; margin:0; padding:0; list-style:none; }
+    .timeline li { position:relative; padding-left:18px; color:#5f6f7f; font-size:12px; }
+    .timeline li:before { content:""; position:absolute; left:0; top:5px; width:8px; height:8px; border-radius:50%; background:#e88b2b; box-shadow:0 0 0 4px #fff2e2; }
+    .timeline time { display:block; color:#8392a2; font-size:11px; margin-bottom:3px; }
+    .merge-group-row td { background:#fffaf3; border-top:1px solid #f2ddc4; }
+    .merge-tip { padding:12px 15px; color:#6d7b89; font-size:12px; background:#f8fafc; border-top:1px solid #e3e8ed; }
+    .color-dot { width:18px; height:18px; display:inline-block; border-radius:6px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); vertical-align:middle; }
+  </style>
+</head>
+<body data-page="sale-customer-list" data-title="客户列表">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">MY CUSTOMERS</div>
+      <h1>我的客户</h1>
+      <p>管理直客与机构渠道客户资料、标签、归属销售和历史订单。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="客户导入模板已打开">导入客户</button>
+      <button class="button primary" type="button" data-modal-open="customerModal">新建客户</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#customerTable">
+      <label class="field wide"><span>客户名称</span><input data-table-search="#customerTable" placeholder="王建国 / 康辉旅行社"></label>
+      <label class="field"><span>客户类型</span><select data-table-filter="#customerTable" data-filter-key="type"><option value="">全部类型</option><option>直客</option><option>机构渠道</option></select></label>
+      <label class="field"><span>标签</span><select data-table-filter="#customerTable" data-filter-key="tag"><option value="">全部标签</option><option>银发</option><option>俱乐部</option><option>高净值</option><option>复购</option></select></label>
+      <label class="field"><span>归属销售</span><select data-table-filter="#customerTable" data-filter-key="owner"><option value="">全部销售</option><option>李销售</option><option>张经理</option><option>王销售</option></select></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#customerTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>客户列表</h2><p>支持查看客户详情、编辑资料和直接进入建单。</p></div>
+      <span class="badge blue">客户主数据</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="customerTable">
+        <thead><tr><th>客户编号</th><th>客户名称</th><th>客户类型</th><th>联系人</th><th>联系电话</th><th>标签</th><th>累计订单数</th><th>累计金额</th><th>归属销售</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-type="直客" data-tag="银发 复购" data-owner="李销售"><td>KH20260001</td><td><b>王建国</b></td><td><span class="badge green">直客</span></td><td>王建国</td><td>138****6688</td><td><span class="tag-group"><span class="badge orange">银发</span><span class="badge blue">复购</span></span></td><td>12</td><td>¥156000</td><td>李销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="机构渠道" data-tag="俱乐部 复购" data-owner="李销售"><td>KH20260002</td><td><b>康辉旅行社</b></td><td><span class="badge blue">机构渠道</span></td><td>刘经理</td><td>139****8899</td><td><span class="tag-group"><span class="badge purple">俱乐部</span><span class="badge blue">复购</span></span></td><td>26</td><td>¥486000</td><td>李销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="机构渠道" data-tag="俱乐部 银发" data-owner="张经理"><td>KH20260003</td><td><b>夕阳红俱乐部</b></td><td><span class="badge blue">机构渠道</span></td><td>赵老师</td><td>137****2299</td><td><span class="tag-group"><span class="badge purple">俱乐部</span><span class="badge orange">银发</span></span></td><td>18</td><td>¥326000</td><td>张经理</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="机构渠道" data-tag="复购 高净值" data-owner="王销售"><td>KH20260004</td><td><b>众信旅游</b></td><td><span class="badge blue">机构渠道</span></td><td>王经理</td><td>136****6677</td><td><span class="tag-group"><span class="badge blue">复购</span><span class="badge red">高净值</span></span></td><td>21</td><td>¥398000</td><td>王销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="直客" data-tag="银发" data-owner="李销售"><td>KH20260005</td><td><b>李秀兰</b></td><td><span class="badge green">直客</span></td><td>李秀兰</td><td>135****1188</td><td><span class="tag-group"><span class="badge orange">银发</span></span></td><td>3</td><td>¥38997</td><td>李销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="直客" data-tag="高净值" data-owner="张经理"><td>KH20260006</td><td><b>张伟</b></td><td><span class="badge green">直客</span></td><td>张伟</td><td>188****9900</td><td><span class="tag-group"><span class="badge red">高净值</span></span></td><td>5</td><td>¥96000</td><td>张经理</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="机构渠道" data-tag="复购" data-owner="王销售"><td>KH20260007</td><td><b>中青旅</b></td><td><span class="badge blue">机构渠道</span></td><td>陈经理</td><td>138****7788</td><td><span class="tag-group"><span class="badge blue">复购</span></span></td><td>15</td><td>¥266000</td><td>王销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+          <tr data-type="机构渠道" data-tag="银发 俱乐部" data-owner="李销售"><td>KH20260008</td><td><b>银发之家</b></td><td><span class="badge blue">机构渠道</span></td><td>孙主任</td><td>137****3366</td><td><span class="tag-group"><span class="badge orange">银发</span><span class="badge purple">俱乐部</span></span></td><td>9</td><td>¥126000</td><td>李销售</td><td><button class="button ghost small" data-modal-open="customerDrawer">查看</button><button class="button ghost small" data-modal-open="customerModal">编辑</button><a class="button ghost small" href="order-create.html">建单</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 8 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="customerModal" hidden>
+    <form class="modal-card" data-success="客户资料已保存">
+      <div class="modal-head"><div><h2>客户编辑</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <label class="field"><span>客户名称*</span><input value="王建国" required></label>
+        <div class="field"><span>客户类型*</span><label class="check-row"><input type="radio" name="customerType" checked><div><b>直客</b><span>个人报名客户</span></div></label><label class="check-row"><input type="radio" name="customerType"><div><b>机构渠道</b><span>旅行社/俱乐部</span></div></label></div>
+        <label class="field"><span>联系人*</span><input value="王建国" required></label>
+        <label class="field"><span>联系电话*</span><input value="138****6688" required></label>
+        <label class="field"><span>证件类型</span><select><option>身份证</option><option>护照</option></select></label>
+        <label class="field"><span>证件号</span><input placeholder="5329************"></label>
+        <div class="field full"><span>标签</span><label class="check-row"><input type="checkbox" checked><div><b>银发</b><span>长者客户</span></div></label><label class="check-row"><input type="checkbox"><div><b>俱乐部</b><span>社群组织</span></div></label><label class="check-row"><input type="checkbox"><div><b>高净值</b><span>高客单客户</span></div></label><label class="check-row"><input type="checkbox" checked><div><b>复购</b><span>历史成交</span></div></label></div>
+        <label class="field"><span>归属销售</span><select><option>李销售</option><option>张经理</option><option>王销售</option></select></label>
+        <label class="field full"><span>备注</span><textarea>偏好尊享房，需提前确认无障碍协助与低盐餐。</textarea></label>
+      </div>
+      <div class="modal-foot"><button class="button secondary" type="button" data-modal-close>取消</button><button class="button primary" type="submit">保存</button></div>
+    </form>
+  </div>
+
+  <div class="modal drawer wide" id="customerDrawer" hidden>
+    <section class="modal-card">
+      <div class="modal-head"><div><span class="badge green">直客</span><h2>客户详情</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <section class="panel full">
+          <div class="panel-header"><div><h2>基本信息</h2><p>王建国 · 138****6688 · 归属销售：李销售</p></div><span class="badge orange">银发</span></div>
+          <div class="record-meta"><span>客户编号：KH20260001</span><span>客户类型：直客</span><span>累计订单：12</span><span>累计金额：¥156000</span></div>
+        </section>
+        <section class="panel full">
+          <div class="panel-header"><div><h2>跟进记录时间线</h2></div></div>
+          <ul class="timeline">
+            <li><time>2026-06-28 10:20</time>确认 9/25 班期尊享房报价，客户倾向 2 人入住。</li>
+            <li><time>2026-06-25 16:40</time>发送环云南9天产品资料与早鸟优惠说明。</li>
+            <li><time>2026-06-20 09:30</time>客户咨询适老化设施、随车医疗与低盐餐。</li>
+          </ul>
+        </section>
+        <section class="panel full">
+          <div class="panel-header"><div><h2>历史订单</h2></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>订单号</th><th>产品班期</th><th>房型/人数</th><th>金额</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>DD20260902</td><td>环云南9天 09-25</td><td>尊享房2人</td><td>¥25998</td><td><span class="badge green">已确认</span></td></tr>
+                <tr><td>DD20260318</td><td>滇西秘境7天 03-18</td><td>品质房2人</td><td>¥13998</td><td><span class="badge blue">已付款</span></td></tr>
+                <tr><td>DD20251209</td><td>版纳雨林6天 12-09</td><td>品质房4人</td><td>¥23996</td><td><span class="badge">已完成</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <div class="modal-foot"><button class="button secondary" data-modal-close>关闭</button><a class="button primary" href="order-create.html">为客户建单</a></div>
+    </section>
+  </div>
+
+</body>
+</html>

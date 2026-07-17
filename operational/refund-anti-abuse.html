@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>退改风控 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+  <style>
+    .anti-rule-modal .modal-card { width: min(1120px, 94vw); }
+    .anti-rule-modal .modal-body { display: block; padding: 0; }
+    .anti-rule-form { padding: 18px; }
+    .anti-rule-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .anti-rule-enable { display: flex; align-items: center; gap: 10px; min-height: 72px; padding: 8px 0; }
+    .anti-rule-enable input { accent-color: var(--green); }
+    .anti-rule-enable div { flex: 1; min-width: 0; }
+    .anti-rule-enable b, .anti-rule-enable span { display: block; }
+    .anti-rule-enable b { color: #21364b; font-size: 13px; }
+    .anti-rule-enable span { margin-top: 4px; color: #7d8a98; font-size: 12px; }
+    @media (max-width: 980px) { .anti-rule-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body data-page="refund-anti-abuse" data-title="退改风控">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">ANTI ABUSE</div>
+      <h1>退改风控</h1>
+      <p>识别同一客户频繁取消占房行为，并自动加收违约金比例。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="命中记录已刷新">刷新记录</button>
+    </div>
+  </header>
+
+  <section class="panel" id="antiAbuseScope">
+    <div class="toolbar">
+      <div class="filter-tabs" data-tabs data-scope="#antiAbuseScope">
+        <button class="active" type="button" data-tab="rules">风控规则 <i>3</i></button>
+        <button type="button" data-tab="hits">命中记录 <i>4</i></button>
+      </div>
+      <div class="toolbar-actions">
+        <button class="button primary small" type="button" data-modal-open="antiRuleModal" data-tab-action="rules">新增规则</button>
+        <button class="button secondary small" type="button" data-toast="命中记录已导出" data-tab-action="hits" hidden>导出记录</button>
+      </div>
+    </div>
+
+    <div data-tab-panel="rules">
+      <div class="table-wrap">
+        <table class="data-table selectable">
+          <thead><tr><th>规则名称</th><th>触发条件</th><th>加收比例</th><th>统计周期</th><th>状态</th><th>最近更新</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr class="selected"><td><b>规则卡片</b></td><td>累计取消达到 3 间</td><td>10%</td><td>单班期</td><td><span class="badge green">启用</span></td><td>2026-07-10</td><td><button class="button ghost small" type="button" data-modal-open="antiRuleModal">编辑</button><button class="button ghost small" type="button" data-confirm="确认停用规则卡片？" data-confirm-success="规则已停用">停用</button></td></tr>
+            <tr><td><b>年度频繁取消</b></td><td>全年累计取消达到 6 间</td><td>15%</td><td>全年</td><td><span class="badge green">启用</span></td><td>2026-07-08</td><td><button class="button ghost small" type="button" data-modal-open="antiRuleModal">编辑</button><button class="button ghost small" type="button" data-confirm="确认停用年度频繁取消？" data-confirm-success="规则已停用">停用</button></td></tr>
+            <tr><td><b>渠道临时占房</b></td><td>同渠道同班期取消达到 5 间</td><td>12%</td><td>单班期</td><td><span class="badge">停用</span></td><td>2026-06-28</td><td><button class="button ghost small" type="button" data-modal-open="antiRuleModal">编辑</button><button class="button ghost small" type="button" data-toast="规则已是停用状态">停用</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div data-tab-panel="hits" hidden>
+      <section class="metric-grid">
+        <article class="metric-card"><span class="metric-icon red">命</span><div><span>本月命中</span><strong>4</strong><small>需重点复核</small></div></article>
+        <article class="metric-card"><span class="metric-icon orange">间</span><div><span>累计取消</span><strong>15</strong><small>命中客户总间数</small></div></article>
+        <article class="metric-card"><span class="metric-icon blue">金</span><div><span>加收违约金</span><strong>¥13,096</strong><small>规则测算金额</small></div></article>
+        <article class="metric-card"><span class="metric-icon green">期</span><div><span>统计周期</span><strong>单班期</strong><small>当前启用口径</small></div></article>
+      </section>
+      <div class="table-wrap">
+        <table class="data-table selectable" id="antiAbuseTable">
+          <thead><tr><th>客户</th><th>累计取消间数</th><th>加收违约金</th><th>时间</th></tr></thead>
+          <tbody>
+            <tr class="selected"><td><b>张建国</b></td><td>3</td><td>¥3899</td><td>2026-06-20</td></tr>
+            <tr><td><b>王秀兰</b></td><td>4</td><td>¥4599</td><td>2026-06-22</td></tr>
+            <tr><td><b>李爱民</b></td><td>5</td><td>¥3199</td><td>2026-06-25</td></tr>
+            <tr><td><b>赵玉芬</b></td><td>3</td><td>¥1399</td><td>2026-06-28</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination"><span>共 4 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+    </div>
+  </section>
+
+  <div class="modal anti-rule-modal" id="antiRuleModal" hidden>
+    <form class="modal-card" data-success="风控规则已保存">
+      <div class="modal-head">
+        <div><h2>规则卡片</h2><p>用于退改申请和违约计算页，命中后自动展示加收说明。</p></div>
+        <span class="badge green">开</span>
+        <button class="modal-close" type="button" data-modal-close>×</button>
+      </div>
+      <div class="modal-body">
+        <div class="anti-rule-form">
+          <div class="anti-rule-grid">
+            <label class="field"><span>累计取消达到N间</span><input type="number" value="3"></label>
+            <label class="field"><span>加收违约金比例</span><input type="number" value="10"></label>
+            <label class="field"><span>统计周期</span><select><option>单班期</option><option>全年</option></select></label>
+            <label class="anti-rule-enable"><input type="checkbox" checked><div><b>是否启用</b><span>开</span></div><span class="badge green">开</span></label>
+            <label class="field span-2"><span>说明</span><textarea>同一客户在统计周期内累计取消达到3间，基础违约金之外加收10%。适用于防止临时占房、反复锁定库存后取消的行为。</textarea></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="button secondary" type="button" data-toast="已恢复默认规则">恢复默认</button>
+        <button class="button secondary" type="button" data-modal-close>取消</button>
+        <button class="button primary" type="submit">保存</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

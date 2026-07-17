@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>直客分析 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="bi-direct" data-title="直客分析">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">DIRECT CUSTOMER ANALYSIS</div>
+      <h1>直客分析</h1>
+      <p>跟踪直客营收、直客占比、来源渠道、转化率和客单价变化。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="直客分析已导出">导出</button>
+      <button class="button primary" type="button" data-toast="直客数据已刷新">刷新数据</button>
+    </div>
+  </header>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon orange">直</span><div><span>直客营收</span><strong>¥14,300,000</strong><small>小程序/公众号等</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">占</span><div><span>直客占比</span><strong>50%</strong><small>暑期冲到 50%</small></div></article>
+    <article class="metric-card"><span class="metric-icon blue">单</span><div><span>直客订单数</span><strong>620</strong><small>本期直客成交</small></div></article>
+    <article class="metric-card"><span class="metric-icon purple">价</span><div><span>直客客单价</span><strong>¥11,200</strong><small>高于渠道均值</small></div></article>
+  </section>
+
+  <section class="grid gap-4 lg:grid-cols-2">
+    <article class="panel">
+      <div class="panel-header"><div><h2>直客占比趋势折线图</h2><p>近12月趋势，暑期直客占比冲到50%。</p></div><span class="badge green">近12月</span></div>
+      <div class="relative h-72 rounded-xl border border-slate-200 bg-[linear-gradient(#eef2f6_1px,transparent_1px),linear-gradient(90deg,#eef2f6_1px,transparent_1px)] bg-[length:100%_25%,8.33%_100%] p-4">
+        <div class="absolute left-[7%] top-[70%] h-1 w-[11%] rotate-[-6deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[17%] top-[67%] h-1 w-[11%] rotate-[-8deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[27%] top-[63%] h-1 w-[11%] rotate-[-12deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[37%] top-[57%] h-1 w-[11%] rotate-[-14deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[47%] top-[50%] h-1 w-[11%] rotate-[-18deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[57%] top-[41%] h-1 w-[11%] rotate-[-22deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[67%] top-[30%] h-1 w-[11%] rotate-[-16deg] rounded bg-[#239665]"></div>
+        <div class="absolute left-[77%] top-[22%] h-1 w-[11%] rotate-[8deg] rounded bg-[#239665]"></div>
+        <div class="absolute right-4 top-4 rounded-lg bg-white/90 px-3 py-2 text-xs text-green-700 shadow-sm">暑期峰值 50%</div>
+        <div class="absolute bottom-3 left-4 right-4 grid grid-cols-12 text-center text-[10px] text-slate-400">
+          <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span><span>7月</span><span>8月</span><span>9月</span><span>10月</span><span>11月</span><span>12月</span>
+        </div>
+      </div>
+    </article>
+    <article class="panel">
+      <div class="panel-header"><div><h2>直客渠道来源饼图</h2><p>小程序 / 公众号 / 12306 / 小红书引流。</p></div><span class="badge orange">来源</span></div>
+      <div class="flex flex-col items-center justify-center gap-6 py-7 sm:flex-row">
+        <div class="h-56 w-56 rounded-full shadow-inner" style="background:conic-gradient(#3478e5 0 42%, #e88b2b 42% 70%, #239665 70% 86%, #d84f58 86% 100%);"></div>
+        <div class="space-y-4 text-sm text-slate-600">
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#3478e5]"></span>小程序 42%</p>
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#e88b2b]"></span>公众号 28%</p>
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#239665]"></span>12306 16%</p>
+          <p><span class="mr-2 inline-block h-3 w-3 rounded-sm bg-[#d84f58]"></span>小红书引流 14%</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><div><h2>直客 vs 渠道客 客单价对比柱状图</h2><p>直客客单价 ¥11,200，高于渠道客平均 ¥9,800。</p></div><span class="badge blue">客单价</span></div>
+    <div class="chart-bars h-72">
+      <div class="chart-col blue"><i style="height:80%"></i><b>小程序直客</b><span>¥11,600</span></div>
+      <div class="chart-col"><i style="height:76%"></i><b>公众号直客</b><span>¥11,200</span></div>
+      <div class="chart-col blue"><i style="height:72%"></i><b>12306</b><span>¥10,800</span></div>
+      <div class="chart-col"><i style="height:67%"></i><b>小红书</b><span>¥10,200</span></div>
+      <div class="chart-col blue"><i style="height:64%"></i><b>渠道客</b><span>¥9,800</span></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>直客来源明细</h2><p>按来源渠道查看访问量、下单量、成交金额与转化率。</p></div>
+      <span class="badge blue">6行</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="directTable">
+        <thead><tr><th>来源渠道</th><th>访问量</th><th>下单量</th><th>成交金额</th><th>转化率</th><th>客单价</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td><b>微信小程序</b></td><td>86,000</td><td>268</td><td>¥6,080,000</td><td><div class="progress-line"><div class="progress green"><i style="width:31%"></i></div><span>3.1%</span></div></td><td>¥11,600</td></tr>
+          <tr><td><b>公众号</b></td><td>64,000</td><td>176</td><td>¥4,004,000</td><td><div class="progress-line"><div class="progress green"><i style="width:28%"></i></div><span>2.8%</span></div></td><td>¥11,200</td></tr>
+          <tr><td><b>12306</b></td><td>42,000</td><td>92</td><td>¥2,288,000</td><td><div class="progress-line"><div class="progress blue"><i style="width:22%"></i></div><span>2.2%</span></div></td><td>¥10,800</td></tr>
+          <tr><td><b>小红书</b></td><td>38,000</td><td>54</td><td>¥1,064,000</td><td><div class="progress-line"><div class="progress"><i style="width:14%"></i></div><span>1.4%</span></div></td><td>¥10,200</td></tr>
+          <tr><td><b>海外站</b></td><td>12,000</td><td>18</td><td>¥468,000</td><td><div class="progress-line"><div class="progress"><i style="width:15%"></i></div><span>1.5%</span></div></td><td>¥13,000</td></tr>
+          <tr><td><b>其他</b></td><td>18,000</td><td>12</td><td>¥396,000</td><td><div class="progress-line"><div class="progress"><i style="width:7%"></i></div><span>0.7%</span></div></td><td>¥11,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-900">直客占比是资本故事'开源'核心指标</div>
+  </section>
+</body>
+</html>

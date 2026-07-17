@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>列车车型 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="stock-traintype-list" data-title="列车车型">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">TRAIN TYPE</div>
+      <h1>列车车型</h1>
+      <p>维护昆明号等专列车型的编组规模、房型档次和可售容量。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-modal-open="trainTypeModal">复制列车车型</button>
+      <button class="button primary" type="button" data-modal-open="trainTypeModal">新建列车车型</button>
+    </div>
+  </header>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon green">型</span><div><span>列车车型</span><strong>6</strong><small>启用 5 · 停用 1</small></div></article>
+    <article class="metric-card"><span class="metric-icon blue">车</span><div><span>平均编组</span><strong>16</strong><small>客运车厢 12 节</small></div></article>
+    <article class="metric-card"><span class="metric-icon orange">厢</span><div><span>可售包厢</span><strong>72</strong><small>尊享 24 · 品质 48</small></div></article>
+    <article class="metric-card"><span class="metric-icon purple">员</span><div><span>标准定员</span><strong>264</strong><small>昆明号主力车型</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#trainTypeTable">
+      <label class="field wide"><span>列车车型</span><input data-table-search="#trainTypeTable" placeholder="昆明号"></label>
+      <label class="field narrow"><span>状态</span><select data-table-filter="#trainTypeTable" data-filter-key="status"><option value="">全部状态</option><option value="启用">启用</option><option value="停用">停用</option></select></label>
+      <div class="filter-actions">
+        <button class="button secondary small" type="button" data-apply-filters="#trainTypeTable">查询</button>
+        <button class="button ghost small" type="button" data-reset-filters>重置</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div class="filter-tabs" data-status-tabs data-target="#trainTypeTable">
+        <button class="active" data-status="all">全部 <i>6</i></button>
+        <button data-status="启用">启用 <i>5</i></button>
+        <button data-status="停用">停用 <i>1</i></button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="trainTypeTable">
+        <thead>
+          <tr>
+            <th>车型编号</th><th>列车车型</th><th>总编组辆数</th><th>载客车厢数</th><th>可售包厢数</th><th>总定员</th><th>房型档次</th><th>状态</th><th>创建时间</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="selected" data-status="启用"><td>TR-KM01</td><td><b>昆明号</b></td><td class="numeric">16</td><td class="numeric">12</td><td class="numeric">72</td><td class="numeric">264</td><td><span class="badge orange">5钻</span><span class="badge blue">4钻</span></td><td><span class="badge green">启用</span></td><td>2026-01-15</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-KM01&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-confirm="确认停用昆明号列车车型？" data-confirm-success="列车车型已停用">停用</button></td></tr>
+          <tr data-status="启用"><td>TR-LJ02</td><td><b>丽江号</b></td><td class="numeric">14</td><td class="numeric">10</td><td class="numeric">60</td><td class="numeric">220</td><td><span class="badge orange">5钻</span><span class="badge blue">4钻</span></td><td><span class="badge green">启用</span></td><td>2026-02-01</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-LJ02&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-confirm="确认停用丽江号列车车型？" data-confirm-success="列车车型已停用">停用</button></td></tr>
+          <tr data-status="启用"><td>TR-XG03</td><td><b>香格里拉号</b></td><td class="numeric">16</td><td class="numeric">12</td><td class="numeric">72</td><td class="numeric">264</td><td><span class="badge orange">5钻</span><span class="badge blue">4钻</span></td><td><span class="badge green">启用</span></td><td>2026-02-18</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-XG03&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-confirm="确认停用香格里拉号列车车型？" data-confirm-success="列车车型已停用">停用</button></td></tr>
+          <tr data-status="启用"><td>TR-DL04</td><td><b>大理号</b></td><td class="numeric">15</td><td class="numeric">11</td><td class="numeric">66</td><td class="numeric">242</td><td><span class="badge blue">4钻</span></td><td><span class="badge green">启用</span></td><td>2026-03-05</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-DL04&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-confirm="确认停用大理号列车车型？" data-confirm-success="列车车型已停用">停用</button></td></tr>
+          <tr data-status="启用"><td>TR-TC05</td><td><b>腾冲号</b></td><td class="numeric">16</td><td class="numeric">12</td><td class="numeric">72</td><td class="numeric">264</td><td><span class="badge orange">5钻</span><span class="badge blue">4钻</span></td><td><span class="badge green">启用</span></td><td>2026-03-22</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-TC05&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-confirm="确认停用腾冲号列车车型？" data-confirm-success="列车车型已停用">停用</button></td></tr>
+          <tr data-status="停用"><td>TR-BN06</td><td><b>版纳号</b></td><td class="numeric">12</td><td class="numeric">8</td><td class="numeric">48</td><td class="numeric">176</td><td><span class="badge blue">4钻</span></td><td><span class="badge">停用</span></td><td>2026-04-10</td><td><button class="button ghost small" data-modal-open="trainTypeDrawer">查看</button><a class="button ghost small" href="stock-carriage-config.html?train=TR-BN06&from=stock-traintype-list.html">列车编组</a><button class="button ghost small" data-modal-open="trainTypeModal">编辑</button><button class="button ghost small" data-modal-open="trainTypeModal">复制</button><button class="button ghost small" data-toast="列车车型已是停用状态">停用</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 6 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="trainTypeModal" hidden>
+    <form class="modal-card" data-success="列车车型已保存">
+      <div class="modal-head"><div><h2>列车车型编辑</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <label class="field"><span>列车车型*</span><input value="昆明号" required></label>
+        <label class="field"><span>车型编号*</span><input value="TR-KM01" required></label>
+        <label class="field"><span>总编组辆数*</span><input type="number" value="16" required></label>
+        <label class="field"><span>载客车厢数*</span><input type="number" value="12" required></label>
+        <label class="field"><span>工作车数</span><input type="number" value="1"></label>
+        <label class="field"><span>发电车数</span><input type="number" value="1"></label>
+        <label class="field"><span>餐车数</span><input type="number" value="2"></label>
+        <label class="field"><span>可售包厢数*</span><input type="number" value="72" required></label>
+        <label class="field"><span>总定员*</span><input type="number" value="264" required></label>
+        <label class="check-row"><input type="checkbox" checked><div><b>5钻</b><span>安途尊享房</span></div></label>
+        <label class="check-row"><input type="checkbox" checked><div><b>4钻</b><span>悦途品质房</span></div></label>
+        <label class="check-row"><input type="checkbox" checked><div><b>状态</b><span>启用</span></div><span class="badge green">启用</span></label>
+        <label class="field full"><span>涂装/备注</span><textarea>金色孔雀涂装</textarea></label>
+      </div>
+      <div class="modal-foot"><button class="button secondary" type="button" data-modal-close>取消</button><button class="button primary" type="submit">保存</button></div>
+    </form>
+  </div>
+
+  <div class="modal drawer wide" id="trainTypeDrawer" hidden>
+    <section class="modal-card">
+      <div class="modal-head"><div><h2>昆明号列车车型详情</h2></div><button class="modal-close" type="button" data-modal-close>×</button></div>
+      <div class="modal-body">
+        <section class="panel full">
+          <div class="panel-header"><div><h2>基本信息</h2><p>列车车型名称、编号、编组辆数和定员信息</p></div><span class="badge green">启用</span></div>
+          <div class="info-grid">
+            <div class="info-card"><span>列车车型</span><b>昆明号</b><small>金色孔雀涂装</small></div>
+            <div class="info-card"><span>车型编号</span><b>TR-KM01</b><small>2026-01-15 创建</small></div>
+            <div class="info-card"><span>编组辆数</span><b>16 辆</b><small>12 载客 + 4 功能</small></div>
+            <div class="info-card"><span>总定员</span><b>264 人</b><small>可售包厢 72 间</small></div>
+          </div>
+        </section>
+        <section class="panel full">
+          <div class="panel-header"><div><h2>车厢结构清单</h2><p>展示前 8 行结构，完整结构覆盖 1~16 车厢</p></div></div>
+          <div class="table-wrap"><table class="data-table"><thead><tr><th>车厢序号</th><th>车厢类型</th><th>包厢数</th></tr></thead><tbody>
+            <tr><td>1</td><td><span class="badge blue">软卧载客</span></td><td>6</td></tr>
+            <tr><td>2</td><td><span class="badge blue">软卧载客</span></td><td>6</td></tr>
+            <tr><td>3</td><td><span class="badge blue">软卧载客</span></td><td>6</td></tr>
+            <tr><td>4</td><td><span class="badge blue">软卧载客</span></td><td>6</td></tr>
+            <tr><td>13</td><td><span class="badge orange">多功能餐车</span></td><td>—</td></tr>
+            <tr><td>14</td><td><span class="badge orange">特色餐车</span></td><td>—</td></tr>
+            <tr><td>15</td><td><span class="badge purple">工作车</span></td><td>—</td></tr>
+            <tr><td>16</td><td><span class="badge">发电车</span></td><td>—</td></tr>
+          </tbody></table></div>
+        </section>
+        <section class="panel full">
+          <div class="panel-header"><div><h2>房型概览</h2><p>安途尊享房与悦途品质房的容量摘要</p></div></div>
+          <div class="info-grid compact">
+            <div class="info-card"><span>安途尊享房</span><b>5钻 · 24间</b><small>每间 3 铺，独立卫浴</small></div>
+            <div class="info-card"><span>悦途品质房</span><b>4钻 · 48间</b><small>每间 4 铺，公共卫浴</small></div>
+          </div>
+        </section>
+      </div>
+      <div class="modal-foot"><button class="button secondary" data-modal-close>关闭</button><a class="button secondary" href="stock-carriage-config.html?train=TR-KM01&from=stock-traintype-list.html">列车编组</a><button class="button primary" data-modal-open="trainTypeModal">编辑列车车型</button></div>
+    </section>
+  </div>
+</body>
+</html>

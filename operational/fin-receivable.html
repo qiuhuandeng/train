@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>应收账款 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="fin-receivable" data-title="应收账款">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">ACCOUNTS RECEIVABLE</div>
+      <h1>应收账款</h1>
+      <p>跟踪直客与渠道应收、已收、未收和逾期账款。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="应收账款已导出">导出</button>
+      <a class="button primary" href="fin-writeoff.html">去核销</a>
+    </div>
+  </header>
+
+  <section class="metric-grid">
+    <article class="metric-card"><span class="metric-icon blue">应</span><div><span>应收总额</span><strong>¥2860000</strong><small>全部账期</small></div></article>
+    <article class="metric-card"><span class="metric-icon green">收</span><div><span>已收</span><strong>¥2600000</strong><small>到账已确认</small></div></article>
+    <article class="metric-card"><span class="metric-icon orange">未</span><div><span>未收</span><strong>¥260000</strong><small>待收尾款/账期款</small></div></article>
+    <article class="metric-card"><span class="metric-icon red">逾</span><div><span>逾期</span><strong class="text-red-600">¥48000</strong><small>需催收跟进</small></div></article>
+  </section>
+
+  <section class="panel">
+    <div class="filters" data-filter-scope="#receivableTable">
+      <label class="field"><span>客户/渠道</span><input data-table-search="#receivableTable" placeholder="王建国 / 康辉旅行社"></label>
+      <label class="field"><span>班期</span><select data-table-filter="#receivableTable" data-filter-key="schedule"><option value="">全部班期</option><option>环云南9天 09-25</option><option>环云南9天 10-17</option><option>环云南9天 11-14</option></select></label>
+      <label class="field"><span>账期状态</span><select data-table-filter="#receivableTable" data-filter-key="status"><option value="">全部状态</option><option>未到期</option><option>已到期</option><option>逾期</option></select></label>
+      <label class="field"><span>时间区间</span><input type="text" placeholder="2026-06-01 至 2026-09-30"></label>
+      <div class="filter-actions"><button class="button secondary small" data-apply-filters="#receivableTable">查询</button><button class="button ghost small" data-reset-filters>重置</button></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>应收明细</h2><p>支持按客户、渠道、班期和账龄状态跟踪回款。</p></div>
+      <span class="badge blue">10条</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="receivableTable">
+        <thead><tr><th>单据号</th><th>客户/渠道</th><th>客户类型</th><th>产品班期</th><th>应收金额</th><th>已收金额</th><th>未收金额</th><th>账期到期日</th><th>账龄状态</th><th>归属销售</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected" data-schedule="环云南9天 09-25" data-status="未到期"><td>YS20260901</td><td><b>王建国</b></td><td><span class="badge green">直客</span></td><td>环云南9天 09-25</td><td>¥25998</td><td>¥5000</td><td>¥20998</td><td>2026-08-25</td><td><span class="badge blue">未到期</span></td><td>李销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 09-25" data-status="未到期"><td>YS20260902</td><td><b>康辉旅行社</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 09-25</td><td>¥51996</td><td>¥10000</td><td>¥41996</td><td>2026-08-25</td><td><span class="badge blue">未到期</span></td><td>李销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 09-25" data-status="逾期"><td>YS20260903</td><td><b>众信旅游</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 09-25</td><td>¥95992</td><td>¥60000</td><td>¥35992</td><td>2026-07-15</td><td><span class="badge red">逾期</span></td><td>王销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 09-25" data-status="已到期"><td>YS20260904</td><td><b>李秀兰</b></td><td><span class="badge green">直客</span></td><td>环云南9天 09-25</td><td>¥25998</td><td>¥20000</td><td>¥5998</td><td>2026-07-30</td><td><span class="badge orange">已到期</span></td><td>李销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 10-17" data-status="未到期"><td>YS20261001</td><td><b>夕阳红俱乐部</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 10-17</td><td>¥103992</td><td>¥30000</td><td>¥73992</td><td>2026-09-17</td><td><span class="badge blue">未到期</span></td><td>赵销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 10-17" data-status="未到期"><td>YS20261002</td><td><b>张伟</b></td><td><span class="badge green">直客</span></td><td>环云南9天 10-17</td><td>¥12798</td><td>¥5000</td><td>¥7798</td><td>2026-09-17</td><td><span class="badge blue">未到期</span></td><td>李销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 10-17" data-status="已到期"><td>YS20261003</td><td><b>中青旅</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 10-17</td><td>¥167972</td><td>¥140000</td><td>¥27972</td><td>2026-07-28</td><td><span class="badge orange">已到期</span></td><td>王销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 11-14" data-status="逾期"><td>YS20261101</td><td><b>银发之家</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 11-14</td><td>¥71994</td><td>¥59986</td><td>¥12008</td><td>2026-07-10</td><td><span class="badge red">逾期</span></td><td>赵销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 11-14" data-status="未到期"><td>YS20261102</td><td><b>陈桂英</b></td><td><span class="badge green">直客</span></td><td>环云南9天 11-14</td><td>¥23996</td><td>¥10000</td><td>¥13996</td><td>2026-10-15</td><td><span class="badge blue">未到期</span></td><td>李销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+          <tr data-schedule="环云南9天 11-14" data-status="未到期"><td>YS20261103</td><td><b>暖阳旅居</b></td><td><span class="badge blue">渠道</span></td><td>环云南9天 11-14</td><td>¥143988</td><td>¥120000</td><td>¥23988</td><td>2026-10-15</td><td><span class="badge blue">未到期</span></td><td>王销售</td><td><button class="button ghost small" data-toast="已进入核销">核销</button><button class="button ghost small" data-toast="催收提醒已发送">催收</button><button class="button ghost small" data-toast="应收详情已打开">查看</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 10 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+</body>
+</html>

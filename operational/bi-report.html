@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>报表中心 · 专列ERP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body data-page="bi-report" data-title="报表中心">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">REPORT CENTER</div>
+      <h1>报表中心</h1>
+      <p>集中查看常用经营报表，并支持按销售、库存、财务、客户主题创建自定义报表。</p>
+    </div>
+    <div class="page-actions">
+      <button class="button secondary" type="button" data-toast="报表目录已导出">导出目录</button>
+      <button class="button primary" type="button" data-modal-open="reportModal">新建自定义报表</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>常用报表</h2><p>高频报表入口，可直接查看或导出 Excel。</p></div>
+      <span class="badge blue">8个</span>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon blue">日</span><span class="badge green">销售</span></div>
+        <h3 class="font-semibold text-slate-900">销售日报/周报/月报</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:00</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="销售报表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon green">收</span><span class="badge blue">营收</span></div>
+        <h3 class="font-semibold text-slate-900">营收统计表</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:05</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="营收统计表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon orange">座</span><span class="badge orange">库存</span></div>
+        <h3 class="font-semibold text-slate-900">上座率报表</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:10</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="上座率报表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon purple">账</span><span class="badge purple">渠道</span></div>
+        <h3 class="font-semibold text-slate-900">渠道对账汇总</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:15</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="渠道对账汇总已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon green">毛</span><span class="badge green">财务</span></div>
+        <h3 class="font-semibold text-slate-900">毛利分析表</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:20</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="毛利分析表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon red">退</span><span class="badge red">退改</span></div>
+        <h3 class="font-semibold text-slate-900">退改统计表</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:25</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="退改统计表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon blue">客</span><span class="badge blue">客户</span></div>
+        <h3 class="font-semibold text-slate-900">客户分析表</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:30</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="客户分析表已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="mb-4 flex items-center justify-between"><span class="metric-icon orange">地</span><span class="badge orange">地接</span></div>
+        <h3 class="font-semibold text-slate-900">地接结算汇总</h3>
+        <p class="mt-2 text-sm text-slate-500">更新时间：2026-07-16 09:35</p>
+        <div class="mt-4 flex gap-2"><button class="button ghost small" data-toast="地接结算汇总已打开">查看</button><button class="button ghost small" data-toast="Excel已导出">导出Excel</button></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div><h2>我的自定义报表</h2><p>按个人或团队沉淀自定义统计口径。</p></div>
+      <span class="badge blue">5行</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table selectable" id="customReportTable">
+        <thead><tr><th>报表名称</th><th>统计维度</th><th>创建人</th><th>创建时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr class="selected"><td><b>昆明号班期利润追踪</b></td><td>班期 / 产品 / 房型</td><td>张经理</td><td>2026-06-01</td><td><button class="button ghost small" data-toast="报表已打开">查看</button><button class="button ghost small" data-modal-open="reportModal">编辑</button><button class="button ghost small" data-toast="Excel已导出">导出</button><button class="button ghost small" data-confirm="确认删除该报表？" data-confirm-success="报表已删除">删除</button></td></tr>
+          <tr><td><b>直客开源指标月报</b></td><td>来源 / 月份 / 客群</td><td>李销售</td><td>2026-06-05</td><td><button class="button ghost small" data-toast="报表已打开">查看</button><button class="button ghost small" data-modal-open="reportModal">编辑</button><button class="button ghost small" data-toast="Excel已导出">导出</button><button class="button ghost small" data-confirm="确认删除该报表？" data-confirm-success="报表已删除">删除</button></td></tr>
+          <tr><td><b>渠道返佣与毛利联动表</b></td><td>渠道 / 返佣 / 毛利</td><td>财务王</td><td>2026-06-12</td><td><button class="button ghost small" data-toast="报表已打开">查看</button><button class="button ghost small" data-modal-open="reportModal">编辑</button><button class="button ghost small" data-toast="Excel已导出">导出</button><button class="button ghost small" data-confirm="确认删除该报表？" data-confirm-success="报表已删除">删除</button></td></tr>
+          <tr><td><b>库存低余量预警周报</b></td><td>班期 / 房型 / 余量</td><td>王计调</td><td>2026-06-18</td><td><button class="button ghost small" data-toast="报表已打开">查看</button><button class="button ghost small" data-modal-open="reportModal">编辑</button><button class="button ghost small" data-toast="Excel已导出">导出</button><button class="button ghost small" data-confirm="确认删除该报表？" data-confirm-success="报表已删除">删除</button></td></tr>
+          <tr><td><b>银发客群复购分析</b></td><td>客户 / 标签 / 复购</td><td>赵运营</td><td>2026-06-25</td><td><button class="button ghost small" data-toast="报表已打开">查看</button><button class="button ghost small" data-modal-open="reportModal">编辑</button><button class="button ghost small" data-toast="Excel已导出">导出</button><button class="button ghost small" data-confirm="确认删除该报表？" data-confirm-success="报表已删除">删除</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination"><span>共 5 条 · 每页 10 条</span><div><button>‹</button><button class="active">1</button><button>›</button></div></div>
+  </section>
+
+  <div class="modal" id="reportModal" hidden>
+    <form class="modal-card" data-success="自定义报表已保存">
+      <div class="modal-head">
+        <div><span class="eyebrow">CUSTOM REPORT</span><h2>新建自定义报表</h2></div>
+        <button class="modal-close" type="button" data-modal-close>×</button>
+      </div>
+      <div class="modal-body">
+        <label class="field full"><span>报表名称*</span><input value="昆明号班期利润追踪" required></label>
+        <label class="field">
+          <span>数据主题</span>
+          <select><option>销售</option><option>库存</option><option>财务</option><option>客户</option></select>
+        </label>
+        <div class="field">
+          <span>统计维度</span>
+          <div class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:grid-cols-2">
+            <label><input type="checkbox" checked> 班期</label>
+            <label><input type="checkbox" checked> 产品</label>
+            <label><input type="checkbox"> 渠道</label>
+            <label><input type="checkbox"> 房型</label>
+          </div>
+        </div>
+        <div class="field">
+          <span>指标字段</span>
+          <div class="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm sm:grid-cols-2">
+            <label><input type="checkbox" checked> 营收</label>
+            <label><input type="checkbox" checked> 订单数</label>
+            <label><input type="checkbox" checked> 毛利率</label>
+            <label><input type="checkbox"> 上座率</label>
+          </div>
+        </div>
+        <label class="field full"><span>筛选条件</span><textarea rows="3" placeholder="如：车型=昆明号；时间=本季度；状态=已确认"></textarea></label>
+        <label class="field">
+          <span>图表类型</span>
+          <select><option>表格</option><option>柱状图</option><option>折线图</option><option>饼图</option><option>组合图</option></select>
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button class="button secondary" type="button" data-modal-close>取消</button>
+        <button class="button primary" type="submit">保存</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
