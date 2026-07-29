@@ -81,6 +81,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      padding-right: 54px;
     }
 
     .conversation-item .conv-preview {
@@ -99,58 +100,41 @@
       color: var(--text-muted);
     }
 
-    .conversation-item .conv-status {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
+    .context-menu {
+      position: fixed;
+      min-width: 148px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      z-index: 2500;
+      display: none;
     }
 
-    .conv-status.active { background: var(--success); }
-    .conv-status.pending { background: var(--warning); }
-    .conv-status.done { background: var(--primary); }
-    .conv-status.draft { background: var(--text-muted); }
-    .conv-status.rework { background: var(--warning); }
-    .conv-status.archived { background: var(--text-muted); }
-
-    .conv-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 8px;
+    .context-menu.show {
+      display: block;
     }
 
-    .stage-pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: var(--bg-sidebar);
-      color: var(--text-secondary);
-      font-size: 11px;
-      line-height: 1.4;
+    .context-menu button {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      text-align: left;
+      font-family: var(--font-family);
+      font-size: 13px;
+      color: var(--text-primary);
+      cursor: pointer;
     }
 
-    .stage-pill.active {
-      background: var(--success-bg);
-      color: var(--success);
+    .context-menu button:hover {
+      background: var(--bg-hover);
     }
 
-    .stage-pill.pending,
-    .stage-pill.rework {
-      background: var(--warning-bg);
-      color: var(--warning);
-    }
-
-    .stage-pill.done {
-      background: var(--primary-bg);
-      color: var(--primary);
-    }
-
-    .stage-pill.draft,
-    .stage-pill.archived {
-      background: var(--bg-sidebar);
-      color: var(--text-muted);
+    .context-menu button.danger {
+      color: var(--danger);
     }
 
     /* 中间主对话区 */
@@ -345,6 +329,9 @@
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .quote-card table {
@@ -386,6 +373,9 @@
       font-weight: 600;
       margin-bottom: 10px;
       color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .compare-option {
@@ -490,6 +480,13 @@
     .toolbar-btn:hover {
       background: var(--bg-hover);
       color: var(--text-primary);
+    }
+
+    .toolbar-btn .icon-line,
+    .send-btn .icon-line,
+    .command-item .icon-line {
+      width: 18px;
+      height: 18px;
     }
 
     .input-wrapper {
@@ -611,6 +608,9 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .requirement-item {
@@ -763,6 +763,77 @@
       width: 100%;
       justify-content: center;
     }
+
+    .timeline-item[draggable="true"] {
+      cursor: grab;
+      border-radius: var(--radius-sm);
+    }
+
+    .timeline-item.drag-over {
+      background: var(--primary-bg);
+    }
+
+    .timeline-item.dragging {
+      opacity: 0.45;
+    }
+
+    @media (max-width: 768px) {
+      .chat-layout {
+        display: flex;
+        width: 100vw;
+      }
+
+      .chat-sidebar,
+      .chat-panel {
+        display: none;
+      }
+
+      .chat-main {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .chat-header {
+        padding: 10px 12px;
+      }
+
+      .chat-header .chat-title {
+        font-size: 14px;
+      }
+
+      .chat-header .chat-status {
+        font-size: 11px;
+      }
+
+      .chat-header > div:last-child {
+        display: none !important;
+      }
+
+      .chat-messages {
+        padding: 12px;
+        gap: 14px;
+      }
+
+      .message {
+        max-width: 94%;
+      }
+
+      .route-card,
+      .quote-card,
+      .compare-card,
+      .task-card,
+      .doc-card {
+        max-width: 100%;
+      }
+
+      .chat-input-area {
+        padding: 10px 12px;
+      }
+
+      .input-toolbar span:last-child {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -775,7 +846,7 @@
         </button>
       </div>
       <div class="sidebar-search">
-        <input type="text" id="conversationSearch" placeholder="搜索客户、目的地、阶段..." oninput="renderConversationList()">
+        <input type="text" id="conversationSearch" placeholder="搜索客户、目的地..." oninput="renderConversationList()">
       </div>
       <ul class="conversation-list" id="conversationList"></ul>
     </div>
@@ -789,7 +860,7 @@
         </div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-sm btn-secondary" onclick="exportConversation()">导出对话</button>
-          <button class="btn btn-sm btn-ghost" onclick="showConversationMenu()">⋯</button>
+          <button class="btn btn-sm btn-ghost" onclick="showConversationMenu(event)">⋯</button>
         </div>
       </div>
 
@@ -798,42 +869,42 @@
       <!-- 输入区 -->
       <div class="chat-input-area">
         <div class="input-toolbar">
-          <button class="toolbar-btn" title="上传文件" onclick="location.href='upload.html'">📎</button>
-          <button class="toolbar-btn" title="上传图片" onclick="mockAttachImage()">🖼</button>
-          <button class="toolbar-btn" title="语音输入" onclick="mockVoiceInput()">🎤</button>
+          <button class="toolbar-btn" title="上传文件" onclick="location.href='upload.html'"><span data-icon="paperclip"></span></button>
+          <button class="toolbar-btn" title="上传图片" onclick="mockAttachImage()"><span data-icon="image"></span></button>
+          <button class="toolbar-btn" title="语音输入" onclick="mockVoiceInput()"><span data-icon="mic"></span></button>
           <span style="flex:1"></span>
           <span style="font-size:11px;color:var(--text-muted);">输入 / 查看可用指令</span>
         </div>
         <div class="input-wrapper" style="position:relative;">
           <div class="command-menu" id="commandMenu">
             <div class="command-item" onclick="insertCommand('/上传线路')">
-              <span>📄</span>
+              <span data-icon="file"></span>
               <span class="cmd-name">/上传线路</span>
               <span class="cmd-desc">上传线路文件并解析入库</span>
             </div>
             <div class="command-item" onclick="insertCommand('/上价格')">
-              <span>💰</span>
+              <span data-icon="coins"></span>
               <span class="cmd-name">/上价格</span>
               <span class="cmd-desc">上传价格/库存表</span>
             </div>
             <div class="command-item" onclick="insertCommand('/生成海报')">
-              <span>🖼</span>
+              <span data-icon="image"></span>
               <span class="cmd-name">/生成海报</span>
               <span class="cmd-desc">基于当前方案生成海报</span>
             </div>
             <div class="command-item" onclick="insertCommand('/生成PDF')">
-              <span>📑</span>
+              <span data-icon="clipboard"></span>
               <span class="cmd-name">/生成PDF</span>
               <span class="cmd-desc">生成行程单PDF文档</span>
             </div>
             <div class="command-item" onclick="insertCommand('/报价')">
-              <span>🧮</span>
+              <span data-icon="calculator"></span>
               <span class="cmd-name">/报价</span>
               <span class="cmd-desc">对当前方案生成详细报价</span>
             </div>
           </div>
           <textarea id="chatInput" placeholder="描述客户需求，或输入 / 使用指令..." rows="1" onkeydown="handleKeydown(event)" oninput="handleInput(event)"></textarea>
-          <button class="send-btn" onclick="sendMessage()" id="sendBtn">➤</button>
+          <button class="send-btn" onclick="sendMessage()" id="sendBtn"><span data-icon="send"></span></button>
         </div>
       </div>
     </div>
@@ -841,6 +912,8 @@
     <!-- 右侧面板 -->
     <div class="chat-panel" id="contextPanel"></div>
   </div>
+
+  <div class="context-menu" id="conversationMenu"></div>
 
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
@@ -850,9 +923,9 @@
     const LEGACY_CHAT_KEY = 'aiTravelAssistant.chat.v2';
     const LEGACY_CHAT_VERSION = 'multi-stage-20260729';
     const chatInput = document.getElementById('chatInput');
-    let conversations = loadConversations();
+    let conversations = simplifyConversations(loadConversations());
     const requestedConversationId = sessionStorage.getItem('openConversationId');
-    let activeConversationId = conversations.some(item => item.id === requestedConversationId) ? requestedConversationId : conversations[0].id;
+    let activeConversationId = conversations.some(item => item.id === requestedConversationId) ? requestedConversationId : 'new-intake';
     sessionStorage.removeItem('openConversationId');
 
     chatInput.addEventListener('input', function() {
@@ -862,6 +935,7 @@
 
     function getDefaultConversations() {
       return [
+        getIntakeConversation(),
         {
           id: 'zhang-family',
           title: '张先生一家 - 瑞法10日',
@@ -1238,6 +1312,117 @@
       ];
     }
 
+    function quoteStatusSource(status) {
+      if (window.AppStore && AppStore.quoteSourceType) return AppStore.quoteSourceType(status);
+      if (status === '实时') return 'api';
+      if (/待确认|估算|缺价/.test(status)) return 'warning';
+      return 'local';
+    }
+
+    function conversationQuoteFromEngine(quote) {
+      return {
+        title: '日本商务团初版报价',
+        totalLabel: '团费合计',
+        total: AppStore.money(quote.total),
+        perPerson: `人均 ${AppStore.money(quote.perPerson)} · ${quote.matchedCount}/${quote.totalNeeds} 项资源已匹配`,
+        items: quote.items.map(item => [
+          item.name,
+          AppStore.money(item.amount),
+          item.status,
+          item.sourceType || quoteStatusSource(item.status)
+        ])
+      };
+    }
+
+    function quoteCardFromEngine(quote) {
+      return {
+        type: 'quote',
+        title: '日本商务团初版报价',
+        total: AppStore.money(quote.total),
+        note: `人均 ${AppStore.money(quote.perPerson)} · 来源：知识库组件 + 资源成本库`,
+        items: quote.items.map(item => [item.name, AppStore.money(item.amount), item.status])
+      };
+    }
+
+    function getIntakeConversation() {
+      const quote = AppStore.japanBusinessQuote();
+      const quoteCard = quoteCardFromEngine(quote);
+      return {
+        id: 'new-intake',
+        title: '新客户',
+        stage: '报价已生成',
+        stageClass: 'pending',
+        status: 'pending',
+        statusText: '已生成初版方案和报价',
+        preview: 'AI：已生成日本商务团文案和报价',
+        time: '刚刚',
+        startedAt: '对话开始于 今天 16:20',
+        requirements: [
+          { label: '客户', value: '王总公司商务团', confirmed: true },
+          { label: '人数', value: '18人', confirmed: true },
+          { label: '出发地', value: '上海', confirmed: true },
+          { label: '目的地', value: '东京 + 箱根', confirmed: true },
+          { label: '天数', value: '5天4晚', confirmed: true },
+          { label: '预算', value: '总预算 ¥220,000 内', confirmed: true },
+          { label: '住宿', value: '东京市区五星商务酒店', confirmed: true },
+          { label: '偏好', value: '商务拜访、会议室、接送机、轻团建', confirmed: true }
+        ],
+        itineraryTitle: '推荐线路',
+        itinerary: [
+          ['Day1', '上海 → 东京，专车接机，入住银座/丸之内商圈酒店'],
+          ['Day2', '上午客户拜访，下午商务接待，晚上团队晚宴'],
+          ['Day3', '酒店会议室半日，下午银座自由商务活动'],
+          ['Day4', '东京 → 箱根，温泉酒店 + 轻团建'],
+          ['Day5', '箱根 → 东京机场，专车送机返程']
+        ],
+        quote: conversationQuoteFromEngine(quote),
+        notes: [
+          '客户强调商务感，不要排成普通观光团；报价可先发初版，但会议室和茶歇需供应商复核。',
+          '建议客户确认发票抬头、付款主体和接送机航班时间。'
+        ],
+        messages: [
+          { role: 'system', text: '对话开始于 今天 16:20' },
+          {
+            role: 'user',
+            time: '16:20',
+            text: '新客户是王总公司商务团，18个人，想去日本5天，东京为主，加一天箱根，不要太旅游化，要商务一点。上海出发，总预算控制在22万以内。'
+          },
+          {
+            role: 'ai',
+            time: '16:21',
+            text: '我已提取客户画像：18人企业商务团、上海出发、日本5天、东京为主并加入箱根轻团建。这个单子的文案重点建议放在“商务拜访效率、酒店会议配套、接送机省心、箱根放松不拉车”。',
+            cards: [
+              {
+                type: 'route',
+                planId: 'A',
+                title: '推荐方案：东京商务 + 箱根轻团建（5天4晚）',
+                days: [
+                  ['Day1', '上海 → 东京，专车接机，入住商务酒店'],
+                  ['Day2', '客户拜访 + 商务接待'],
+                  ['Day3', '会议室半日 + 银座商务活动'],
+                  ['Day4', '箱根温泉酒店 + 轻团建'],
+                  ['Day5', '专车送机返程']
+                ]
+              }
+            ]
+          },
+          {
+            role: 'user',
+            time: '16:24',
+            text: '可以，先给我一个能发客户看的初版报价，会议室和接送机要单独列出来。'
+          },
+          {
+            role: 'ai',
+            time: '16:25',
+            text: '已生成初版报价。机票按实时价估算，酒店和用车优先使用协议价；会议室半日和茶歇需要供应商二次确认后再作为最终价发送。',
+            cards: [
+              quoteCard
+            ]
+          }
+        ]
+      };
+    }
+
     function loadConversations() {
       const workspace = AppStore.all();
       if (Array.isArray(workspace.conversations) && workspace.conversations.length) {
@@ -1257,6 +1442,114 @@
       return seeded;
     }
 
+    function simplifyConversations(list) {
+      const source = Array.isArray(list) ? list.slice() : [];
+      const coreIds = ['zhang-family', 'li-honeymoon', 'wang-business', 'zhao-rework', 'thai-done'];
+      const defaults = new Map(getDefaultConversations().map(item => [item.id, item]));
+      const compact = [getIntakeConversation()];
+
+      coreIds.forEach(id => {
+        const saved = source.find(item => item && item.id === id);
+        compact.push(saved || defaults.get(id));
+      });
+
+      return compact.filter(Boolean);
+    }
+
+    function ensureEdgeConversations(list) {
+      const conversations = Array.isArray(list) ? list : [];
+      const edgeCases = [
+        {
+          id: 'sun-visa-risk',
+          title: '孙先生夫妇 - 意大利临期签证',
+          stage: '风险预警',
+          stageClass: 'pending',
+          status: 'pending',
+          statusText: '临期出发 · 签证和酒店库存存在风险',
+          preview: '签证未出签，酒店取消期即将到达',
+          time: '刚刚',
+          startedAt: '对话开始于 今天 11:20',
+          requirements: [
+            { label: '客户', value: '孙先生夫妇', confirmed: true },
+            { label: '人数', value: '2成人', confirmed: true },
+            { label: '出发地', value: '上海', confirmed: true },
+            { label: '目的地', value: '意大利', confirmed: true },
+            { label: '天数', value: '8天7晚', confirmed: true },
+            { label: '预算', value: '总预算 ¥42,000', confirmed: true },
+            { label: '住宿', value: '四星市中心', confirmed: false },
+            { label: '风险', value: '申根签证未出签，酒店取消期T-3', confirmed: false }
+          ],
+          itineraryTitle: '风险版行程草案',
+          itinerary: [
+            ['Day1', '上海 → 罗马，签证未出暂不出票'],
+            ['Day2-3', '罗马城市游，酒店库存仅剩2间'],
+            ['Day4', '佛罗伦萨，火车票待锁位'],
+            ['Day5-6', '威尼斯，嘉年华期间房价上涨'],
+            ['Day7-8', '米兰返程']
+          ],
+          quote: null,
+          notes: ['签证未出前不建议确认不可退资源。', '酒店取消期临近，需要客户确认是否接受备选区域。'],
+          messages: [
+            { role: 'system', text: '系统识别到临期出发和签证风险' },
+            { role: 'user', time: '11:20', text: '孙先生夫妇下周想去意大利，签证还没出来，但客户想先看方案和大概价格。' },
+            { role: 'ai', time: '11:21', text: '这单存在较高风险：出发临近、签证未出、罗马市中心酒店取消期接近。建议只给“风险提示版方案”，报价里标注资源不可锁定。', quickReplies: ['生成风险提示话术', '只做可退资源方案', '查可取消酒店'] }
+          ]
+        },
+        {
+          id: 'liu-overbudget',
+          title: '刘女士亲子 - 美西预算超限',
+          stage: '预算冲突',
+          stageClass: 'rework',
+          status: 'rework',
+          statusText: '客户预算与旺季资源冲突 · 需降配或改期',
+          preview: '暑期机票上涨，当前方案超预算约18%',
+          time: '刚刚',
+          startedAt: '对话开始于 今天 12:05',
+          requirements: [
+            { label: '客户', value: '刘女士亲子家庭', confirmed: true },
+            { label: '人数', value: '2大1小', confirmed: true },
+            { label: '出发地', value: '北京', confirmed: true },
+            { label: '目的地', value: '美国西海岸', confirmed: true },
+            { label: '天数', value: '12天10晚', confirmed: true },
+            { label: '预算', value: '总预算 ¥90,000', confirmed: true },
+            { label: '住宿', value: '四星以上，近景点', confirmed: true },
+            { label: '冲突', value: '暑期机票和主题乐园门票超预算', confirmed: false }
+          ],
+          itineraryTitle: '超预算方案',
+          itinerary: [
+            ['Day1-3', '洛杉矶，环球影城 + 城市游'],
+            ['Day4-5', '圣地亚哥亲子海洋世界'],
+            ['Day6-8', '拉斯维加斯 + 大峡谷'],
+            ['Day9-12', '旧金山 + 一号公路轻体验']
+          ],
+          quote: {
+            title: '旺季预估报价',
+            totalLabel: '当前预估',
+            total: '¥106,800',
+            perPerson: '超出预算约 ¥16,800',
+            items: [
+              ['国际机票', '¥42,000', '实时', 'api'],
+              ['酒店', '¥34,000', '旺季价', 'warning'],
+              ['主题乐园门票', '¥9,800', '实时', 'api'],
+              ['用车', '¥16,000', '协议价', 'local'],
+              ['餐费', '¥5,000', '估算', 'warning']
+            ]
+          },
+          notes: ['当前方案超预算约18%，建议提供改期、减少城市或降低酒店位置三套降本路径。'],
+          messages: [
+            { role: 'system', text: '系统识别到预算冲突' },
+            { role: 'user', time: '12:05', text: '刘女士想暑假带孩子去美西12天，预算9万以内，但环球影城和大峡谷都想去。' },
+            { role: 'ai', time: '12:06', text: '按当前暑期资源估算会超预算。我建议给客户三个选择：改到9月、减少一个城市、或酒店从景点步行圈调整到车程15分钟范围。', quickReplies: ['生成降本方案', '改到9月重算', '减少一个城市'] }
+          ]
+        }
+      ];
+
+      edgeCases.forEach(edge => {
+        if (!conversations.some(item => item.id === edge.id)) conversations.push(edge);
+      });
+      return conversations;
+    }
+
     function saveConversations() {
       AppStore.setConversations(conversations);
     }
@@ -1274,6 +1567,7 @@
     function routeFromConversation(conv) {
       const values = (conv.requirements || []).find(item => item.label === '目的地')?.value || '';
       const from = (conv.requirements || []).find(item => item.label === '出发地')?.value || '出发地';
+      if (conv.id === 'new-intake') return ['上海', '东京', '箱根', '上海'];
       if (conv.id === 'zhang-family') return ['上海', '苏黎世', '卢塞恩', '因特拉肯', '蒙特勒', '巴黎', '上海'];
       if (conv.id === 'li-honeymoon') return ['广州', '马累', '莉莉岛', '广州'];
       if (conv.id === 'wang-business') return ['北京', '东京', '箱根', '北京'];
@@ -1351,6 +1645,20 @@
       saveConversations();
     }
 
+    function displayConversationTitle(conv) {
+      return String(conv?.title || '新客户')
+        .replace(/\s*-\s*(需求收集中|未命名|报价待确认|待客户确认|持续修改中|已出行归档|酒店比选中|风险预警|预算冲突)\s*$/, '');
+    }
+
+    function simpleConversationProgress(conv) {
+      if (!conv) return '';
+      if (conv.status === 'archived') return '已归档，可复制为新方案';
+      if (conv.status === 'done') return '报价已确认，可生成正式文档';
+      if (conv.quote) return '已有方案和报价，等待客户反馈';
+      if (conv.itinerary && conv.itinerary.length) return '已有初版方案，待生成报价';
+      return '正在收集需求，补齐信息后生成方案';
+    }
+
     function renderConversationList() {
       const keyword = (document.getElementById('conversationSearch')?.value || '').trim().toLowerCase();
       const list = document.getElementById('conversationList');
@@ -1370,15 +1678,11 @@
       }
 
       list.innerHTML = filtered.map(conv => `
-        <li class="conversation-item ${conv.id === activeConversationId ? 'active' : ''}" onclick="switchConversation('${conv.id}')">
+        <li class="conversation-item ${conv.id === activeConversationId ? 'active' : ''}" onclick="switchConversation('${conv.id}')" oncontextmenu="openConversationMenu(event, '${conv.id}')">
           <div class="conv-title">
-            <span class="conv-status ${conv.status}"></span>
-            <span>${escapeHtml(conv.title)}</span>
+            <span>${escapeHtml(displayConversationTitle(conv))}</span>
           </div>
           <div class="conv-preview">${escapeHtml(conv.preview)}</div>
-          <div class="conv-meta">
-            <span class="stage-pill ${conv.stageClass}">${escapeHtml(conv.stage)}</span>
-          </div>
           <span class="conv-time">${escapeHtml(conv.time)}</span>
         </li>
       `).join('');
@@ -1386,11 +1690,8 @@
 
     function renderHeader() {
       const conv = currentConversation();
-      document.getElementById('chatTitle').textContent = conv.title;
-      document.getElementById('chatStatus').innerHTML = `
-        <span class="stage-pill ${conv.stageClass}">${escapeHtml(conv.stage)}</span>
-        <span style="margin-left:8px;">${escapeHtml(conv.statusText)}</span>
-      `;
+      document.getElementById('chatTitle').textContent = displayConversationTitle(conv);
+      document.getElementById('chatStatus').textContent = simpleConversationProgress(conv);
     }
 
     function renderMessages() {
@@ -1464,7 +1765,7 @@
     function renderQuoteCard(card) {
       return `
         <div class="quote-card">
-          <div class="quote-title">💰 ${escapeHtml(card.title)}</div>
+          <div class="quote-title">${iconSvg('dollar')}<span>${escapeHtml(card.title)}</span></div>
           <table>
             ${(card.items || []).map(item => `
               <tr>
@@ -1517,7 +1818,7 @@
     function renderDocCard(card) {
       return `
         <div class="doc-card">
-          <div class="doc-title">📎 ${escapeHtml(card.title)}</div>
+          <div class="doc-title">${iconSvg('paperclip')}<span>${escapeHtml(card.title)}</span></div>
           <div class="doc-meta">${escapeHtml(card.meta)}</div>
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
             ${(card.actions || ['查看']).map(action => `<button class="btn btn-sm btn-secondary" onclick="handleDocCardAction('${escapeHtml(action)}')">${escapeHtml(action)}</button>`).join('')}
@@ -1531,25 +1832,25 @@
       const panel = document.getElementById('contextPanel');
       panel.innerHTML = `
         <div class="panel-section">
-          <div class="panel-section-title">📋 当前需求摘要</div>
+          <div class="panel-section-title">${iconSvg('clipboard')}<span>当前需求摘要</span></div>
           ${renderRequirements(conv.requirements)}
         </div>
         <div class="panel-section">
-          <div class="panel-section-title">🗺️ ${escapeHtml(conv.itineraryTitle || '线路状态')}</div>
+          <div class="panel-section-title">${iconSvg('map')}<span>${escapeHtml(conv.itineraryTitle || '线路状态')}</span></div>
           ${renderItinerary(conv.itinerary)}
         </div>
         <div class="panel-section">
-          <div class="panel-section-title">💰 报价状态</div>
+          <div class="panel-section-title">${iconSvg('dollar')}<span>报价状态</span></div>
           ${renderQuoteSummary(conv.quote)}
         </div>
         <div class="panel-section">
-          <div class="panel-section-title">⚑ 跟进提醒</div>
+          <div class="panel-section-title">${iconSvg('flag')}<span>跟进提醒</span></div>
           ${renderNotes(conv.notes)}
         </div>
         <div class="panel-actions">
-          <button class="btn btn-primary" onclick="handlePanelAction('pdf')">📑 生成行程单PDF</button>
-          <button class="btn btn-secondary" onclick="handlePanelAction('poster')">🖼 生成朋友圈海报</button>
-          <button class="btn btn-secondary" onclick="handlePanelAction('quote')">📊 导出报价单</button>
+          <button class="btn btn-primary" onclick="handlePanelAction('pdf', this)">${iconSvg('clipboard')}<span>生成行程单PDF</span></button>
+          <button class="btn btn-secondary" onclick="handlePanelAction('poster', this)">${iconSvg('image')}<span>生成朋友圈海报</span></button>
+          <button class="btn btn-secondary" onclick="handlePanelAction('quote', this)">${iconSvg('chart')}<span>导出报价单</span></button>
         </div>
       `;
     }
@@ -1574,13 +1875,14 @@
 
       return `
         <div class="timeline">
-          ${itinerary.map(item => `
-            <div class="timeline-item">
+          ${itinerary.map((item, index) => `
+            <div class="timeline-item" draggable="true" ondragstart="startItineraryDrag(event, ${index})" ondragover="overItineraryDrag(event, ${index})" ondragleave="event.currentTarget.classList.remove('drag-over')" ondrop="dropItineraryDay(event, ${index})" ondragend="endItineraryDrag(event)">
               <div class="tl-day">${escapeHtml(item[0])}</div>
               <div class="tl-desc">${escapeHtml(item[1])}</div>
             </div>
           `).join('')}
         </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">可拖拽调整顺序</div>
       `;
     }
 
@@ -1615,6 +1917,43 @@
     function renderNotes(notes) {
       if (!notes || !notes.length) return '<div class="context-empty">暂无特别提醒</div>';
       return notes.map((note, index) => `<div class="panel-note ${index === 0 ? 'warning' : ''}" style="margin-bottom:8px;">${escapeHtml(note)}</div>`).join('');
+    }
+
+    let draggingItineraryIndex = null;
+
+    function startItineraryDrag(event, index) {
+      draggingItineraryIndex = index;
+      event.currentTarget.classList.add('dragging');
+      event.dataTransfer.effectAllowed = 'move';
+    }
+
+    function overItineraryDrag(event, index) {
+      event.preventDefault();
+      if (draggingItineraryIndex === index) return;
+      event.currentTarget.classList.add('drag-over');
+    }
+
+    function endItineraryDrag(event) {
+      event.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.timeline-item.drag-over').forEach(item => item.classList.remove('drag-over'));
+    }
+
+    function dropItineraryDay(event, targetIndex) {
+      event.preventDefault();
+      document.querySelectorAll('.timeline-item.drag-over').forEach(item => item.classList.remove('drag-over'));
+      if (draggingItineraryIndex === null || draggingItineraryIndex === targetIndex) return;
+      const conv = currentConversation();
+      const [moved] = conv.itinerary.splice(draggingItineraryIndex, 1);
+      conv.itinerary.splice(targetIndex, 0, moved);
+      draggingItineraryIndex = null;
+      conv.stage = '持续修改中';
+      conv.stageClass = 'rework';
+      conv.status = 'rework';
+      conv.statusText = '行程顺序已调整 · 待确认新版';
+      conv.notes = ['已通过拖拽调整行程顺序，请重新检查交通衔接和报价。', ...(conv.notes || []).slice(0, 1)];
+      syncConversationToPlan(conv, null, '拖拽调整行程');
+      renderAll();
+      showToast('行程顺序已更新', 'success');
     }
 
     function switchConversation(id) {
@@ -1801,7 +2140,7 @@
     }
 
     function hydrateDraftConversation(conv, input) {
-      conv.title = input.includes('马代') || input.includes('马尔代夫') ? '新客户 - 马代咨询' : '新客户 - 需求收集中';
+      conv.title = input.includes('马代') || input.includes('马尔代夫') ? '新客户 - 马代咨询' : '新客户';
       conv.stage = '需求收集中';
       conv.stageClass = 'active';
       conv.status = 'active';
@@ -1864,7 +2203,9 @@
         return;
       }
 
-      if (!conv.quote) {
+      if (conv.id === 'new-intake') {
+        conv.quote = conversationQuoteFromEngine(AppStore.japanBusinessQuote());
+      } else if (!conv.quote) {
         conv.quote = {
           title: '初版预估报价',
           totalLabel: '预估总价',
@@ -1918,31 +2259,17 @@
     }
 
     function newConversation() {
-      const id = 'new-' + Date.now();
-      const conv = {
-        id,
-        title: '新客户 - 未命名',
-        stage: '需求收集中',
-        stageClass: 'draft',
-        status: 'draft',
-        statusText: '新建对话 · 等待录入客户需求',
-        preview: '请先描述客户需求',
-        time: '刚刚',
-        startedAt: '刚刚创建',
-        requirements: [],
-        itineraryTitle: '线路状态',
-        itinerary: [],
-        quote: null,
-        notes: ['输入客户目的地、人数、天数和预算后，AI 会自动提取需求摘要。'],
-        messages: [
-          { role: 'system', text: '新对话已创建' },
-          { role: 'ai', time: nowTime(), text: '您好，请告诉我这个客户的基本需求。我会先抽取信息，再逐步生成线路和报价。', quickReplies: ['客户想去瑞士法国10天', '客户想做日本商务团', '客户想去马代蜜月'] }
-        ]
-      };
-      conversations.unshift(conv);
-      activeConversationId = id;
+      const fresh = getIntakeConversation();
+      const index = conversations.findIndex(item => item.id === fresh.id);
+      if (index >= 0) {
+        conversations[index] = fresh;
+      } else {
+        conversations.unshift(fresh);
+      }
+      conversations = simplifyConversations(conversations);
+      activeConversationId = fresh.id;
       renderAll();
-      showToast('已创建新对话', 'info');
+      showToast('已打开新客户演示单', 'info');
     }
 
     function viewPlanDetail() {
@@ -1956,21 +2283,145 @@
     }
 
     function requestAdjustment() {
-      chatInput.value = '客户想调整：';
-      chatInput.focus();
-      showToast('可以直接输入要替换、删除或增加的行程内容', 'info');
+      const conv = currentConversation();
+      if (!conv.itinerary || !conv.itinerary.length) {
+        showToast('当前还没有可调整的行程', 'warning');
+        return;
+      }
+
+      showDetailModal('调整行程', `
+        <div class="form-group">
+          <label class="form-label">调整方式</label>
+          <select class="form-select" id="adjustMode">
+            <option value="replace">替换某一天内容</option>
+            <option value="insert">插入一天自由活动</option>
+            <option value="delete">删除某一天</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">选择天数</label>
+          <select class="form-select" id="adjustDay">
+            ${conv.itinerary.map((item, index) => `<option value="${index}">${escapeHtml(item[0])} · ${escapeHtml(item[1])}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">新行程内容</label>
+          <textarea class="form-textarea" id="adjustText" rows="3" placeholder="例如：改成巴黎自由活动，上午酒店休息，下午塞纳河游船"></textarea>
+        </div>
+        <div class="panel-note warning">调整后会保存为新的方案版本，并在右侧线路面板实时更新。</div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="applyItineraryAdjustment()">确认调整</button>
+      `);
     }
 
     function adjustQuote() {
+      const conv = currentConversation();
+      if (!conv.quote) {
+        showToast('当前还没有报价明细可调整', 'warning');
+        return;
+      }
+
+      showDetailModal('调整报价明细', `
+        <div class="form-group">
+          <label class="form-label">调整项</label>
+          <select class="form-select" id="quoteAdjustItem">
+            <option value="hotel">酒店降一档（-8%）</option>
+            <option value="flight">机票改转机（-12%）</option>
+            <option value="guide">减少导游天数（-¥1,200）</option>
+            <option value="service">增加服务费（+¥1,500）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" id="quoteAdjustNote" rows="3" placeholder="例如：客户要求总价压到5万内，优先调整酒店和机票"></textarea>
+        </div>
+        <div class="panel-note">调整后会重新计算总价，并保存为新的报价版本。</div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="applyQuoteAdjustment()">确认调整</button>
+      `);
+    }
+
+    function applyItineraryAdjustment() {
+      const conv = currentConversation();
+      const mode = document.getElementById('adjustMode').value;
+      const index = Number(document.getElementById('adjustDay').value || 0);
+      const text = document.getElementById('adjustText').value.trim();
+
+      if (mode !== 'delete' && !text) {
+        showToast('请填写新的行程内容', 'warning');
+        return;
+      }
+
+      if (mode === 'replace') {
+        conv.itinerary[index][1] = text;
+      } else if (mode === 'insert') {
+        conv.itinerary.splice(index + 1, 0, ['新增', text]);
+      } else if (mode === 'delete') {
+        conv.itinerary.splice(index, 1);
+      }
+
+      conv.stage = '持续修改中';
+      conv.stageClass = 'rework';
+      conv.status = 'rework';
+      conv.statusText = '行程已调整 · 等待客户确认新版';
+      conv.notes = ['行程刚被人工调整，请重新检查报价和资源库存。', ...(conv.notes || []).slice(0, 1)];
+      closeModal('globalDetailModal');
+      syncConversationToPlan(conv, null, '行程调整');
       addMessage({
         role: 'ai',
         time: nowTime(),
-        text: '可以调整报价明细。请说明要改哪一项，例如“酒店降到四星”“机票改转机”“导游减少一天”。',
-        quickReplies: ['酒店降一档', '机票改转机', '减少导游天数']
+        text: '行程已调整，并保存为新的方案版本。我建议现在刷新报价，确认受影响资源是否仍有库存。',
+        quickReplies: ['重新报价', '生成新版行程单', '继续调整']
       });
+      showToast('行程已调整', 'success');
     }
 
-    function handlePanelAction(type) {
+    function applyQuoteAdjustment() {
+      const conv = currentConversation();
+      const item = document.getElementById('quoteAdjustItem').value;
+      const note = document.getElementById('quoteAdjustNote').value.trim();
+      let total = parseMoney(conv.quote.total);
+
+      if (item === 'hotel') total = Math.round(total * 0.92);
+      if (item === 'flight') total = Math.round(total * 0.88);
+      if (item === 'guide') total = Math.max(0, total - 1200);
+      if (item === 'service') total += 1500;
+
+      const peopleText = (conv.requirements || []).find(req => req.label === '人数')?.value || '';
+      const people = Math.max(1, Number(peopleText.match(/\d+/)?.[0] || 3));
+      conv.quote.total = AppStore.money(total);
+      conv.quote.perPerson = '人均 ' + AppStore.money(Math.round(total / people)) + (note ? ' · ' + note : '');
+      conv.quote.title = conv.quote.title.includes('调整后') ? conv.quote.title : conv.quote.title + '（调整后）';
+      conv.stage = '报价已调整';
+      conv.stageClass = 'pending';
+      conv.status = 'pending';
+      conv.statusText = '报价已调整 · 待客户确认';
+      conv.notes = ['报价已人工调整，建议发送前再次核对利润率。', ...(conv.notes || []).slice(0, 1)];
+
+      closeModal('globalDetailModal');
+      syncConversationToPlan(conv, null, '报价调整');
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '报价明细已调整，新的总价为 ' + conv.quote.total + '。已保存为新的报价版本。',
+        cards: [{
+          type: 'quote',
+          title: conv.quote.title,
+          total: conv.quote.total,
+          note: conv.quote.perPerson,
+          items: conv.quote.items.map(row => [row[0], row[1], row[2]])
+        }]
+      });
+      showToast('报价已调整并保存版本', 'success');
+    }
+
+    function handlePanelAction(type, button) {
+      if (button) {
+        runWithButtonLoading(button, '生成中...', () => handlePanelAction(type), 650);
+        return;
+      }
       const conv = currentConversation();
       if ((type === 'pdf' || type === 'quote') && !conv.quote) {
         showToast('当前方案还没有报价，建议先生成报价', 'warning');
@@ -2005,8 +2456,108 @@
       showToast('已导出当前对话记录（模拟）', 'success');
     }
 
-    function showConversationMenu() {
-      showToast('可扩展：重命名、归档、删除、转交同事', 'info');
+    function showConversationMenu(event) {
+      openConversationMenu(event, activeConversationId);
+    }
+
+    function openConversationMenu(event, id) {
+      event.preventDefault();
+      event.stopPropagation();
+      const menu = document.getElementById('conversationMenu');
+      menu.innerHTML = `
+        <button onclick="renameConversation('${id}')">重命名</button>
+        <button onclick="duplicateConversation('${id}')">复制对话</button>
+        <button onclick="archiveConversation('${id}')">归档对话</button>
+        <button class="danger" onclick="deleteConversation('${id}')">删除对话</button>
+      `;
+      menu.style.left = Math.min(event.clientX, window.innerWidth - 170) + 'px';
+      menu.style.top = Math.min(event.clientY, window.innerHeight - 170) + 'px';
+      menu.classList.add('show');
+    }
+
+    function closeConversationMenu() {
+      document.getElementById('conversationMenu').classList.remove('show');
+    }
+
+    function renameConversation(id) {
+      closeConversationMenu();
+      const conv = conversations.find(item => item.id === id);
+      if (!conv) return;
+      showDetailModal('重命名对话', `
+        <div class="form-group">
+          <label class="form-label">对话标题</label>
+          <input class="form-input" id="renameConversationInput" value="${escapeHtml(conv.title)}">
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveConversationName('${id}')">保存</button>
+      `);
+    }
+
+    function saveConversationName(id) {
+      const conv = conversations.find(item => item.id === id);
+      const value = document.getElementById('renameConversationInput').value.trim();
+      if (!conv || !value) {
+        showToast('标题不能为空', 'warning');
+        return;
+      }
+      conv.title = value;
+      closeModal('globalDetailModal');
+      renderAll();
+      showToast('对话已重命名', 'success');
+    }
+
+    function duplicateConversation(id) {
+      closeConversationMenu();
+      const conv = conversations.find(item => item.id === id);
+      if (!conv) return;
+      const copy = JSON.parse(JSON.stringify(conv));
+      copy.id = 'copy-' + Date.now();
+      copy.title = conv.title + '（复制）';
+      copy.stage = '需求收集中';
+      copy.stageClass = 'draft';
+      copy.status = 'draft';
+      copy.statusText = '复制草稿 · 可继续编辑';
+      copy.time = '刚刚';
+      copy.preview = '从历史对话复制的新草稿';
+      copy.messages = [
+        { role: 'system', text: '已从“' + conv.title + '”复制为新对话草稿' },
+        ...(copy.messages || []).slice(-3)
+      ];
+      conversations.unshift(copy);
+      activeConversationId = copy.id;
+      renderAll();
+      showToast('已复制为新客户对话', 'success');
+    }
+
+    function archiveConversation(id) {
+      closeConversationMenu();
+      const conv = conversations.find(item => item.id === id);
+      if (!conv) return;
+      conv.stage = '已归档';
+      conv.stageClass = 'archived';
+      conv.status = 'archived';
+      conv.statusText = '对话已归档';
+      conv.preview = '对话已归档';
+      conv.time = '刚刚';
+      renderAll();
+      showToast('对话已归档', 'success');
+    }
+
+    function deleteConversation(id) {
+      closeConversationMenu();
+      const conv = conversations.find(item => item.id === id);
+      if (!conv) return;
+      confirmAction('删除对话：' + conv.title + '？此操作只删除原型中的模拟对话。', () => {
+        conversations = conversations.filter(item => item.id !== id);
+        if (!conversations.length) {
+          newConversation();
+          return;
+        }
+        activeConversationId = conversations[0].id;
+        renderAll();
+        showToast('对话已删除', 'success');
+      }, '删除对话');
     }
 
     function mockAttachImage() {
@@ -2043,6 +2594,7 @@
     }
 
     renderAll();
+    document.addEventListener('click', closeConversationMenu);
   </script>
 </body>
 </html>

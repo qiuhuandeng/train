@@ -19,408 +19,250 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: var(--bg-sidebar);
-      border-radius: var(--radius);
-      margin-bottom: 20px;
-    }
-
-    .tab-btn {
-      padding: 8px 16px;
-      border: none;
-      background: transparent;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s ease;
-      font-family: var(--font-family);
-    }
-
-    .tab-btn.active {
-      background: var(--bg-card);
-      color: var(--primary);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .tab-btn:hover:not(.active) {
-      color: var(--text-primary);
-    }
-
-    .plan-list {
-      display: flex;
-      flex-direction: column;
       gap: 16px;
+      margin-bottom: 18px;
     }
 
-    .plan-card {
+    .ledger-panel {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px;
-      transition: all 0.2s ease;
-      cursor: pointer;
+      overflow: hidden;
     }
 
-    .plan-card:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-1px);
-    }
-
-    .plan-card .plan-header {
+    .ledger-header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-sidebar);
     }
 
-    .plan-card .plan-title {
-      font-size: 17px;
-      font-weight: 600;
+    .ledger-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .ledger-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .ledger-meta strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .ledger-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ledger-tools .form-input {
+      width: 220px;
+      height: 34px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      background: white;
+    }
+
+    .plan-table {
+      min-width: 980px;
+    }
+
+    .plan-table th,
+    .plan-table td {
+      vertical-align: top;
+    }
+
+    .plan-name {
+      font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 4px;
     }
 
-    .plan-card .plan-route {
-      font-size: 13px;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .plan-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
     }
 
-    .plan-card .plan-status {
-      padding: 4px 12px;
-      border-radius: 99px;
+    .route-text {
+      margin-top: 6px;
       font-size: 12px;
-      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: normal;
+    }
+
+    .status-cell {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-cell.pending {
+      color: var(--warning);
+      background: var(--warning-bg);
+    }
+
+    .status-cell.confirmed {
+      color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .status-cell.draft {
+      color: var(--text-muted);
+      background: var(--bg-sidebar);
+    }
+
+    .status-cell.archived {
+      color: var(--text-muted);
+      background: var(--bg-sidebar);
+    }
+
+    .price-main {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
       white-space: nowrap;
     }
 
-    .plan-status.draft {
-      background: var(--bg-sidebar);
-      color: var(--text-muted);
-    }
-
-    .plan-status.pending {
-      background: var(--warning-bg);
-      color: var(--warning);
-    }
-
-    .plan-status.confirmed {
-      background: var(--success-bg);
-      color: var(--success);
-    }
-
-    .plan-status.traveling {
-      background: var(--primary-bg);
-      color: var(--primary);
-    }
-
-    .plan-status.archived {
-      background: var(--bg-sidebar);
-      color: var(--text-muted);
-    }
-
-    .plan-card .plan-info {
+    .doc-list {
       display: flex;
-      gap: 24px;
-      margin-bottom: 16px;
-      font-size: 13px;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
       color: var(--text-secondary);
     }
 
-    .plan-card .plan-info-item {
+    .action-stack {
       display: flex;
-      align-items: center;
-      gap: 4px;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 260px;
     }
 
-    .plan-card .plan-price {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 16px;
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
-    .plan-card .plan-price .total {
-      font-size: 22px;
+    .detail-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: var(--bg-sidebar);
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .detail-item strong {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .itinerary-list {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .itinerary-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 12px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+    }
+
+    .itinerary-row:last-child {
+      border-bottom: none;
+    }
+
+    .itinerary-day {
       font-weight: 700;
       color: var(--primary);
     }
 
-    .plan-card .plan-price .per-person {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+    @media (max-width: 768px) {
+      .plans-content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
 
-    .plan-card .plan-actions {
-      display: flex;
-      gap: 8px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-light);
-    }
+      .ledger-header {
+        align-items: stretch;
+        flex-direction: column;
+      }
 
-    .plan-card .plan-timeline {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 0;
-      overflow-x: auto;
-      margin-bottom: 8px;
-    }
+      .ledger-tools {
+        flex-direction: column;
+        align-items: stretch;
+      }
 
-    .plan-card .tl-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      min-width: 60px;
-    }
+      .ledger-tools .form-input,
+      .ledger-tools .btn {
+        width: 100%;
+      }
 
-    .plan-card .tl-node .tl-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--primary);
-    }
-
-    .plan-card .tl-node .tl-city {
-      font-size: 11px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-    }
-
-    .plan-card .tl-line {
-      flex: 1;
-      min-width: 20px;
-      height: 2px;
-      background: var(--border);
-      margin-top: -14px;
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="plans-content">
     <div class="page-header">
-      <div>
-        <h1 class="page-title">方案管理</h1>
-        <p class="page-subtitle">管理所有旅行方案和报价单，共 32 个方案</p>
-      </div>
-      <button class="btn btn-primary" onclick="location.href='chat.html'">＋ 新建方案</button>
+      <h1 class="page-title">方案管理</h1>
+      <button class="btn btn-primary" onclick="location.href='chat.html'">回到 AI 对话</button>
     </div>
 
-    <div class="tabs">
-      <button class="tab-btn active">全部 (32)</button>
-      <button class="tab-btn">草稿 (5)</button>
-      <button class="tab-btn">待确认 (8)</button>
-      <button class="tab-btn">已确认 (12)</button>
-      <button class="tab-btn">已出行 (4)</button>
-      <button class="tab-btn">已归档 (3)</button>
-    </div>
-
-    <div class="filter-bar">
-      <input type="text" class="form-input" style="width:200px;" placeholder="搜索客户名称/目的地...">
-      <select class="form-select" style="width:130px;">
-        <option>所有时间</option>
-        <option>今天</option>
-        <option>近7天</option>
-        <option>近30天</option>
-        <option>近3个月</option>
-      </select>
-      <select class="form-select" style="width:130px;">
-        <option>价格排序</option>
-        <option>价格从高到低</option>
-        <option>价格从低到高</option>
-        <option>最近更新</option>
-        <option>创建时间</option>
-      </select>
-      <button class="btn btn-secondary">筛选</button>
-    </div>
-
-    <div class="plan-list">
-      <!-- 方案1 -->
-      <div class="plan-card">
-        <div class="plan-header">
-          <div>
-            <div class="plan-title">张先生一家 - 瑞士法国10日游</div>
-            <div class="plan-route">✈ 上海 → 苏黎世 → 卢塞恩 → 因特拉肯 → 蒙特勒 → 巴黎 → 上海</div>
-          </div>
-          <span class="plan-status pending">待客户确认</span>
+    <div class="ledger-panel">
+      <div class="ledger-header">
+        <div>
+          <div class="ledger-title">当前方案台账</div>
+          <div class="ledger-meta" id="ledgerMeta"></div>
         </div>
-        <div class="plan-timeline">
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">苏黎世</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">卢塞恩</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">因特拉肯</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">蒙特勒</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">巴黎</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-        </div>
-        <div class="plan-info">
-          <span class="plan-info-item">👥 2大1小</span>
-          <span class="plan-info-item">📅 10天9晚</span>
-          <span class="plan-info-item">🏨 四星酒店</span>
-          <span class="plan-info-item">📝 创建于 今天 09:36</span>
-        </div>
-        <div class="plan-price">
-          <span class="total">¥50,300</span>
-          <span class="per-person">人均 ¥16,767</span>
-        </div>
-        <div class="plan-actions">
-          <button class="btn btn-sm btn-primary">查看详情</button>
-          <button class="btn btn-sm btn-secondary" onclick="location.href='chat.html'">继续编辑</button>
-          <button class="btn btn-sm btn-secondary">📑 生成PDF</button>
-          <button class="btn btn-sm btn-secondary">🖼 生成海报</button>
-          <button class="btn btn-sm btn-ghost">复制方案</button>
+        <div class="ledger-tools">
+          <input type="text" class="form-input" id="planSearch" placeholder="搜索客户、目的地、报价..." oninput="renderPlans()">
+          <button class="btn btn-secondary" onclick="syncFromChat()">同步当前对话</button>
         </div>
       </div>
-
-      <!-- 方案2 -->
-      <div class="plan-card">
-        <div class="plan-header">
-          <div>
-            <div class="plan-title">李女士蜜月 - 马尔代夫7日</div>
-            <div class="plan-route">✈ 上海 → 马累 → 阿雅达岛 → 马累 → 上海</div>
-          </div>
-          <span class="plan-status confirmed">已确认</span>
-        </div>
-        <div class="plan-timeline">
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">马累</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">阿雅达岛</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">马累</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-        </div>
-        <div class="plan-info">
-          <span class="plan-info-item">👥 2人</span>
-          <span class="plan-info-item">📅 7天6晚</span>
-          <span class="plan-info-item">🏨 水上别墅</span>
-          <span class="plan-info-item">📝 创建于 昨天</span>
-        </div>
-        <div class="plan-price">
-          <span class="total">¥68,000</span>
-          <span class="per-person">人均 ¥34,000</span>
-        </div>
-        <div class="plan-actions">
-          <button class="btn btn-sm btn-primary">查看详情</button>
-          <button class="btn btn-sm btn-secondary">📑 生成PDF</button>
-          <button class="btn btn-sm btn-secondary">🖼 生成海报</button>
-          <button class="btn btn-sm btn-ghost">复制方案</button>
-        </div>
-      </div>
-
-      <!-- 方案3 -->
-      <div class="plan-card">
-        <div class="plan-header">
-          <div>
-            <div class="plan-title">王总商务团 - 日本5日</div>
-            <div class="plan-route">✈ 北京 → 东京 → 箱根 → 京都 → 大阪 → 北京</div>
-          </div>
-          <span class="plan-status pending">报价待确认</span>
-        </div>
-        <div class="plan-timeline">
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">北京</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">东京</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">箱根</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">京都</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">大阪</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">北京</span></div>
-        </div>
-        <div class="plan-info">
-          <span class="plan-info-item">👥 8人</span>
-          <span class="plan-info-item">📅 5天4晚</span>
-          <span class="plan-info-item">🏨 五星商务酒店</span>
-          <span class="plan-info-item">📝 创建于 3小时前</span>
-        </div>
-        <div class="plan-price">
-          <span class="total">¥136,000</span>
-          <span class="per-person">人均 ¥17,000</span>
-        </div>
-        <div class="plan-actions">
-          <button class="btn btn-sm btn-primary">查看详情</button>
-          <button class="btn btn-sm btn-secondary" onclick="location.href='chat.html'">继续编辑</button>
-          <button class="btn btn-sm btn-secondary">📑 生成PDF</button>
-          <button class="btn btn-sm btn-ghost">复制方案</button>
-        </div>
-      </div>
-
-      <!-- 方案4 -->
-      <div class="plan-card">
-        <div class="plan-header">
-          <div>
-            <div class="plan-title">公司团建 - 泰国普吉岛6日</div>
-            <div class="plan-route">✈ 上海 → 曼谷 → 普吉岛 → 上海</div>
-          </div>
-          <span class="plan-status traveling">出行中</span>
-        </div>
-        <div class="plan-timeline">
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">曼谷</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">普吉岛</span></div>
-          <div class="tl-line"></div>
-          <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">上海</span></div>
-        </div>
-        <div class="plan-info">
-          <span class="plan-info-item">👥 20人</span>
-          <span class="plan-info-item">📅 6天5晚</span>
-          <span class="plan-info-item">🏨 四星海景酒店</span>
-          <span class="plan-info-item">📝 出发日期 3月12日</span>
-        </div>
-        <div class="plan-price">
-          <span class="total">¥142,000</span>
-          <span class="per-person">人均 ¥7,100</span>
-        </div>
-        <div class="plan-actions">
-          <button class="btn btn-sm btn-primary">查看详情</button>
-          <button class="btn btn-sm btn-secondary">查看行程单</button>
-          <button class="btn btn-sm btn-ghost">复制方案</button>
-        </div>
-      </div>
-
-      <!-- 方案5 -->
-      <div class="plan-card" style="opacity:0.7;">
-        <div class="plan-header">
-          <div>
-            <div class="plan-title">陈阿姨老年团 - 云南8日</div>
-            <div class="plan-route">✈ 杭州 → 昆明 → 大理 → 丽江 → 昆明 → 杭州</div>
-          </div>
-          <span class="plan-status archived">已归档</span>
-        </div>
-        <div class="plan-info" style="margin-top:12px;">
-          <span class="plan-info-item">👥 12人</span>
-          <span class="plan-info-item">📅 8天7晚</span>
-          <span class="plan-info-item">💰 总价 ¥62,400</span>
-          <span class="plan-info-item">📝 已完成出行</span>
-        </div>
-        <div class="plan-actions">
-          <button class="btn btn-sm btn-secondary">查看详情</button>
-          <button class="btn btn-sm btn-ghost">复制方案</button>
-        </div>
+      <div class="table-wrapper" style="border:0;border-radius:0;">
+        <table class="plan-table">
+          <thead>
+            <tr>
+              <th>方案</th>
+              <th>人数/天数</th>
+              <th>报价</th>
+              <th>文件</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="planTableBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -430,7 +272,7 @@
   <script>
     renderNavbar('plans');
 
-    let activePlanStatus = 'all';
+    const CURRENT_CONVERSATION_ID = 'new-intake';
 
     function esc(value) {
       return String(value ?? '')
@@ -441,115 +283,161 @@
         .replace(/'/g, '&#39;');
     }
 
+    function defaultCurrentPlan() {
+      const quote = AppStore.japanBusinessQuote();
+      return {
+        id: 'plan-new-intake',
+        conversationId: CURRENT_CONVERSATION_ID,
+        componentId: 'seg-japan-business-5d',
+        title: '新客户 - 日本商务团5日',
+        route: ['上海', '东京', '箱根', '上海'],
+        status: 'pending',
+        statusText: '待客户反馈',
+        people: '18人',
+        days: '5天4晚',
+        hotel: '东京市区五星商务酒店',
+        createdAt: '刚刚',
+        total: quote.total,
+        perPerson: quote.perPerson,
+        summary: '东京商务拜访、酒店会议室、专车接送机和箱根轻团建，适合先给客户确认方向与预算。',
+        itinerary: [
+          ['Day1', '上海 → 东京，专车接机，入住银座/丸之内商圈酒店'],
+          ['Day2', '上午客户拜访，下午商务接待，晚上团队晚宴'],
+          ['Day3', '酒店会议室半日，下午银座自由商务活动'],
+          ['Day4', '东京 → 箱根，温泉酒店 + 轻团建'],
+          ['Day5', '箱根 → 东京机场，专车送机返程']
+        ],
+        quoteItems: quote.items.map(item => [item.name, item.amount, item.status]),
+        quoteLines: quote.lines.map(line => ({
+          resource: line.need.resource,
+          quantity: line.need.quantity,
+          unit: line.need.unit,
+          priceName: line.price?.name || '缺价',
+          amount: line.amount,
+          status: line.status
+        })),
+        documents: ['初版报价单']
+      };
+    }
+
+    function ensureCurrentPlan() {
+      const data = AppStore.all();
+      const defaults = defaultCurrentPlan();
+      const existing = data.plans.find(plan => plan.conversationId === CURRENT_CONVERSATION_ID);
+      if (!existing) return AppStore.addPlan(defaults);
+
+      return AppStore.updatePlan(existing.id, {
+        ...defaults,
+        id: existing.id,
+        documents: existing.documents || defaults.documents,
+        versions: existing.versions,
+        currentVersionId: existing.currentVersionId
+      }) || existing;
+    }
+
+    function currentPlans() {
+      return [ensureCurrentPlan()];
+    }
+
     function planStatusLabel(status) {
       return {
         draft: '草稿',
-        pending: '待确认',
+        pending: '待客户反馈',
         confirmed: '已确认',
         traveling: '已出行',
         archived: '已归档'
       }[status] || status;
     }
 
-    function renderPlanTabs() {
-      const data = AppStore.all();
-      const tabs = [
-        ['all', '全部'],
-        ['draft', '草稿'],
-        ['pending', '待确认'],
-        ['confirmed', '已确认'],
-        ['traveling', '已出行'],
-        ['archived', '已归档']
-      ];
-
-      document.querySelector('.tabs').innerHTML = tabs.map(([status, label]) => {
-        const count = status === 'all' ? data.plans.length : data.plans.filter(plan => plan.status === status).length;
-        return `<button class="tab-btn ${activePlanStatus === status ? 'active' : ''}" onclick="switchPlanTab('${status}')">${label} (${count})</button>`;
+    function documentsText(plan) {
+      const docs = plan.documents || [];
+      if (!docs.length) return '<span class="text-muted">暂无文件</span>';
+      return docs.map(doc => {
+        const name = typeof doc === 'string' ? doc : doc.name;
+        const time = typeof doc === 'string' ? '' : doc.time;
+        return `<span>${esc(name)}${time ? ' · ' + esc(time) : ''}</span>`;
       }).join('');
     }
 
-    function filteredPlans() {
-      const data = AppStore.all();
-      const filters = document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select');
-      const keyword = (filters[0]?.value || '').trim().toLowerCase();
-      const sort = filters[2]?.value || '价格排序';
-      let plans = data.plans.filter(plan => activePlanStatus === 'all' || plan.status === activePlanStatus);
+    function renderSummary(plan) {
+      const docs = (plan.documents || []).length;
+      document.getElementById('ledgerMeta').innerHTML = `
+        <span>当前客户 <strong>1 个</strong></span>
+        <span>状态 <strong>${esc(plan.statusText || planStatusLabel(plan.status))}</strong></span>
+        <span>报价 <strong>${AppStore.money(plan.total)}</strong></span>
+        <span>文件 <strong>${docs} 份</strong></span>
+      `;
+    }
 
-      if (keyword) {
-        plans = plans.filter(plan => [
+    function renderPlans() {
+      const keyword = (document.getElementById('planSearch')?.value || '').trim().toLowerCase();
+      const plans = currentPlans().filter(plan => {
+        if (!keyword) return true;
+        return [
           plan.title,
           plan.summary,
           plan.people,
           plan.days,
+          plan.statusText,
+          AppStore.money(plan.total),
           ...(plan.route || [])
-        ].join(' ').toLowerCase().includes(keyword));
-      }
+        ].join(' ').toLowerCase().includes(keyword);
+      });
+      const current = currentPlans()[0];
+      renderSummary(current);
 
-      if (sort === '价格从高到低') plans.sort((a, b) => b.total - a.total);
-      if (sort === '价格从低到高') plans.sort((a, b) => a.total - b.total);
-      return plans;
-    }
-
-    function renderPlans() {
-      const data = AppStore.all();
-      const plans = filteredPlans();
-      document.querySelector('.page-subtitle').textContent = `管理所有旅行方案和报价单，共 ${data.plans.length} 个方案`;
-      renderPlanTabs();
-
-      const list = document.querySelector('.plan-list');
+      const tbody = document.getElementById('planTableBody');
       if (!plans.length) {
-        list.innerHTML = '<div class="card empty-state"><div class="empty-icon">📋</div><div class="empty-title">没有匹配方案</div><div class="empty-desc">调整筛选条件，或从 AI 对话中新建方案。</div></div>';
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-text">没有匹配方案</div><div class="empty-sub">请调整搜索关键词。</div></div></td></tr>';
         return;
       }
 
-      list.innerHTML = plans.map(plan => `
-        <div class="plan-card" onclick="viewPlan('${plan.id}')">
-          <div class="plan-header">
-            <div>
-              <div class="plan-title">${esc(plan.title)}</div>
-              <div class="plan-route">✈ ${esc((plan.route || []).join(' → '))}</div>
+      tbody.innerHTML = plans.map(plan => `
+        <tr onclick="viewPlan('${plan.id}')">
+          <td>
+            <div class="plan-name">${esc(plan.title)}</div>
+            <div class="plan-sub">${esc(plan.summary)}</div>
+            <div class="route-text">${esc((plan.route || []).join(' / '))}</div>
+          </td>
+          <td>
+            <div><strong>${esc(plan.people)}</strong></div>
+            <div class="plan-sub">${esc(plan.days)} · ${esc(plan.hotel)}</div>
+          </td>
+          <td>
+            <div class="price-main">${AppStore.money(plan.total)}</div>
+            <div class="plan-sub">人均 ${AppStore.money(plan.perPerson)}</div>
+          </td>
+          <td><div class="doc-list">${documentsText(plan)}</div></td>
+          <td>
+            <div class="action-stack">
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editPlan('${plan.id}')">继续编辑</button>
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();generatePlanDoc('${plan.id}', 'PDF', this)">生成PDF</button>
+              <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();generatePlanDoc('${plan.id}', '海报', this)">生成海报</button>
             </div>
-            <span class="plan-status ${esc(plan.status)}">${esc(plan.statusText || planStatusLabel(plan.status))}</span>
-          </div>
-          <div class="plan-timeline">
-            ${(plan.route || []).map((city, index, arr) => `
-              <div class="tl-node"><div class="tl-dot"></div><span class="tl-city">${esc(city)}</span></div>
-              ${index < arr.length - 1 ? '<div class="tl-line"></div>' : ''}
-            `).join('')}
-          </div>
-          <div class="plan-info">
-            <span class="plan-info-item">👥 ${esc(plan.people)}</span>
-            <span class="plan-info-item">📅 ${esc(plan.days)}</span>
-            <span class="plan-info-item">🏨 ${esc(plan.hotel)}</span>
-            <span class="plan-info-item">📝 ${esc(plan.createdAt)}</span>
-          </div>
-          <div class="plan-price">
-            <span class="total">${AppStore.money(plan.total)}</span>
-            <span class="per-person">人均 ${AppStore.money(plan.perPerson)}</span>
-          </div>
-          <div class="plan-actions">
-            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();viewPlan('${plan.id}')">查看详情</button>
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editPlan('${plan.id}')">继续编辑</button>
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();generatePlanDoc('${plan.id}', 'PDF')">📑 生成PDF</button>
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();generatePlanDoc('${plan.id}', '海报')">🖼 生成海报</button>
-            <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();duplicatePlan('${plan.id}')">复制方案</button>
-          </div>
-        </div>
+          </td>
+        </tr>
       `).join('');
     }
 
-    function switchPlanTab(status) {
-      activePlanStatus = status;
-      renderPlans();
-    }
-
     function viewPlan(id) {
-      const plan = AppStore.all().plans.find(item => item.id === id);
-      if (!plan) return;
+      const plan = AppStore.all().plans.find(item => item.id === id) || ensureCurrentPlan();
+      const requirementsHtml = [
+        ['客户', '王总公司商务团'],
+        ['人数', plan.people],
+        ['天数', plan.days],
+        ['目的地', (plan.route || []).slice(1, -1).join(' + ')],
+        ['住宿', plan.hotel],
+        ['预算', '总预算 220,000 元内']
+      ].map(item => `
+        <div class="detail-item">
+          <span>${esc(item[0])}</span>
+          <strong>${esc(item[1])}</strong>
+        </div>
+      `).join('');
 
       const itineraryHtml = (plan.itinerary || []).map(day => `
-        <div style="display:grid;grid-template-columns:72px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-light);">
-          <strong style="color:var(--primary);">${esc(day[0])}</strong>
+        <div class="itinerary-row">
+          <span class="itinerary-day">${esc(day[0])}</span>
           <span>${esc(day[1])}</span>
         </div>
       `).join('');
@@ -557,127 +445,69 @@
       const quoteHtml = (plan.quoteItems || []).map(item => `
         <tr>
           <td>${esc(item[0])}</td>
-          <td style="text-align:right;font-weight:600;">${AppStore.money(item[1])}</td>
+          <td style="text-align:right;font-weight:700;">${AppStore.money(item[1])}</td>
           <td style="text-align:right;color:var(--text-muted);">${esc(item[2])}</td>
         </tr>
       `).join('');
-      const documentsHtml = (plan.documents || []).length
-        ? plan.documents.map(doc => {
-            const name = typeof doc === 'string' ? doc : doc.name;
-            const time = typeof doc === 'string' ? '' : ` · ${doc.time || ''}`;
-            return `<span class="badge badge-info" style="margin-right:6px;margin-bottom:6px;">${esc(name)}${esc(time)}</span>`;
-          }).join('')
-        : '<span style="color:var(--text-muted);">暂无文件</span>';
-      const versionsHtml = (plan.versions || []).map((version, index) => `
-        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-light);">
-          <div>
-            <strong>${esc(version.label || ('V' + (index + 1)))}</strong>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">${esc(version.time)} · ${esc(version.reason || '方案快照')}</div>
-          </div>
-          <button class="btn btn-sm btn-ghost" onclick="restorePlanVersion('${plan.id}', '${version.id}')">恢复</button>
-        </div>
-      `).join('');
 
       showDetailModal(plan.title, `
-        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-          <span class="badge badge-primary">${esc(planStatusLabel(plan.status))}</span>
-          <span class="badge badge-info">${esc(plan.people)}</span>
-          <span class="badge badge-success">${esc(plan.days)}</span>
-        </div>
-        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:16px;">${esc(plan.summary)}</p>
-        <h4 style="margin-bottom:8px;">行程时间线</h4>
-        <div style="margin-bottom:18px;">${itineraryHtml}</div>
+        <div class="detail-grid">${requirementsHtml}</div>
+        <h4 style="margin-bottom:8px;">行程安排</h4>
+        <div class="itinerary-list">${itineraryHtml}</div>
         <h4 style="margin-bottom:8px;">报价明细</h4>
-        <table>${quoteHtml}<tr><td style="font-weight:700;">合计</td><td style="text-align:right;font-weight:700;color:var(--primary);">${AppStore.money(plan.total)}</td><td></td></tr></table>
+        <table>
+          <tbody>${quoteHtml}</tbody>
+          <tfoot>
+            <tr>
+              <td style="font-weight:800;">合计</td>
+              <td style="text-align:right;font-weight:800;color:var(--primary);">${AppStore.money(plan.total)}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
         <h4 style="margin:18px 0 8px;">已生成文件</h4>
-        <div>${documentsHtml}</div>
-        <h4 style="margin:18px 0 8px;">版本历史</h4>
-        <div>${versionsHtml || '<span style="color:var(--text-muted);">暂无版本记录</span>'}</div>
+        <div class="doc-list">${documentsText(plan)}</div>
       `, `
         <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">关闭</button>
-        <button class="btn btn-secondary" onclick="savePlanVersion('${plan.id}')">保存当前版本</button>
-        <button class="btn btn-secondary" onclick="comparePlanVersions('${plan.id}')">版本对比</button>
-        <button class="btn btn-secondary" onclick="generatePlanDoc('${plan.id}', 'PDF')">生成PDF</button>
+        <button class="btn btn-secondary" onclick="confirmPlan('${plan.id}')">标记已确认</button>
+        <button class="btn btn-secondary" onclick="generatePlanDoc('${plan.id}', 'PDF', this)">生成PDF</button>
         <button class="btn btn-primary" onclick="editPlan('${plan.id}')">继续编辑</button>
       `);
     }
 
     function editPlan(id) {
-      const plan = AppStore.all().plans.find(item => item.id === id);
-      if (plan) {
-        sessionStorage.setItem('openConversationId', plan.conversationId || '');
-        location.href = 'chat.html';
-      }
+      const plan = AppStore.all().plans.find(item => item.id === id) || ensureCurrentPlan();
+      sessionStorage.setItem('openConversationId', plan.conversationId || CURRENT_CONVERSATION_ID);
+      location.href = 'chat.html';
     }
 
-    function generatePlanDoc(id, type) {
-      const plan = AppStore.all().plans.find(item => item.id === id);
-      if (!plan) return;
-      const name = type === '海报' ? '朋友圈海报' : '行程单PDF';
-      AppStore.addDocumentToPlan(id, { name, type, status: '已生成' });
-      const latestPlan = AppStore.updatePlan(id, { status: plan.status === 'draft' ? 'pending' : plan.status, statusText: plan.status === 'draft' ? '待客户确认' : plan.statusText });
-      showToast(`${type}已生成并保存到方案`, 'success');
-      showDocumentPreview(name, latestPlan || plan);
-      renderPlans();
-    }
-
-    function savePlanVersion(id) {
-      const plan = AppStore.all().plans.find(item => item.id === id);
-      if (!plan) return;
-      const version = AppStore.capturePlanVersion(id, 'V' + ((plan.versions || []).length + 1) + ' 手动保存', '计调手动保存当前方案');
-      showToast(`已保存 ${version.label}`, 'success');
-      viewPlan(id);
-      renderPlans();
-    }
-
-    function comparePlanVersions(id) {
-      const plan = AppStore.all().plans.find(item => item.id === id);
-      if (!plan || !plan.versions || plan.versions.length < 2) {
-        showToast('至少需要两个版本才能对比', 'warning');
+    function generatePlanDoc(id, type, button) {
+      if (button) {
+        runWithButtonLoading(button, '生成中...', () => generatePlanDoc(id, type), 650);
         return;
       }
-      const prev = plan.versions[plan.versions.length - 2];
-      const latest = plan.versions[plan.versions.length - 1];
-      const diffRows = [
-        ['总价', AppStore.money(prev.total), AppStore.money(latest.total)],
-        ['人均', AppStore.money(prev.perPerson), AppStore.money(latest.perPerson)],
-        ['路线', (prev.route || []).join(' → '), (latest.route || []).join(' → ')],
-        ['行程天数', (prev.itinerary || []).length + ' 段', (latest.itinerary || []).length + ' 段']
-      ];
-      showDetailModal('版本对比', `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-          <div class="panel-note"><strong>${esc(prev.label)}</strong><br>${esc(prev.time)}<br>${esc(prev.reason)}</div>
-          <div class="panel-note warning"><strong>${esc(latest.label)}</strong><br>${esc(latest.time)}<br>${esc(latest.reason)}</div>
-        </div>
-        <table>
-          <thead><tr><th>字段</th><th>${esc(prev.label)}</th><th>${esc(latest.label)}</th></tr></thead>
-          <tbody>${diffRows.map(row => `<tr><td>${esc(row[0])}</td><td>${esc(row[1])}</td><td>${esc(row[2])}</td></tr>`).join('')}</tbody>
-        </table>
-      `, `<button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">关闭</button><button class="btn btn-primary" onclick="viewPlan('${plan.id}')">返回方案</button>`);
+      const plan = AppStore.all().plans.find(item => item.id === id) || ensureCurrentPlan();
+      const name = type === '海报' ? '朋友圈海报' : '行程单PDF';
+      AppStore.addDocumentToPlan(plan.id, { name, type, status: '已生成' });
+      const latest = AppStore.all().plans.find(item => item.id === plan.id) || plan;
+      showToast(`${type}已生成并保存`, 'success');
+      showDocumentPreview(name, latest);
+      renderPlans();
     }
 
-    function restorePlanVersion(id, versionId) {
-      confirmAction('恢复该版本会覆盖当前方案的行程和报价，是否继续？', () => {
-        AppStore.restorePlanVersion(id, versionId);
-        showToast('已恢复选中版本', 'success');
-        viewPlan(id);
-        renderPlans();
-      }, '恢复版本');
+    function confirmPlan(id) {
+      AppStore.updatePlan(id, { status: 'confirmed', statusText: '已确认' });
+      closeModal('globalDetailModal');
+      showToast('方案已标记为已确认', 'success');
+      renderPlans();
     }
 
-    function duplicatePlan(id) {
-      const copy = AppStore.duplicatePlan(id);
-      if (copy) {
-        activePlanStatus = 'draft';
-        showToast('已复制为新草稿方案', 'success');
-        renderPlans();
-      }
+    function syncFromChat() {
+      const plan = ensureCurrentPlan();
+      showToast('已同步当前新客户方案', 'success');
+      renderPlans();
+      viewPlan(plan.id);
     }
-
-    document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select').forEach(el => {
-      el.addEventListener('input', renderPlans);
-      el.addEventListener('change', renderPlans);
-    });
 
     renderPlans();
   </script>

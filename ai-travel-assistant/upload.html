@@ -257,7 +257,6 @@
 <body>
   <div class="upload-content">
     <h1 class="page-title">文件管理</h1>
-    <p class="page-subtitle">上传线路PDF文件，AI自动解析并切段入库</p>
 
     <!-- 上传区域 -->
     <div class="upload-zone" id="uploadZone">
@@ -607,10 +606,13 @@
             <div class="seg-field"><span class="seg-field-label">交通</span><span class="seg-field-value">${esc(seg.transport)}</span></div>
             <div class="seg-field"><span class="seg-field-label">描述</span><span>${esc(seg.desc)}</span></div>
             <div class="seg-review-actions">
-              ${seg.status === 'review' ? `<button class="btn btn-sm btn-success" onclick="approveExtracted('${seg.id}')">确认入库</button><button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="rejectExtracted('${seg.id}')">拒绝</button>` : `<span class="badge badge-success">已入库</span>`}
+              ${seg.status === 'review' ? `<button class="btn btn-sm btn-success" onclick="approveExtracted('${seg.id}')">确认入库</button><button class="btn btn-sm btn-secondary" onclick="editExtracted('${seg.id}')">修改后入库</button><button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="rejectExtracted('${seg.id}')">拒绝</button>` : `<span class="badge badge-success">已入库</span>`}
             </div>
           </div>
         `).join('') : '<div class="empty-state"><div class="empty-text">暂无提取结果</div></div>'}
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">关闭</button>
+        ${segments.some(seg => seg.status === 'review') ? `<button class="btn btn-primary" onclick="batchApproveTask('${task.id}', this)">批量确认入库</button>` : `<button class="btn btn-primary" onclick="location.href='knowledge.html'">查看知识库</button>`}
       `);
     }
 
@@ -623,6 +625,55 @@
       showToast('切段已确认入库，可在知识库查看', 'success');
       renderUploadTasks();
       closeModal('globalDetailModal');
+    }
+
+    function batchApproveTask(id, button) {
+      const data = AppStore.all();
+      const task = data.uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      runWithButtonLoading(button, '入库中...', () => {
+        (task.extracted || []).forEach(segId => {
+          const seg = AppStore.all().segments.find(item => item.id === segId);
+          if (seg && seg.status === 'review') AppStore.approveSegment(segId);
+        });
+        showToast('待审核切段已批量入库', 'success');
+        closeModal('globalDetailModal');
+        renderUploadTasks();
+      }, 650);
+    }
+
+    function editExtracted(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      showDetailModal('修改后入库', `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">出发城市</label><input class="form-input" id="uploadEditFrom" value="${esc(seg.from)}"></div>
+          <div class="form-group"><label class="form-label">到达城市</label><input class="form-input" id="uploadEditTo" value="${esc(seg.to)}"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">交通方式</label><input class="form-input" id="uploadEditTransport" value="${esc(seg.transport)}"></div>
+          <div class="form-group"><label class="form-label">建议天数</label><input class="form-input" id="uploadEditDuration" value="${esc(seg.duration)}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">切段描述</label><textarea class="form-textarea" id="uploadEditDesc" rows="4">${esc(seg.desc)}</textarea></div>
+        <div class="panel-note warning">保存后会直接确认入库，并同步到知识库。</div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveEditedExtracted('${seg.id}')">保存并入库</button>
+      `);
+    }
+
+    function saveEditedExtracted(id) {
+      AppStore.updateSegment(id, {
+        from: document.getElementById('uploadEditFrom').value.trim(),
+        to: document.getElementById('uploadEditTo').value.trim(),
+        transport: document.getElementById('uploadEditTransport').value.trim(),
+        duration: document.getElementById('uploadEditDuration').value.trim(),
+        desc: document.getElementById('uploadEditDesc').value.trim()
+      });
+      AppStore.approveSegment(id);
+      closeModal('globalDetailModal');
+      showToast('切段已修改并入库', 'success');
+      renderUploadTasks();
     }
 
     function rejectExtracted(id) {

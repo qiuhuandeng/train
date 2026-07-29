@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>价格库管理 - AI智能计调助手</title>
+  <title>资源成本库 - AI智能计调助手</title>
   <link rel="stylesheet" href="css/common.css">
   <style>
     .pricing-content {
@@ -19,150 +19,88 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 18px;
     }
 
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .mini-stat {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      text-align: center;
-    }
-
-    .mini-stat .stat-num {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .mini-stat .stat-text {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: var(--bg-sidebar);
-      border-radius: var(--radius);
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-
-    .tab-btn {
-      padding: 8px 16px;
-      border: none;
-      background: transparent;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s ease;
-      font-family: var(--font-family);
-      white-space: nowrap;
-    }
-
-    .tab-btn.active {
-      background: var(--bg-card);
-      color: var(--primary);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .tab-btn:hover:not(.active) {
-      color: var(--text-primary);
-    }
-
-    .price-table-wrapper {
+    .resource-panel {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       overflow: hidden;
     }
 
-    .price-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .price-table th {
-      background: var(--bg-sidebar);
-      padding: 12px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .price-table td {
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
       padding: 14px 16px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border-light);
-      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-sidebar);
     }
 
-    .price-table tr:hover td {
-      background: var(--bg-hover);
+    .panel-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary);
     }
 
-    .price-table tr.expiring td {
-      background: #FFFBEB;
+    .panel-meta {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
-    .price-table tr.expired td {
-      background: #FEF2F2;
-      opacity: 0.7;
+    .resource-table {
+      min-width: 1120px;
     }
 
-    .source-badge {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 500;
+    .resource-table th,
+    .resource-table td {
+      vertical-align: top;
     }
 
-    .source-manual {
-      background: var(--success-bg);
-      color: var(--success);
+    .resource-name {
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 4px;
     }
 
-    .source-api {
-      background: var(--info-bg);
-      color: var(--info);
+    .resource-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
     }
 
-    .status-badge {
+    .category-badge,
+    .status-badge,
+    .match-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 0 4px 5px 0;
+      background: var(--bg-sidebar);
+      color: var(--text-secondary);
     }
 
-    .status-valid {
+    .status-valid,
+    .match-ready {
       background: var(--success-bg);
       color: var(--success);
     }
 
-    .status-expiring {
+    .status-expiring,
+    .match-warning {
       background: var(--warning-bg);
       color: var(--warning);
     }
 
-    .status-expired {
+    .status-expired,
+    .match-missing {
       background: var(--danger-bg);
       color: var(--danger);
     }
@@ -172,36 +110,51 @@
       color: var(--info);
     }
 
-    .upload-area {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-lg);
-      padding: 40px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 20px;
+    .price-main {
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
-    .upload-area:hover {
-      border-color: var(--primary);
-      background: var(--primary-bg);
+    .action-stack {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 220px;
     }
 
-    .upload-area .upload-icon {
-      font-size: 40px;
+    .condition-text {
+      max-width: 280px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .missing-row td {
+      background: var(--warning-bg);
+    }
+
+    .formula-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-sidebar);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.7;
       margin-bottom: 12px;
     }
 
-    .upload-area .upload-text {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
+    @media (max-width: 768px) {
+      .pricing-content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
 
-    .upload-area .upload-hint {
-      font-size: 12px;
-      color: var(--text-muted);
+      .panel-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
   </style>
 </head>
@@ -209,292 +162,51 @@
   <div class="pricing-content">
     <div class="page-header">
       <div>
-        <h1 class="page-title">价格库管理</h1>
-        <p class="page-subtitle">管理协议价格和实时API报价数据</p>
+        <h1 class="page-title">资源成本库</h1>
       </div>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-secondary" onclick="openModal('uploadPriceModal')">📤 导入价格表</button>
-        <button class="btn btn-primary" onclick="openModal('addPriceModal')">＋ 添加价格</button>
+        <button class="btn btn-secondary" onclick="openImportModal()">导入价格表</button>
+        <button class="btn btn-primary" onclick="openResourceEditor()">＋ 添加资源</button>
       </div>
-    </div>
-
-    <div class="stats-row">
-      <div class="mini-stat">
-        <div class="stat-num">1,234</div>
-        <div class="stat-text">价格总条目</div>
-      </div>
-      <div class="mini-stat">
-        <div class="stat-num" style="color:var(--success);">1,089</div>
-        <div class="stat-text">有效价格</div>
-      </div>
-      <div class="mini-stat">
-        <div class="stat-num" style="color:var(--warning);">87</div>
-        <div class="stat-text">即将过期（30天内）</div>
-      </div>
-      <div class="mini-stat">
-        <div class="stat-num" style="color:var(--danger);">58</div>
-        <div class="stat-text">已过期</div>
-      </div>
-      <div class="mini-stat">
-        <div class="stat-num" style="color:var(--info);">156</div>
-        <div class="stat-text">API实时价格</div>
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab-btn active">全部</button>
-      <button class="tab-btn">🏨 酒店 (423)</button>
-      <button class="tab-btn">✈️ 机票 (198)</button>
-      <button class="tab-btn">🚂 火车 (156)</button>
-      <button class="tab-btn">🎫 门票 (267)</button>
-      <button class="tab-btn">👤 导游 (89)</button>
-      <button class="tab-btn">🍽 餐费 (101)</button>
     </div>
 
     <div class="filter-bar">
-      <input type="text" class="form-input" style="width:180px;" placeholder="搜索项目名称...">
-      <select class="form-select" style="width:130px;">
-        <option>所有城市</option>
-        <option>巴黎</option>
-        <option>苏黎世</option>
-        <option>东京</option>
-        <option>曼谷</option>
+      <input type="text" class="form-input" id="keywordFilter" style="width:220px;" placeholder="搜索资源、供应商、城市...">
+      <select class="form-select" id="categoryFilter" style="width:150px;">
+        <option>所有品类</option>
+        <option>酒店</option>
+        <option>用车</option>
+        <option>导游</option>
+        <option>门票</option>
+        <option>餐费</option>
+        <option>保险</option>
+        <option>机票</option>
+        <option>火车</option>
+        <option>会议室</option>
       </select>
-      <select class="form-select" style="width:130px;">
-        <option>所有来源</option>
-        <option>手工录入</option>
-        <option>API实时</option>
-      </select>
-      <select class="form-select" style="width:130px;">
+      <select class="form-select" id="statusFilter" style="width:150px;">
         <option>所有状态</option>
         <option>有效</option>
         <option>即将过期</option>
         <option>已过期</option>
+        <option>实时</option>
       </select>
-      <button class="btn btn-secondary">筛选</button>
+      <button class="btn btn-secondary" onclick="renderResources()">筛选</button>
     </div>
 
-    <div class="price-table-wrapper">
-      <table class="price-table">
-        <thead>
-          <tr>
-            <th>品类</th>
-            <th>城市</th>
-            <th>项目名称</th>
-            <th>供应商</th>
-            <th>单价</th>
-            <th>单位</th>
-            <th>有效期</th>
-            <th>来源</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>🏨 酒店</td>
-            <td>巴黎</td>
-            <td><strong>万豪香榭丽舍 标准间</strong></td>
-            <td>万豪直连</td>
-            <td style="font-weight:600;">¥1,200</td>
-            <td>间/晚</td>
-            <td>2025.03 - 2025.09</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-valid">● 有效</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">编辑</button>
-              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>🏨 酒店</td>
-            <td>苏黎世</td>
-            <td><strong>苏黎世凯悦 湖景房</strong></td>
-            <td>凯悦集团</td>
-            <td style="font-weight:600;">¥1,800</td>
-            <td>间/晚</td>
-            <td>2025.04 - 2025.10</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-valid">● 有效</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">编辑</button>
-              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>✈️ 机票</td>
-            <td>上海-巴黎</td>
-            <td><strong>东航直飞 MU553</strong></td>
-            <td>中航信</td>
-            <td style="font-weight:600;">¥6,500</td>
-            <td>人/单程</td>
-            <td>实时</td>
-            <td><span class="source-badge source-api">API</span></td>
-            <td><span class="status-badge status-realtime">⟳ 实时</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">刷新</button>
-            </td>
-          </tr>
-          <tr class="expiring">
-            <td>🎫 门票</td>
-            <td>巴黎</td>
-            <td><strong>卢浮宫 成人票</strong></td>
-            <td>官方代理</td>
-            <td style="font-weight:600;">¥150</td>
-            <td>人/次</td>
-            <td>2025.01 - 2025.04</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-expiring">● 即将过期</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">续期</button>
-              <button class="btn btn-sm btn-ghost">编辑</button>
-            </td>
-          </tr>
-          <tr class="expiring">
-            <td>👤 导游</td>
-            <td>巴黎</td>
-            <td><strong>中文导游 全天</strong></td>
-            <td>巴黎地接A</td>
-            <td style="font-weight:600;">¥1,200</td>
-            <td>天</td>
-            <td>2025.01 - 2025.03</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-expiring">● 即将过期</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">续期</button>
-              <button class="btn btn-sm btn-ghost">编辑</button>
-            </td>
-          </tr>
-          <tr class="expired">
-            <td>🚂 火车</td>
-            <td>巴黎-尼斯</td>
-            <td><strong>TGV 二等座</strong></td>
-            <td>SNCF</td>
-            <td style="font-weight:600;">¥450</td>
-            <td>人/单程</td>
-            <td>2024.06 - 2024.12</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-expired">● 已过期</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">更新</button>
-              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>🍽 餐费</td>
-            <td>巴黎</td>
-            <td><strong>中餐团餐 标准</strong></td>
-            <td>华人餐厅联盟</td>
-            <td style="font-weight:600;">¥80</td>
-            <td>人/餐</td>
-            <td>2025.01 - 2025.12</td>
-            <td><span class="source-badge source-manual">手工</span></td>
-            <td><span class="status-badge status-valid">● 有效</span></td>
-            <td>
-              <button class="btn btn-sm btn-ghost">编辑</button>
-              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="pagination" style="margin-top:20px;">
-      <button>← 上一页</button>
-      <button class="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>...</button>
-      <button>12</button>
-      <button>下一页 →</button>
-    </div>
-  </div>
-
-  <!-- 上传价格表弹窗 -->
-  <div class="modal-overlay" id="uploadPriceModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">导入价格表</h3>
-        <button class="modal-close" onclick="closeModal('uploadPriceModal')">×</button>
+    <div class="resource-panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">资源成本台账</div>
+          <div class="panel-meta" id="panelMeta"></div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="showFormulaGuide()">报价公式说明</button>
       </div>
-      <div class="modal-body">
-        <div class="upload-area" onclick="this.querySelector('input').click()">
-          <input type="file" hidden accept=".xlsx,.xls,.csv">
-          <div class="upload-icon">📊</div>
-          <div class="upload-text">点击或拖拽上传 Excel/CSV 文件</div>
-          <div class="upload-hint">支持 .xlsx、.xls、.csv 格式，单文件不超过 10MB</div>
-        </div>
-        <div style="font-size:13px;color:var(--text-secondary);">
-          <p style="font-weight:600;margin-bottom:8px;">文件格式要求：</p>
-          <p>表格应包含以下列：品类、城市、项目名称、供应商、单价、单位、有效期起、有效期止</p>
-          <p style="margin-top:8px;"><a href="#">📥 下载导入模板</a></p>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('uploadPriceModal')">取消</button>
-        <button class="btn btn-primary" onclick="importPriceTable()">开始导入</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 添加价格弹窗 -->
-  <div class="modal-overlay" id="addPriceModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">添加价格条目</h3>
-        <button class="modal-close" onclick="closeModal('addPriceModal')">×</button>
-      </div>
-      <div class="modal-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group">
-            <label class="form-label">品类 *</label>
-            <select class="form-select">
-              <option>酒店</option>
-              <option>机票</option>
-              <option>火车</option>
-              <option>门票</option>
-              <option>导游</option>
-              <option>餐费</option>
-              <option>其他</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">城市 *</label>
-            <input type="text" class="form-input" placeholder="如：巴黎">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">项目名称 *</label>
-          <input type="text" class="form-input" placeholder="如：万豪香榭丽舍 标准间">
-        </div>
-        <div class="form-group">
-          <label class="form-label">供应商</label>
-          <input type="text" class="form-input" placeholder="如：万豪直连">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group">
-            <label class="form-label">单价 *</label>
-            <input type="number" class="form-input" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label class="form-label">计价单位 *</label>
-            <input type="text" class="form-input" placeholder="如：间/晚">
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group">
-            <label class="form-label">有效期起</label>
-            <input type="date" class="form-input">
-          </div>
-          <div class="form-group">
-            <label class="form-label">有效期止</label>
-            <input type="date" class="form-input">
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('addPriceModal')">取消</button>
-        <button class="btn btn-primary" onclick="addPriceEntry()">确认添加</button>
+      <div class="table-wrapper" style="border:0;border-radius:0;">
+        <table class="resource-table">
+          <thead id="resourceHead"></thead>
+          <tbody id="resourceBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -504,7 +216,9 @@
   <script>
     renderNavbar('pricing');
 
-    let activeCategory = '全部';
+    let pendingImportRows = [];
+    let latestMissingNeeds = [];
+    sessionStorage.removeItem('pricingFromComponentId');
 
     function esc(value) {
       return String(value ?? '')
@@ -515,216 +229,449 @@
         .replace(/'/g, '&#39;');
     }
 
-    function categoryIcon(category) {
-      return {
-        酒店: '🏨',
-        机票: '✈️',
-        火车: '🚂',
-        门票: '🎫',
-        导游: '👤',
-        餐费: '🍽',
-        其他: '📦'
-      }[category] || '📦';
+    function parsePeriodEnd(period) {
+      if (!period || period === '实时' || period === '长期有效') return null;
+      const parts = String(period).split(/\s*-\s*/);
+      const end = parts[parts.length - 1];
+      const dateParts = end.split(/[./-]/).map(Number);
+      if (dateParts.length >= 3) return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+      if (dateParts.length >= 2) return new Date(dateParts[0], dateParts[1], 0);
+      return null;
+    }
+
+    function effectiveStatus(price) {
+      return AppStore.priceStatus(price);
     }
 
     function statusText(status) {
-      return {
-        valid: '有效',
-        expiring: '即将过期',
-        expired: '已过期',
-        realtime: '实时'
-      }[status] || status;
+      return { valid: '有效', expiring: '即将过期', expired: '已过期', realtime: '实时' }[status] || status;
     }
 
-    function statusClass(status) {
-      return {
-        valid: 'status-valid',
-        expiring: 'status-expiring',
-        expired: 'status-expired',
-        realtime: 'status-realtime'
-      }[status] || 'status-valid';
+    function requiredResources(seg) {
+      return AppStore.componentNeeds(seg);
     }
 
-    function renderStats() {
-      const prices = AppStore.all().prices;
-      const nums = document.querySelectorAll('.mini-stat .stat-num');
-      nums[0].textContent = prices.length.toLocaleString('zh-CN');
-      nums[1].textContent = prices.filter(item => item.status === 'valid').length.toLocaleString('zh-CN');
-      nums[2].textContent = prices.filter(item => item.status === 'expiring').length.toLocaleString('zh-CN');
-      nums[3].textContent = prices.filter(item => item.status === 'expired').length.toLocaleString('zh-CN');
-      nums[4].textContent = prices.filter(item => item.source === 'API' || item.status === 'realtime').length.toLocaleString('zh-CN');
+    function categoryForNeed(need) {
+      const resource = typeof need === 'string' ? need : (need.resource || need.category || '');
+      return AppStore.categoryForRequirement(resource);
     }
 
-    function renderPriceTabs() {
-      const prices = AppStore.all().prices;
-      const categories = ['全部', '酒店', '机票', '火车', '门票', '导游', '餐费'];
-      document.querySelector('.tabs').innerHTML = categories.map(category => {
-        const count = category === '全部' ? prices.length : prices.filter(item => item.category === category).length;
-        const label = category === '全部' ? '全部' : `${categoryIcon(category)} ${category}`;
-        return `<button class="tab-btn ${activeCategory === category ? 'active' : ''}" onclick="switchCategory('${category}')">${label} (${count})</button>`;
-      }).join('');
+    function matchesNeed(price, need, component) {
+      return AppStore.matchPricesForNeed(need, component || { from: need.from, to: need.to }, [price]).length > 0;
+    }
+
+    function missingNeeds() {
+      const data = AppStore.all();
+      const needs = [];
+      data.segments.filter(seg => seg.status !== 'rejected').forEach(seg => {
+        requiredResources(seg).forEach(resourceNeed => {
+          const need = {
+            ...resourceNeed,
+            id: seg.id + '-' + resourceNeed.key,
+            componentId: seg.id,
+            component: `${seg.from} → ${seg.to}`,
+            from: seg.from,
+            to: seg.to
+          };
+          if (!AppStore.matchPricesForNeed(need, seg, data.prices).length) needs.push(need);
+        });
+      });
+      const seen = new Set();
+      latestMissingNeeds = needs.filter(need => {
+        const key = [need.component, need.resource, need.category, need.city].join('|');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      return latestMissingNeeds;
+    }
+
+    function conditionFor(price) {
+      if (price.condition) return price.condition;
+      const map = {
+        酒店: '按间夜报价，需确认房型、早餐、入住日期和取消规则。',
+        机票: '按人/航段报价，税费和舱位以实时接口为准。',
+        火车: '按人/区间报价，席别和出票规则需二次确认。',
+        门票: '按人/次报价，需确认预约时段、儿童政策和闭馆日。',
+        导游: '按天报价，默认 8-10 小时服务，超时另计。',
+        餐费: '按人/餐报价，团队菜单和特殊餐需提前确认。',
+        保险: '按人或按团报价，需确认保障地区、天数、年龄和保额。',
+        用车: '按车/天报价，需确认车型、座位数、服务小时和超公里规则。',
+        会议室: '按半日/日报价，茶歇、投影、摆台方式另计。'
+      };
+      return map[price.category] || '需确认适用日期、人数、库存和供应商取消政策。';
+    }
+
+    function formulaFor(price) {
+      if (price.formula) return price.formula;
+      const map = {
+        酒店: '间数 × 晚数 × 间夜价',
+        机票: '人数 × 航段票价',
+        火车: '人数 × 区间票价',
+        门票: '成人数 × 成人票 + 儿童数 × 儿童票',
+        导游: '服务天数 × 日服务费',
+        餐费: '人数 × 餐数 × 餐标',
+        保险: '人数 × 天数 × 保费，或按团固定金额',
+        用车: '用车天数 × 日车价 + 超时/停车/高速',
+        会议室: '场次 × 半日价 + 茶歇/设备费用'
+      };
+      return map[price.category] || '数量 × 单价';
+    }
+
+    function markupFor(price) {
+      if (price.markup) return price.markup;
+      if (price.source === 'API') return '实时成本 + 服务费';
+      if (price.category === '酒店') return '成本价 + 8%-12%';
+      if (price.category === '导游' || price.category === '用车') return '成本价 + 10%';
+      return '成本价 + 5%-10%';
+    }
+
+    function referencedComponents(price) {
+      const data = AppStore.all();
+      return data.segments.filter(seg => {
+        if (seg.status === 'rejected') return false;
+        return requiredResources(seg).some(need => matchesNeed(price, need, seg));
+      });
+    }
+
+    function normalizedPrices() {
+      return AppStore.all().prices.map(price => ({
+        ...price,
+        computedStatus: effectiveStatus(price),
+        condition: conditionFor(price),
+        formula: formulaFor(price),
+        markup: markupFor(price),
+        references: referencedComponents(price)
+      }));
+    }
+
+    function viewMatches(price) {
+      return true;
     }
 
     function filteredPrices() {
-      const fields = document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select');
-      const keyword = (fields[0]?.value || '').trim().toLowerCase();
-      const city = fields[1]?.value || '所有城市';
-      const source = fields[2]?.value || '所有来源';
-      const status = fields[3]?.value || '所有状态';
-
-      return AppStore.all().prices.filter(price => {
-        if (activeCategory !== '全部' && price.category !== activeCategory) return false;
-        if (keyword && ![price.name, price.city, price.supplier].join(' ').toLowerCase().includes(keyword)) return false;
-        if (city !== '所有城市' && price.city !== city && !price.city.includes(city)) return false;
-        if (source === '手工录入' && price.source !== '手工') return false;
-        if (source === 'API实时' && price.source !== 'API') return false;
-        if (status === '有效' && price.status !== 'valid') return false;
-        if (status === '即将过期' && price.status !== 'expiring') return false;
-        if (status === '已过期' && price.status !== 'expired') return false;
+      const keyword = (document.getElementById('keywordFilter')?.value || '').trim().toLowerCase();
+      const category = document.getElementById('categoryFilter')?.value || '所有品类';
+      const status = document.getElementById('statusFilter')?.value || '所有状态';
+      return normalizedPrices().filter(price => {
+        if (!viewMatches(price)) return false;
+        if (category !== '所有品类' && price.category !== category && !(category === '用车' && /车|接送/.test(price.name))) return false;
+        if (status !== '所有状态' && statusText(price.computedStatus) !== status) return false;
+        if (keyword) {
+          const haystack = [price.category, price.city, price.name, price.supplier, price.condition, price.formula].join(' ').toLowerCase();
+          if (!haystack.includes(keyword)) return false;
+        }
         return true;
       });
     }
 
+    function renderResources() {
+      document.getElementById('panelMeta').textContent = '展示可参与方案报价的供应商资源、计价规则和适用条件';
+      renderPriceTable();
+      hydrateLineIcons();
+    }
+
     function renderPriceTable() {
-      refreshNavBadges();
-      renderStats();
-      renderPriceTabs();
+      document.getElementById('resourceHead').innerHTML = `
+        <tr>
+          <th>资源名称</th>
+          <th>品类/城市</th>
+          <th>适用条件</th>
+          <th>成本与公式</th>
+          <th>有效期/状态</th>
+          <th>被引用</th>
+          <th>操作</th>
+        </tr>
+      `;
       const prices = filteredPrices();
-      const tbody = document.querySelector('.price-table tbody');
+      const tbody = document.getElementById('resourceBody');
       if (!prices.length) {
-        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="empty-text">没有匹配价格</div><div class="empty-sub">调整筛选条件，或添加新的价格条目。</div></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-text">没有匹配资源</div><div class="empty-sub">请调整筛选条件，或添加新的资源成本。</div></div></td></tr>';
         return;
       }
 
       tbody.innerHTML = prices.map(price => `
-        <tr class="${price.status === 'expiring' ? 'expiring' : price.status === 'expired' ? 'expired' : ''}">
-          <td>${categoryIcon(price.category)} ${esc(price.category)}</td>
-          <td>${esc(price.city)}</td>
-          <td><strong>${esc(price.name)}</strong></td>
-          <td>${esc(price.supplier || '-')}</td>
-          <td style="font-weight:600;">${AppStore.money(price.price)}</td>
-          <td>${esc(price.unit)}</td>
-          <td>${esc(price.period)}</td>
-          <td><span class="source-badge ${price.source === 'API' ? 'source-api' : 'source-manual'}">${esc(price.source)}</span></td>
-          <td><span class="status-badge ${statusClass(price.status)}">● ${statusText(price.status)}</span></td>
+        <tr>
           <td>
-            ${price.status === 'expired' || price.status === 'expiring' ? `<button class="btn btn-sm btn-ghost" onclick="renewPrice('${price.id}')">续期</button>` : ''}
-            ${price.source === 'API' ? `<button class="btn btn-sm btn-ghost" onclick="refreshPrice('${price.id}')">刷新</button>` : `<button class="btn btn-sm btn-ghost" onclick="editPrice('${price.id}')">编辑</button>`}
-            <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deletePrice('${price.id}')">删除</button>
+            <div class="resource-name">${esc(price.name)}</div>
+            <div class="resource-sub">${esc(price.supplier || '未标注供应商')}</div>
+          </td>
+          <td>
+            <span class="category-badge">${esc(price.category)}</span>
+            <div class="resource-sub">${esc(price.city)}</div>
+          </td>
+          <td><div class="condition-text">${esc(price.condition)}</div></td>
+          <td>
+            <div class="price-main">${AppStore.money(price.price)}</div>
+            <div class="resource-sub">${esc(price.unit)} · ${esc(price.formula)}</div>
+            <div class="resource-sub">${esc(price.markup)}</div>
+          </td>
+          <td>
+            <span class="status-badge status-${esc(price.computedStatus)}">${esc(statusText(price.computedStatus))}</span>
+            <div class="resource-sub">${esc(price.period)}</div>
+          </td>
+          <td>
+            ${price.references.length
+              ? price.references.slice(0, 2).map(seg => `<span class="match-badge match-ready">${esc(seg.from)}→${esc(seg.to)}</span>`).join('')
+              : '<span class="match-badge match-warning">暂无引用</span>'}
+          </td>
+          <td>
+            <div class="action-stack">
+              ${price.computedStatus === 'expired' || price.computedStatus === 'expiring' ? `<button class="btn btn-sm btn-secondary" onclick="renewPrice('${price.id}')">续期</button>` : ''}
+              ${price.source === 'API' ? `<button class="btn btn-sm btn-secondary" onclick="refreshPrice('${price.id}')">刷新</button>` : `<button class="btn btn-sm btn-secondary" onclick="openResourceEditor('${price.id}')">编辑</button>`}
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deletePrice('${price.id}')">删除</button>
+            </div>
           </td>
         </tr>
       `).join('');
     }
 
-    function switchCategory(category) {
-      activeCategory = category;
-      renderPriceTable();
-    }
-
-    function addPriceEntry() {
-      const modal = document.getElementById('addPriceModal');
-      const selects = modal.querySelectorAll('select');
-      const inputs = modal.querySelectorAll('input');
-      const category = selects[0].value;
-      const city = inputs[0].value.trim();
-      const name = inputs[1].value.trim();
-      const supplier = inputs[2].value.trim();
-      const price = Number(inputs[3].value || 0);
-      const unit = inputs[4].value.trim();
-      const start = inputs[5].value;
-      const end = inputs[6].value;
-
-      if (!city || !name || !price || !unit) {
-        showToast('请填写城市、项目名称、单价和计价单位', 'warning');
+    function renderMissingTable() {
+      const needs = missingNeeds();
+      document.getElementById('resourceHead').innerHTML = `
+        <tr>
+          <th>缺少资源</th>
+          <th>关联组件</th>
+          <th>匹配城市/区间</th>
+          <th>建议补价字段</th>
+          <th>优先级</th>
+          <th>操作</th>
+        </tr>
+      `;
+      const tbody = document.getElementById('resourceBody');
+      if (!needs.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-text">暂无缺价需求</div><div class="empty-sub">当前行程组件都已匹配可用资源。</div></div></td></tr>';
         return;
       }
 
-      AppStore.addPrice({
-        category,
-        city,
-        name,
-        supplier,
-        price,
-        unit,
-        period: start && end ? `${start} - ${end}` : '长期有效',
-        source: '手工',
-        status: 'valid'
+      tbody.innerHTML = needs.map((need, index) => `
+        <tr class="missing-row">
+          <td>
+            <div class="resource-name">${esc(need.resource)}</div>
+            <div class="resource-sub">建议品类：${esc(categoryForNeed(need))}</div>
+          </td>
+          <td>${esc(need.component)}</td>
+          <td>${esc(need.from)} / ${esc(need.to)}</td>
+          <td><div class="condition-text">${esc(suggestFields(need.resource))}</div></td>
+          <td><span class="match-badge ${/酒店|用车|司导|会议室/.test(need.resource) ? 'match-missing' : 'match-warning'}">${/酒店|用车|司导|会议室/.test(need.resource) ? '高' : '中'}</span></td>
+          <td><button class="btn btn-sm btn-primary" onclick="addMissingPrice(${index})">补价格</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function suggestFields(resource) {
+      const map = {
+        酒店: '酒店名、星级、房型、间夜价、早餐、取消规则、有效期',
+        用车: '车型、座位数、服务小时、日车价、超时费、停车高速',
+        司导: '语言、服务城市、服务时长、日服务费、超时费',
+        会议室: '酒店/场地、半日价、摆台方式、投影、茶歇',
+        餐食: '餐厅/餐标、人数、菜单、特殊餐、有效期',
+        保险: '保障地区、保障天数、人数、保额、年龄限制、供应商',
+        '门票/活动': '景点/项目、成人价、儿童价、团队价、预约规则',
+        区间交通: '区间、席别、成人价、儿童价、出票规则',
+        '机票/内陆交通': '航段、舱位、票价、税费、实时接口或供应商'
+      };
+      return map[resource] || '资源名称、供应商、单价、单位、有效期、适用条件';
+    }
+
+    function addMissingPrice(index) {
+      const need = latestMissingNeeds[index];
+      if (!need) return;
+      openResourceEditor('', {
+        category: categoryForNeed(need),
+        city: need.to || need.from,
+        name: `${need.component} ${need.resource}`,
+        supplier: '待确认供应商',
+        unit: defaultUnit(categoryForNeed(need)),
+        condition: suggestFields(need.resource),
+        formula: formulaFor({ category: categoryForNeed(need) }),
+        markup: '成本价 + 10%'
       });
-      modal.querySelectorAll('input').forEach(input => input.value = '');
-      closeModal('addPriceModal');
-      showToast('价格添加成功', 'success');
-      renderPriceTable();
     }
 
-    function importPriceTable() {
-      const imports = AppStore.addImportedPrices();
-      closeModal('uploadPriceModal');
-      showToast(`价格表解析完成，新增 ${imports.length} 条价格`, 'success');
-      renderPriceTable();
+    function defaultUnit(category) {
+      return {
+        酒店: '间/晚',
+        用车: '车/天',
+        导游: '天',
+        会议室: '半日',
+        餐费: '人/餐',
+        保险: '人/天',
+        门票: '人/次',
+        火车: '人/单程',
+        机票: '人/航段'
+      }[category] || '项';
     }
 
-    function editPrice(id) {
-      const price = AppStore.all().prices.find(item => item.id === id);
-      if (!price) return;
-      showDetailModal('编辑价格条目', `
+    function openResourceEditor(id = '', preset = {}) {
+      const price = id ? AppStore.all().prices.find(item => item.id === id) : null;
+      const source = price || preset || {};
+      showDetailModal(price ? '编辑资源成本' : '添加资源成本', `
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group"><label class="form-label">城市</label><input class="form-input" id="editPriceCity" value="${esc(price.city)}"></div>
-          <div class="form-group"><label class="form-label">单价</label><input class="form-input" id="editPriceAmount" type="number" value="${esc(price.price)}"></div>
+          <div class="form-group">
+            <label class="form-label">品类</label>
+            <select class="form-select" id="editCategory">
+              ${['酒店','用车','导游','门票','餐费','保险','机票','火车','会议室','其他'].map(category => `<option ${source.category === category ? 'selected' : ''}>${category}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">城市/区间</label><input class="form-input" id="editCity" value="${esc(source.city || '')}"></div>
         </div>
-        <div class="form-group"><label class="form-label">项目名称</label><input class="form-input" id="editPriceName" value="${esc(price.name)}"></div>
-        <div class="form-group"><label class="form-label">供应商</label><input class="form-input" id="editPriceSupplier" value="${esc(price.supplier)}"></div>
-        <div class="form-group"><label class="form-label">有效期</label><input class="form-input" id="editPricePeriod" value="${esc(price.period)}"></div>
+        <div class="form-group"><label class="form-label">资源名称</label><input class="form-input" id="editName" value="${esc(source.name || '')}"></div>
+        <div class="form-group"><label class="form-label">供应商</label><input class="form-input" id="editSupplier" value="${esc(source.supplier || '')}"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">成本价</label><input class="form-input" id="editAmount" type="number" value="${esc(source.price || '')}"></div>
+          <div class="form-group"><label class="form-label">单位</label><input class="form-input" id="editUnit" value="${esc(source.unit || '')}"></div>
+          <div class="form-group"><label class="form-label">有效期</label><input class="form-input" id="editPeriod" value="${esc(source.period || '长期有效')}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">适用条件</label><textarea class="form-textarea" id="editCondition" rows="3">${esc(conditionFor(source))}</textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">计价公式</label><input class="form-input" id="editFormula" value="${esc(formulaFor(source))}"></div>
+          <div class="form-group"><label class="form-label">销售加价规则</label><input class="form-input" id="editMarkup" value="${esc(markupFor(source))}"></div>
+        </div>
       `, `
         <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
-        <button class="btn btn-primary" onclick="savePriceEdit('${price.id}')">保存修改</button>
+        <button class="btn btn-primary" onclick="saveResource('${esc(id)}')">保存</button>
       `);
     }
 
-    function savePriceEdit(id) {
-      AppStore.updatePrice(id, {
-        city: document.getElementById('editPriceCity').value.trim(),
-        price: Number(document.getElementById('editPriceAmount').value || 0),
-        name: document.getElementById('editPriceName').value.trim(),
-        supplier: document.getElementById('editPriceSupplier').value.trim(),
-        period: document.getElementById('editPricePeriod').value.trim(),
+    function saveResource(id = '') {
+      const patch = {
+        category: document.getElementById('editCategory').value,
+        city: document.getElementById('editCity').value.trim(),
+        name: document.getElementById('editName').value.trim(),
+        supplier: document.getElementById('editSupplier').value.trim(),
+        price: Number(document.getElementById('editAmount').value || 0),
+        unit: document.getElementById('editUnit').value.trim(),
+        period: document.getElementById('editPeriod').value.trim() || '长期有效',
+        condition: document.getElementById('editCondition').value.trim(),
+        formula: document.getElementById('editFormula').value.trim(),
+        markup: document.getElementById('editMarkup').value.trim(),
+        source: '手工',
         status: 'valid'
-      });
+      };
+      if (!patch.city || !patch.name || !patch.price || !patch.unit) {
+        showToast('请填写城市/区间、资源名称、成本价和单位', 'warning');
+        return;
+      }
+      if (id) {
+        AppStore.updatePrice(id, patch);
+      } else {
+        AppStore.addPrice(patch);
+      }
       closeModal('globalDetailModal');
-      showToast('价格已更新', 'success');
-      renderPriceTable();
+      showToast('资源成本已保存', 'success');
+      renderResources();
     }
 
     function renewPrice(id) {
       AppStore.updatePrice(id, { period: '2026.08 - 2027.08', status: 'valid' });
       showToast('价格已续期至 2027.08', 'success');
-      renderPriceTable();
+      renderResources();
     }
 
     function refreshPrice(id) {
       const price = AppStore.all().prices.find(item => item.id === id);
       if (!price) return;
-      const next = Math.round(price.price * (0.98 + Math.random() * 0.06));
-      AppStore.updatePrice(id, { price: next, status: 'realtime', period: '实时' });
-      showToast('API实时价格已刷新', 'success');
-      renderPriceTable();
+      const next = Math.round(Number(price.price || 0) * (0.98 + Math.random() * 0.06));
+      AppStore.updatePrice(id, { price: next, period: '实时', status: 'realtime' });
+      showToast('实时价格已刷新', 'success');
+      renderResources();
     }
 
     function deletePrice(id) {
       const price = AppStore.all().prices.find(item => item.id === id);
       if (!price) return;
-      confirmAction(`删除价格：${price.city} · ${price.name}？`, () => {
+      confirmAction(`删除资源成本：${price.city} · ${price.name}？`, () => {
         AppStore.deletePrice(id);
-        showToast('价格已删除', 'success');
-        renderPriceTable();
+        showToast('资源成本已删除', 'success');
+        renderResources();
       });
     }
 
+    function openImportModal() {
+      pendingImportRows = [];
+      showDetailModal('导入价格表', `
+        <div class="formula-box">
+          支持导入地接报价单、酒店协议价、门票活动表、用车/导游报价表。系统会先识别品类，再做字段映射和重复价格检测。
+        </div>
+        <div class="form-group">
+          <label class="form-label">选择文件</label>
+          <input class="form-input" type="file" accept=".xlsx,.xls,.csv" onchange="previewPriceImport(event)">
+        </div>
+        <div id="priceImportPreview"></div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="importPriceTable(this)">确认导入</button>
+      `);
+    }
+
+    function previewPriceImport(e) {
+      const existing = AppStore.all().prices;
+      pendingImportRows = [
+        { category: '会议室', city: '东京', name: '东京商务酒店会议室 半日', supplier: '东京地接社', price: 8000, unit: '半日', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: 'U型桌、投影、基础茶水，茶歇另计。', formula: '场次 × 半日价 + 茶歇/设备费用', markup: '成本价 + 10%' },
+        { category: '用车', city: '东京', name: '东京商务车 18座 全天', supplier: '东京车队A', price: 3600, unit: '车/天', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: '10小时/天，超时和停车高速另计。', formula: '用车天数 × 日车价 + 超时/停车/高速', markup: '成本价 + 10%' }
+      ].map(row => ({ ...row, duplicate: existing.some(item => item.city === row.city && item.name === row.name) }));
+
+      const target = document.getElementById('priceImportPreview');
+      if (!target) return;
+      target.innerHTML = `
+        <div class="panel-note warning" style="margin-bottom:12px;">已解析：${esc(e.target.files?.[0]?.name || '模拟地接报价表.xlsx')}。发现 ${pendingImportRows.filter(row => row.duplicate).length} 条疑似重复。</div>
+        <table>
+          <thead><tr><th>处理</th><th>品类</th><th>城市</th><th>资源</th><th>成本价</th></tr></thead>
+          <tbody>${pendingImportRows.map(row => `
+            <tr>
+              <td><span class="match-badge ${row.duplicate ? 'match-warning' : 'match-ready'}">${row.duplicate ? '更新' : '新增'}</span></td>
+              <td>${esc(row.category)}</td>
+              <td>${esc(row.city)}</td>
+              <td>${esc(row.name)}</td>
+              <td>${AppStore.money(row.price)}</td>
+            </tr>
+          `).join('')}</tbody>
+        </table>
+      `;
+      showToast('价格表已解析，请检查后导入', 'info');
+    }
+
+    function importPriceTable(button) {
+      if (!pendingImportRows.length) {
+        previewPriceImport({ target: { files: [{ name: '模拟地接报价表.xlsx' }] } });
+        return;
+      }
+      runWithButtonLoading(button, '导入中...', () => {
+        pendingImportRows.forEach(row => {
+          const existing = AppStore.all().prices.find(item => item.city === row.city && item.name === row.name);
+          const patch = { ...row };
+          delete patch.duplicate;
+          if (existing) AppStore.updatePrice(existing.id, patch);
+          else AppStore.addPrice(patch);
+        });
+        closeModal('globalDetailModal');
+        showToast(`已处理 ${pendingImportRows.length} 条资源成本`, 'success');
+        pendingImportRows = [];
+        renderResources();
+      }, 700);
+    }
+
+    function showFormulaGuide() {
+      showDetailModal('报价公式说明', `
+        ${[
+          ['酒店', '间数 × 晚数 × 间夜价，另算单房差、早餐和税费'],
+          ['用车', '天数 × 日车价 + 超时费 + 停车/高速/夜间附加'],
+          ['导游', '服务天数 × 日服务费，按语言和城市区分'],
+          ['门票/活动', '成人数 × 成人价 + 儿童数 × 儿童价，检查预约和闭馆日'],
+          ['餐食', '人数 × 餐数 × 餐标，特殊餐需单列'],
+          ['保险', '按人/天或按团固定金额，报价前检查年龄、目的地和保额'],
+          ['服务费/利润', '成本汇总后按比例或按团固定金额加价']
+        ].map(row => `<div class="formula-box"><strong>${esc(row[0])}</strong><br>${esc(row[1])}</div>`).join('')}
+      `);
+    }
+
     document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select').forEach(el => {
-      el.addEventListener('input', renderPriceTable);
-      el.addEventListener('change', renderPriceTable);
+      el.addEventListener('input', renderResources);
+      el.addEventListener('change', renderResources);
     });
 
-    renderPriceTable();
+    renderResources();
   </script>
 </body>
 </html>

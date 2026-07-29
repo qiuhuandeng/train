@@ -174,6 +174,32 @@
     ],
     segments: [
       {
+        id: 'seg-japan-business-5d',
+        region: 'asia',
+        status: 'approved',
+        from: '东京商务团',
+        to: '东京 + 箱根',
+        transport: '整段组件',
+        componentType: '商务团整段组件',
+        duration: '5天4晚',
+        season: '10-4月最佳',
+        audience: '商务/团建',
+        desc: '上海出发，东京商务拜访、酒店会议室、专车接送机和箱根温泉轻团建，适合18人左右企业商务团。',
+        tags: ['商务', '会议', '团建', '温泉'],
+        source: '日本商务团资源表.xlsx · 已入库',
+        original: 'Tokyo business group 5D4N: hotel 4 nights, guide 5 days, private coach 5 days, meeting room half day, dinner, flight and insurance.',
+        requiredResources: [
+          { key: 'flight', resource: '机票', category: '机票', city: '上海-东京', label: '国际机票', quoteGroup: '国际机票', quantity: 18, unit: '人', pricingQuantity: 18, pricingUnit: '人/往返', priceId: 'price-sha-tyo-flight', status: '实时', detailLabel: '18人往返经济舱' },
+          { key: 'hotel', resource: '酒店', category: '酒店', city: '东京', label: '五星酒店', quoteGroup: '五星酒店', quantity: 4, unit: '晚', pricingQuantity: 36, pricingUnit: '间夜', priceId: 'price-tokyo-business-hotel', status: '协议价', detailLabel: '酒店4晚，18人按9间核算' },
+          { key: 'guide', resource: '司导', category: '导游', city: '东京', label: '中文司导', quoteGroup: '专车与司导', quantity: 5, unit: '天', pricingQuantity: 5, pricingUnit: '天', priceId: 'price-japan-guide', status: '协议价', detailLabel: '5天中文商务司导' },
+          { key: 'vehicle', resource: '专车', category: '用车', city: '东京', label: '商务车', quoteGroup: '专车与司导', quantity: 5, unit: '天', pricingQuantity: 5, pricingUnit: '车/天', priceId: 'price-tokyo-business-car', status: '协议价', adjustment: -4400, adjustmentLabel: '地接打包减免', detailLabel: '专车5天，18座商务车' },
+          { key: 'meeting', resource: '会议室', category: '会议室', city: '东京', label: '会议室半日', quoteGroup: '会议室半日', quantity: 1, unit: '半日', pricingQuantity: 1, pricingUnit: '半日', priceId: 'price-tokyo-meeting-room', status: '待确认', detailLabel: '会议室半日，U型桌、投影、基础茶水' },
+          { key: 'dinner', resource: '晚宴', category: '餐费', city: '东京', label: '团队晚宴', quoteGroup: '餐饮与晚宴', quantity: 1, unit: '餐', pricingQuantity: 18, pricingUnit: '人/餐', priceId: 'price-tokyo-team-dinner', status: '协议价', detailLabel: '团队晚宴1餐，18人' },
+          { key: 'meal-package', resource: '商务餐饮包', category: '餐费', city: '东京', label: '商务接待餐饮包', quoteGroup: '餐饮与晚宴', quantity: 1, unit: '团', pricingQuantity: 1, pricingUnit: '团', priceId: 'price-tokyo-business-meal-package', status: '协议价', detailLabel: '商务接待餐饮补充包' },
+          { key: 'insurance', resource: '保险', category: '保险', city: '日本', label: '保险与杂费', quoteGroup: '保险与杂费', quantity: 18, unit: '人', pricingQuantity: 1, pricingUnit: '团', priceId: 'price-japan-insurance-service', status: '估算', detailLabel: '18人保险与杂费打包' }
+        ]
+      },
+      {
         id: 'seg-paris-nice',
         region: 'europe',
         status: 'approved',
@@ -270,7 +296,14 @@
       { id: 'price-louvre', category: '门票', city: '巴黎', name: '卢浮宫团队票', supplier: 'Local DMC', price: 150, unit: '人/次', period: '2026.01 - 2026.12', source: '手工', status: 'valid' },
       { id: 'price-zurich-hotel', category: '酒店', city: '苏黎世', name: '市区四星酒店 标准间', supplier: '瑞士地接', price: 1350, unit: '间/晚', period: '2026.04 - 2026.08', source: '手工', status: 'expiring' },
       { id: 'price-tgv-par-nice', category: '火车', city: '巴黎-尼斯', name: 'TGV 二等座', supplier: 'SNCF', price: 450, unit: '人/单程', period: '2025.06 - 2025.12', source: '手工', status: 'expired' },
-      { id: 'price-japan-guide', category: '导游', city: '东京', name: '中文商务司导 10小时', supplier: '东京地接社', price: 2200, unit: '天', period: '2026.01 - 2026.12', source: '手工', status: 'valid' },
+      { id: 'price-sha-tyo-flight', category: '机票', city: '上海-东京', name: '上海东京往返经济舱', supplier: '中航信', price: 4500, unit: '人/往返', period: '实时', source: 'API', status: 'realtime', condition: '按人/往返报价，税费和舱位以实时接口为准。', formula: '人数 × 往返票价', markup: '实时成本 + 服务费' },
+      { id: 'price-tokyo-business-hotel', category: '酒店', city: '东京', name: '东京五星商务酒店 标准间', supplier: '东京地接社', price: 1800, unit: '间/晚', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: '双人入住标准间，含早，需确认入住日期、房型和取消规则。', formula: '间数 × 晚数 × 间夜价', markup: '成本价 + 8%-12%' },
+      { id: 'price-japan-guide', category: '导游', city: '东京', name: '中文商务司导 10小时', supplier: '东京地接社', price: 2200, unit: '天', period: '2026.01 - 2026.12', source: '手工', status: 'valid', condition: '10小时/天，含中文司导服务，不含超时和小费。', formula: '服务天数 × 日服务费', markup: '成本价 + 10%' },
+      { id: 'price-tokyo-business-car', category: '用车', city: '东京', name: '商务车 18座 全天', supplier: '东京车队A', price: 3600, unit: '车/天', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: '10小时/天，停车、高速和超时另计；商务团可走地接打包减免。', formula: '用车天数 × 日车价 + 超时/停车/高速', markup: '成本价 + 10%' },
+      { id: 'price-tokyo-meeting-room', category: '会议室', city: '东京', name: '东京商务酒店会议室 半日', supplier: '东京地接社', price: 8000, unit: '半日', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: 'U型桌、投影、基础茶水，茶歇另计，需按酒店库存二次确认。', formula: '场次 × 半日价 + 茶歇/设备费用', markup: '成本价 + 10%' },
+      { id: 'price-tokyo-team-dinner', category: '餐费', city: '东京', name: '团队晚宴 商务标准', supplier: '东京餐饮联盟', price: 300, unit: '人/餐', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: '团队晚宴餐标，18人起订，酒水和包间费另计。', formula: '人数 × 餐数 × 餐标', markup: '成本价 + 8%-10%' },
+      { id: 'price-tokyo-business-meal-package', category: '餐费', city: '东京', name: '商务接待餐饮包', supplier: '东京餐饮联盟', price: 17600, unit: '团', period: '2026.08 - 2027.03', source: '手工', status: 'valid', condition: '含商务接待餐、茶歇预留和团队用餐调剂，按团报价。', formula: '团费固定金额', markup: '成本价 + 8%-10%' },
+      { id: 'price-japan-insurance-service', category: '保险', city: '日本', name: '日本团体保险与杂费', supplier: '内部结算', price: 5000, unit: '团', period: '长期有效', source: '手工', status: 'valid', condition: '18人团体保险、材料和杂费打包估算。', formula: '按团固定金额', markup: '成本价 + 服务费' },
       { id: 'price-lily-package', category: '酒店', city: '马尔代夫', name: '莉莉岛 2沙4水套餐', supplier: '海岛批发商A', price: 31800, unit: '2人/套', period: '2026.09 - 2026.11', source: '手工', status: 'expiring' }
     ],
     uploadTasks: [
@@ -342,6 +375,236 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  function upsertDefaultsById(target, defaults, refreshIds = []) {
+    const refreshSet = new Set(refreshIds);
+    defaults.forEach(defaultItem => {
+      const existing = target.find(item => item.id === defaultItem.id);
+      if (!existing) {
+        target.push(clone(defaultItem));
+      } else if (refreshSet.has(defaultItem.id)) {
+        Object.assign(existing, clone(defaultItem));
+      }
+    });
+  }
+
+  function parsePeriodEnd(period) {
+    if (!period || period === '实时' || period === '长期有效') return null;
+    const parts = String(period).split(/\s*-\s*/);
+    const end = parts[parts.length - 1];
+    const dateParts = String(end).split(/[./-]/).map(Number);
+    if (dateParts.length >= 3) return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    if (dateParts.length >= 2) return new Date(dateParts[0], dateParts[1], 0);
+    return null;
+  }
+
+  function priceStatus(price) {
+    if (!price) return 'missing';
+    if (price.source === 'API' || price.period === '实时') return 'realtime';
+    const end = parsePeriodEnd(price.period);
+    if (!end) return price.status || 'valid';
+    const days = Math.ceil((end - new Date()) / 86400000);
+    if (days < 0) return 'expired';
+    if (days <= 30) return 'expiring';
+    return 'valid';
+  }
+
+  function inferRequirementNames(seg) {
+    const haystack = [seg.from, seg.to, seg.transport, seg.desc, seg.audience, ...(seg.tags || [])].join(' ');
+    const resources = new Set();
+    if (/商务|会议/.test(haystack)) ['酒店', '用车', '司导', '会议室', '餐食'].forEach(item => resources.add(item));
+    if (/团建/.test(haystack)) ['酒店', '用车', '司导', '门票/活动', '餐食'].forEach(item => resources.add(item));
+    if (/亲子|蜜月|摄影|老年/.test(haystack)) ['酒店', '门票/活动'].forEach(item => resources.add(item));
+    if (/火车|TGV|瑞铁|小田急|JR|快车/.test(haystack)) resources.add('区间交通');
+    if (/包车|大巴|自驾|用车/.test(haystack)) resources.add('用车');
+    if (/飞机|水飞|航班/.test(haystack)) resources.add('机票/内陆交通');
+    if (/游船|动物园|卢浮宫|少女峰|迪士尼|体验|景点|温泉|海洋馆/.test(haystack)) resources.add('门票/活动');
+    if (!resources.size) ['酒店', '用车', '门票/活动'].forEach(item => resources.add(item));
+    return Array.from(resources);
+  }
+
+  function categoryForRequirement(resource) {
+    return {
+      司导: '导游',
+      专车: '用车',
+      晚宴: '餐费',
+      餐食: '餐费',
+      商务餐饮包: '餐费',
+      '门票/活动': '门票',
+      区间交通: '火车',
+      '机票/内陆交通': '机票'
+    }[resource] || resource;
+  }
+
+  function componentNeeds(component) {
+    if (!component) return [];
+    if (Array.isArray(component.requiredResources) && component.requiredResources.length) {
+      return clone(component.requiredResources).map((rawNeed, index) => {
+        const need = typeof rawNeed === 'string' ? { resource: rawNeed } : rawNeed;
+        return {
+          key: need.key || ('need-' + index),
+          resource: need.resource || need.category || '资源',
+          category: need.category || categoryForRequirement(need.resource),
+          city: need.city || component.to || component.from || '',
+          label: need.label || need.resource || need.category || '资源',
+          quoteGroup: need.quoteGroup || need.label || need.resource || need.category || '资源',
+          quantity: Number(need.quantity || 1),
+          unit: need.unit || '项',
+          pricingQuantity: Number(need.pricingQuantity || need.quantity || 1),
+          pricingUnit: need.pricingUnit || need.unit || '项',
+          status: need.status || '',
+          adjustment: Number(need.adjustment || 0),
+          adjustmentLabel: need.adjustmentLabel || '',
+          detailLabel: need.detailLabel || '',
+          priceId: need.priceId || '',
+          matchKeywords: need.matchKeywords || []
+        };
+      });
+    }
+    return inferRequirementNames(component).map(name => ({
+      key: name,
+      resource: name,
+      category: categoryForRequirement(name),
+      city: component.to || component.from || '',
+      label: name,
+      quoteGroup: name,
+      quantity: 1,
+      unit: '项',
+      pricingQuantity: 1,
+      pricingUnit: '项',
+      status: ''
+    }));
+  }
+
+  function priceMatchesNeed(price, need, component) {
+    if (!price || !need) return false;
+    if (need.priceId && price.id === need.priceId) return true;
+    const category = need.category || categoryForRequirement(need.resource);
+    const categoryMatched = String(price.category || '').includes(category) ||
+      String(price.name || '').includes(category) ||
+      (category === '用车' && /车|接送/.test(String(price.name || ''))) ||
+      (category === '会议室' && /会议/.test(String(price.name || '')));
+    if (!categoryMatched) return false;
+
+    const cityWords = [need.city, component?.from, component?.to]
+      .filter(Boolean)
+      .flatMap(value => String(value).split(/[+\s/→-]+/))
+      .filter(Boolean);
+    const haystack = [price.city, price.name, price.supplier].join(' ');
+    const cityMatched = !cityWords.length || cityWords.some(word => haystack.includes(word));
+    const keywordMatched = !(need.matchKeywords || []).length || need.matchKeywords.some(word => haystack.includes(word));
+    return cityMatched && keywordMatched;
+  }
+
+  function matchPricesForNeed(need, component, prices) {
+    return (prices || []).filter(price => priceMatchesNeed(price, need, component)).sort((a, b) => {
+      if (need.priceId && a.id === need.priceId) return -1;
+      if (need.priceId && b.id === need.priceId) return 1;
+      return Number(a.price || 0) - Number(b.price || 0);
+    });
+  }
+
+  function needStatus(need, price) {
+    if (!price) return '缺价';
+    if (need.status) return need.status;
+    const status = priceStatus(price);
+    if (status === 'realtime') return '实时';
+    if (status === 'expiring' || status === 'expired') return '待确认';
+    return '协议价';
+  }
+
+  function calculateNeedLine(need, price) {
+    const quoteQuantity = Number(need.pricingQuantity || need.quantity || 1);
+    const quoteUnit = need.pricingUnit || need.unit || '项';
+    const base = price ? Number(price.price || 0) * quoteQuantity : 0;
+    const adjustment = Number(need.adjustment || 0);
+    return {
+      need,
+      price: price || null,
+      amount: base + adjustment,
+      baseAmount: base,
+      quoteQuantity,
+      quoteUnit,
+      adjustment,
+      status: needStatus(need, price),
+      matched: Boolean(price),
+      detail: price
+        ? `${need.detailLabel || need.label}：${price.name} ${formatMoney(price.price)} × ${quoteQuantity}${quoteUnit}${adjustment ? `，${need.adjustmentLabel || '调整'} ${formatMoney(adjustment)}` : ''}`
+        : `${need.label || need.resource}：缺少可用价格`
+    };
+  }
+
+  function quoteStatusForLines(lines) {
+    if (lines.some(line => !line.matched)) return '待确认';
+    const statuses = lines.map(line => line.status).filter(Boolean);
+    if (statuses.length && statuses.every(status => status === statuses[0])) return statuses[0];
+    if (lines.some(line => /待确认|缺价/.test(line.status))) return '待确认';
+    if (lines.some(line => /估算/.test(line.status))) return '估算';
+    if (lines.some(line => line.status === '实时')) return '实时';
+    return '协议价';
+  }
+
+  function quoteSourceType(status) {
+    if (status === '实时') return 'api';
+    if (/待确认|估算|缺价/.test(status)) return 'warning';
+    return 'local';
+  }
+
+  function buildQuoteForComponent(componentOrId, options = {}) {
+    const data = options.data || load();
+    const component = typeof componentOrId === 'string'
+      ? data.segments.find(item => item.id === componentOrId)
+      : componentOrId;
+    if (!component) {
+      return { component: null, needs: [], lines: [], items: [], total: 0, perPerson: 0, missing: [], matchedCount: 0, totalNeeds: 0 };
+    }
+
+    const needs = componentNeeds(component);
+    const lines = needs.map(need => {
+      const price = matchPricesForNeed(need, component, data.prices)[0];
+      return calculateNeedLine(need, price);
+    });
+    const groups = new Map();
+    lines.forEach(line => {
+      const name = line.need.quoteGroup || line.need.label || line.need.resource;
+      if (!groups.has(name)) groups.set(name, { name, amount: 0, lines: [] });
+      const group = groups.get(name);
+      group.amount += line.amount;
+      group.lines.push(line);
+    });
+
+    const items = Array.from(groups.values()).map(group => {
+      const status = quoteStatusForLines(group.lines);
+      return {
+        name: group.name,
+        amount: Math.round(group.amount),
+        status,
+        sourceType: quoteSourceType(status),
+        details: group.lines.map(line => line.detail),
+        missing: group.lines.filter(line => !line.matched).map(line => line.need.resource)
+      };
+    });
+    const total = items.reduce((sum, item) => sum + item.amount, 0);
+    const people = Number(options.people || component.people || 18);
+    const missing = lines.filter(line => !line.matched).map(line => line.need);
+    return {
+      component: clone(component),
+      needs,
+      lines,
+      items,
+      total,
+      perPerson: people ? Math.round(total / people) : total,
+      people,
+      missing,
+      matchedCount: lines.filter(line => line.matched).length,
+      totalNeeds: lines.length
+    };
+  }
+
+  function formatMoney(amount) {
+    const num = Number(amount || 0);
+    return (num < 0 ? '-¥' : '¥') + Math.abs(num).toLocaleString('zh-CN');
+  }
+
   function snapshotPlan(plan, label, reason) {
     return {
       id: uid('ver'),
@@ -382,6 +645,21 @@
     if (!Array.isArray(data.uploadTasks)) data.uploadTasks = clone(initialData.uploadTasks);
     if (!Array.isArray(data.notifications)) data.notifications = clone(initialData.notifications);
     if (!Array.isArray(data.logs)) data.logs = [];
+
+    const quoteSegmentIds = ['seg-japan-business-5d'];
+    const quotePriceIds = [
+      'price-sha-tyo-flight',
+      'price-tokyo-business-hotel',
+      'price-japan-guide',
+      'price-tokyo-business-car',
+      'price-tokyo-meeting-room',
+      'price-tokyo-team-dinner',
+      'price-tokyo-business-meal-package',
+      'price-japan-insurance-service'
+    ];
+    upsertDefaultsById(data.segments, initialData.segments.filter(item => quoteSegmentIds.includes(item.id)), quoteSegmentIds);
+    upsertDefaultsById(data.prices, initialData.prices.filter(item => quotePriceIds.includes(item.id)), quotePriceIds);
+
     data.plans.forEach(ensurePlanVersions);
     data.version = 1;
     return data;
@@ -427,6 +705,15 @@
   window.AppStore = {
     uid,
     todayText,
+    componentNeeds,
+    categoryForRequirement,
+    matchPricesForNeed,
+    priceStatus,
+    buildQuoteForComponent,
+    quoteSourceType,
+    japanBusinessQuote(options = {}) {
+      return buildQuoteForComponent('seg-japan-business-5d', { people: 18, ...options });
+    },
     money(amount) {
       if (typeof amount === 'string') return amount;
       return '¥' + Number(amount || 0).toLocaleString('zh-CN');

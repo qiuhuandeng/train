@@ -58,6 +58,12 @@
       box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
     }
 
+    .login-logo .icon-line {
+      width: 32px;
+      height: 32px;
+      color: white;
+    }
+
     .login-title {
       font-size: 24px;
       font-weight: 700;
@@ -89,8 +95,13 @@
       left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 16px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       opacity: 0.5;
+      color: var(--text-secondary);
     }
 
     .login-form .input-icon-wrapper .form-input {
@@ -148,22 +159,21 @@
 </head>
 <body>
   <div class="login-container">
-    <div class="login-card">
+      <div class="login-card">
       <div class="login-header">
-        <div class="login-logo">✈</div>
+        <div class="login-logo" data-icon="plane"></div>
         <h1 class="login-title">AI智能计调助手</h1>
-        <p class="login-subtitle">旅行社智能线路定制与报价系统</p>
       </div>
       <form class="login-form" onsubmit="handleLogin(event)">
         <div class="form-group">
           <div class="input-icon-wrapper">
-            <span class="input-icon">👤</span>
+            <span class="input-icon" data-icon="user"></span>
             <input type="text" class="form-input" id="username" placeholder="请输入用户名" value="lijd">
           </div>
         </div>
         <div class="form-group">
           <div class="input-icon-wrapper">
-            <span class="input-icon">🔒</span>
+            <span class="input-icon" data-icon="lock"></span>
             <input type="password" class="form-input" id="password" placeholder="请输入密码" value="123456">
           </div>
         </div>
@@ -179,7 +189,10 @@
     </div>
   </div>
 
+  <script src="js/common.js"></script>
   <script>
+    hydrateLineIcons();
+
     function handleLogin(e) {
       e.preventDefault();
       const btn = e.target.querySelector('.login-btn');
