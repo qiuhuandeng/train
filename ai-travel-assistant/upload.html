@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件管理 - AI智能计调助手</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .upload-content {
+      padding-top: calc(var(--nav-height) + 24px);
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-bottom: 24px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-xl);
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--bg-card);
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--primary);
+      background: var(--primary-bg);
+    }
+
+    .upload-zone.dragover {
+      transform: scale(1.01);
+    }
+
+    .upload-zone .upload-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .upload-zone .upload-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .upload-zone .upload-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .upload-zone .upload-formats {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .file-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      transition: all 0.2s ease;
+    }
+
+    .file-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .file-card .file-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .file-card .file-name {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-card .file-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .file-card .file-progress {
+      margin-bottom: 12px;
+    }
+
+    .file-card .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .file-card .file-result {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--bg-sidebar);
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .file-card .result-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .file-card .file-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .file-status {
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .file-status.processing {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .file-status.completed {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .file-status.pending {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .file-status.error {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .file-status.paused {
+      background: var(--bg-sidebar);
+      color: var(--text-muted);
+    }
+
+    /* 解析详情弹窗 */
+    .review-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .review-left {
+      background: var(--bg-sidebar);
+      border-radius: var(--radius);
+      padding: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .review-left .page-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .review-left .page-content {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+
+    .review-right {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .extracted-segment {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .extracted-segment .seg-field {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .extracted-segment .seg-field-label {
+      color: var(--text-muted);
+      min-width: 60px;
+      font-size: 12px;
+    }
+
+    .extracted-segment .seg-field-value {
+      font-weight: 500;
+    }
+
+    .extracted-segment .seg-review-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="upload-content">
+    <h1 class="page-title">文件管理</h1>
+    <p class="page-subtitle">上传线路PDF文件，AI自动解析并切段入库</p>
+
+    <!-- 上传区域 -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" multiple accept=".pdf,.doc,.docx" onchange="handleFileUpload(event)">
+      <span class="upload-icon">📁</span>
+      <div class="upload-title">拖拽文件到此处，或点击选择文件</div>
+      <div class="upload-desc">支持批量上传，系统将自动解析线路内容并切段入库</div>
+      <div class="upload-formats">支持格式：PDF、Word（.doc/.docx）· 单文件最大 200MB</div>
+    </div>
+
+    <!-- 文件列表 -->
+    <div class="section-title">📋 文件解析记录</div>
+
+    <div class="file-list">
+      <!-- 正在解析 -->
+      <div class="file-card">
+        <div class="file-header">
+          <div class="file-name">
+            📄 欧洲深度游2024秋季.pdf
+            <span class="file-status processing">解析中</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">上传于 今天 09:15</span>
+        </div>
+        <div class="file-meta">
+          <span>大小：87.3 MB</span>
+          <span>页数：52 页</span>
+          <span>预估耗时：约3分钟</span>
+        </div>
+        <div class="file-progress">
+          <div class="progress-text">
+            <span>正在解析第 38/52 页...</span>
+            <span>72%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:72%"></div>
+          </div>
+        </div>
+        <div class="file-result">
+          <div class="result-item">
+            <span style="color:var(--success)">✓</span>
+            <span>已识别 <strong>28</strong> 个切段</span>
+          </div>
+          <div class="result-item">
+            <span style="color:var(--warning)">◐</span>
+            <span>待确认 <strong>28</strong> 个</span>
+          </div>
+          <div class="result-item">
+            <span style="color:var(--danger)">✗</span>
+            <span>解析失败 <strong>2</strong> 页</span>
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="btn btn-sm btn-secondary">暂停</button>
+          <button class="btn btn-sm btn-ghost">查看详情</button>
+        </div>
+      </div>
+
+      <!-- 已完成 -->
+      <div class="file-card">
+        <div class="file-header">
+          <div class="file-name">
+            📄 瑞士深度游精品线路.pdf
+            <span class="file-status completed">已完成</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">上传于 昨天 14:30</span>
+        </div>
+        <div class="file-meta">
+          <span>大小：65.2 MB</span>
+          <span>页数：38 页</span>
+          <span>解析耗时：2分18秒</span>
+        </div>
+        <div class="file-result">
+          <div class="result-item">
+            <span style="color:var(--success)">✓</span>
+            <span>识别 <strong>24</strong> 个切段</span>
+          </div>
+          <div class="result-item">
+            <span style="color:var(--success)">✓</span>
+            <span>已入库 <strong>20</strong> 个</span>
+          </div>
+          <div class="result-item">
+            <span style="color:var(--warning)">◐</span>
+            <span>待审核 <strong>4</strong> 个</span>
+          </div>
+          <div class="result-item">
+            <span>🔄</span>
+            <span>重复跳过 <strong>3</strong> 个</span>
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="btn btn-sm btn-primary" onclick="openModal('reviewModal')">去审核 (4)</button>
+          <button class="btn btn-sm btn-secondary">查看详情</button>
+          <button class="btn btn-sm btn-ghost">重新解析</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+        </div>
+      </div>
+
+      <!-- 待处理 -->
+      <div class="file-card">
+        <div class="file-header">
+          <div class="file-name">
+            📄 日本精选线路2025春季.pdf
+            <span class="file-status pending">排队中</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">上传于 今天 09:20</span>
+        </div>
+        <div class="file-meta">
+          <span>大小：112.5 MB</span>
+          <span>页数：68 页</span>
+          <span>预估耗时：约5分钟</span>
+        </div>
+        <div class="file-actions">
+          <button class="btn btn-sm btn-secondary">优先处理</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--danger);">取消</button>
+        </div>
+      </div>
+
+      <!-- 解析失败 -->
+      <div class="file-card" style="border-color:var(--danger);border-left:3px solid var(--danger);">
+        <div class="file-header">
+          <div class="file-name">
+            📄 东南亚线路合集(扫描版).pdf
+            <span class="file-status error">解析失败</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">上传于 3天前</span>
+        </div>
+        <div class="file-meta">
+          <span>大小：156.8 MB</span>
+          <span>页数：92 页</span>
+        </div>
+        <div style="padding:10px 14px;background:var(--danger-bg);border-radius:var(--radius);font-size:13px;color:var(--danger);margin-bottom:12px;">
+          ⚠️ 错误原因：文件为纯扫描图片，OCR识别率过低（&lt;40%）。建议使用更高清的扫描件或提供文字版文档。
+        </div>
+        <div class="file-actions">
+          <button class="btn btn-sm btn-secondary">重试（启用增强OCR）</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审核弹窗 -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal" style="max-width:900px;">
+      <div class="modal-header">
+        <h3 class="modal-title">切段审核 - 瑞士深度游精品线路.pdf (4个待审核)</h3>
+        <button class="modal-close" onclick="closeModal('reviewModal')">×</button>
+      </div>
+      <div class="modal-body" style="padding:16px 24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <span style="font-size:13px;color:var(--text-muted);">第 1 / 4 个待审核切段</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm btn-ghost">← 上一个</button>
+            <button class="btn btn-sm btn-ghost">下一个 →</button>
+          </div>
+        </div>
+        <div class="review-panel">
+          <div class="review-left">
+            <div class="page-label">📄 原文内容（第12页）</div>
+            <div class="page-content">
+              <strong>第三天：因特拉肯 - 少女峰</strong><br><br>
+              早餐后乘坐齿轮小火车前往欧洲之巅——少女峰(Jungfraujoch)。海拔3454米，全程约2小时。途经劳特布伦嫩（Lauterbrunnen）瀑布小镇，可在Kleine Scheidegg换乘。<br><br>
+              山顶游览：冰宫、斯芬克斯观景台、阿莱奇冰川全景。建议游览时间3-4小时。<br><br>
+              下午返回因特拉肯，自由活动。推荐：Höheweg大道购物、何维克街巧克力店。<br><br>
+              住宿：Hotel Interlaken 四星 或同级
+            </div>
+          </div>
+          <div class="review-right">
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:12px;">🤖 AI 提取结果</div>
+            <div class="extracted-segment">
+              <div class="seg-field">
+                <span class="seg-field-label">出发城市</span>
+                <span class="seg-field-value">因特拉肯</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">到达城市</span>
+                <span class="seg-field-value">少女峰（因特拉肯）</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">交通方式</span>
+                <span class="seg-field-value">齿轮小火车</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">天数</span>
+                <span class="seg-field-value">1天</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">景点</span>
+                <span class="seg-field-value">少女峰、冰宫、斯芬克斯观景台、阿莱奇冰川</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">住宿</span>
+                <span class="seg-field-value">Hotel Interlaken 四星</span>
+              </div>
+              <div class="seg-field">
+                <span class="seg-field-label">标签</span>
+                <span class="seg-field-value">
+                  <span class="badge badge-primary" style="margin-right:4px;">雪山</span>
+                  <span class="badge badge-primary" style="margin-right:4px;">观光</span>
+                  <span class="badge badge-primary">亲子友好</span>
+                </span>
+              </div>
+              <div class="seg-review-actions">
+                <button class="btn btn-sm btn-success" onclick="closeModal('reviewModal');showToast('切段已确认入库','success')">✓ 确认入库</button>
+                <button class="btn btn-sm btn-secondary">修改后入库</button>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger);">拒绝</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    renderNavbar('upload');
+
+    const zone = document.getElementById('uploadZone');
+
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('dragover');
+    });
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('dragover');
+    });
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      addFiles(e.dataTransfer.files);
+    });
+
+    function handleFileUpload(e) {
+      addFiles(e.target.files);
+      e.target.value = '';
+    }
+
+    function esc(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function addFiles(files) {
+      if (!files || !files.length) return;
+      Array.from(files).forEach(file => {
+        const task = AppStore.addUploadTask(file);
+        setTimeout(() => {
+          AppStore.updateUploadTask(task.id, { progress: 48, recognized: 1, pending: 0, statusText: '解析中' });
+          renderUploadTasks();
+        }, 600);
+        setTimeout(() => {
+          AppStore.completeUploadTask(task.id);
+          renderUploadTasks();
+          showToast(`${file.name} 解析完成，已生成待审核切段`, 'success');
+        }, 1800);
+      });
+      showToast(`已上传 ${files.length} 个文件，正在解析...`, 'success');
+      renderUploadTasks();
+    }
+
+    function statusLabel(task) {
+      return task.statusText || {
+        processing: '解析中',
+        completed: '已入库',
+        pending: '待审核',
+        paused: '已暂停',
+        error: '解析失败'
+      }[task.status] || task.status;
+    }
+
+    function renderUploadTasks() {
+      const tasks = AppStore.all().uploadTasks;
+      refreshNavBadges();
+      document.querySelector('.section-title').textContent = `📋 文件解析记录（${tasks.length}）`;
+      const list = document.querySelector('.file-list');
+      if (!tasks.length) {
+        list.innerHTML = '<div class="card empty-state"><div class="empty-icon">📁</div><div class="empty-title">暂无解析任务</div><div class="empty-desc">上传线路文件后，AI 会自动解析并生成待审核切段。</div></div>';
+        return;
+      }
+
+      list.innerHTML = tasks.map(task => `
+        <div class="file-card" style="${task.status === 'error' ? 'border-color:var(--danger);border-left:3px solid var(--danger);' : ''}">
+          <div class="file-header">
+            <div class="file-name">
+              📄 ${esc(task.fileName)}
+              <span class="file-status ${esc(task.status)}">${esc(statusLabel(task))}</span>
+            </div>
+            <span style="font-size:12px;color:var(--text-muted);">上传于 ${esc(task.uploadedAt)}</span>
+          </div>
+          <div class="file-meta">
+            <span>大小：${esc(task.size)}</span>
+            <span>页数：${esc(task.pages)}</span>
+            <span>${task.status === 'processing' ? '预估耗时：约3分钟' : '处理状态：' + esc(statusLabel(task))}</span>
+          </div>
+          ${task.status === 'error' ? `
+            <div style="padding:10px 14px;background:var(--danger-bg);border-radius:var(--radius);font-size:13px;color:var(--danger);margin-bottom:12px;">
+              ⚠️ 错误原因：文件识别率过低，建议启用增强 OCR 重新解析。
+            </div>
+          ` : `
+            <div class="file-progress">
+              <div class="progress-text">
+                <span>${task.progress < 100 ? '正在解析结构化切段...' : '解析完成'}</span>
+                <span>${task.progress}%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${task.progress}%"></div></div>
+            </div>
+            <div class="file-result">
+              <div class="result-item"><span style="color:var(--success)">✓</span><span>已识别 <strong>${task.recognized}</strong> 个切段</span></div>
+              <div class="result-item"><span style="color:var(--warning)">◐</span><span>待确认 <strong>${task.pending}</strong> 个</span></div>
+              <div class="result-item"><span>🔄</span><span>可同步到知识库</span></div>
+            </div>
+          `}
+          <div class="file-actions">
+            ${task.status === 'processing' ? `<button class="btn btn-sm btn-secondary" onclick="pauseTask('${task.id}')">暂停</button>` : ''}
+            ${task.status === 'paused' ? `<button class="btn btn-sm btn-secondary" onclick="resumeTask('${task.id}')">继续解析</button>` : ''}
+            ${task.pending > 0 ? `<button class="btn btn-sm btn-primary" onclick="reviewTask('${task.id}')">去审核 (${task.pending})</button>` : ''}
+            <button class="btn btn-sm btn-secondary" onclick="viewTask('${task.id}')">查看详情</button>
+            ${task.status === 'error' ? `<button class="btn btn-sm btn-secondary" onclick="retryTask('${task.id}')">重试（增强OCR）</button>` : `<button class="btn btn-sm btn-ghost" onclick="rerunTask('${task.id}')">重新解析</button>`}
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deleteTask('${task.id}')">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function viewTask(id) {
+      const data = AppStore.all();
+      const task = data.uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      const segments = (task.extracted || []).map(segId => data.segments.find(item => item.id === segId)).filter(Boolean);
+      showDetailModal(task.fileName, `
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <span class="badge badge-info">${esc(statusLabel(task))}</span>
+          <span class="badge badge-primary">${task.progress}%</span>
+          <span class="badge badge-warning">${task.pending} 个待审核</span>
+        </div>
+        <div class="panel-note" style="margin-bottom:16px;">${esc(task.original)}</div>
+        <h4 style="margin-bottom:8px;">AI 提取切段</h4>
+        ${segments.length ? segments.map(seg => `
+          <div class="extracted-segment">
+            <div class="seg-field"><span class="seg-field-label">路线</span><span class="seg-field-value">${esc(seg.from)} → ${esc(seg.to)}</span></div>
+            <div class="seg-field"><span class="seg-field-label">交通</span><span class="seg-field-value">${esc(seg.transport)}</span></div>
+            <div class="seg-field"><span class="seg-field-label">描述</span><span>${esc(seg.desc)}</span></div>
+            <div class="seg-review-actions">
+              ${seg.status === 'review' ? `<button class="btn btn-sm btn-success" onclick="approveExtracted('${seg.id}')">确认入库</button><button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="rejectExtracted('${seg.id}')">拒绝</button>` : `<span class="badge badge-success">已入库</span>`}
+            </div>
+          </div>
+        `).join('') : '<div class="empty-state"><div class="empty-text">暂无提取结果</div></div>'}
+      `);
+    }
+
+    function reviewTask(id) {
+      viewTask(id);
+    }
+
+    function approveExtracted(id) {
+      AppStore.approveSegment(id);
+      showToast('切段已确认入库，可在知识库查看', 'success');
+      renderUploadTasks();
+      closeModal('globalDetailModal');
+    }
+
+    function rejectExtracted(id) {
+      AppStore.rejectSegment(id);
+      showToast('已拒绝该切段', 'warning');
+      renderUploadTasks();
+      closeModal('globalDetailModal');
+    }
+
+    function pauseTask(id) {
+      AppStore.updateUploadTask(id, { status: 'paused', statusText: '已暂停' });
+      showToast('解析任务已暂停', 'info');
+      renderUploadTasks();
+    }
+
+    function resumeTask(id) {
+      AppStore.updateUploadTask(id, { status: 'processing', statusText: '解析中' });
+      showToast('解析任务已继续', 'info');
+      setTimeout(() => {
+        AppStore.completeUploadTask(id);
+        renderUploadTasks();
+        showToast('解析完成，已生成待审核切段', 'success');
+      }, 900);
+      renderUploadTasks();
+    }
+
+    function rerunTask(id) {
+      AppStore.updateUploadTask(id, { status: 'processing', statusText: '重新解析中', progress: 30 });
+      showToast('已重新加入解析队列', 'info');
+      setTimeout(() => {
+        AppStore.completeUploadTask(id);
+        renderUploadTasks();
+      }, 1200);
+      renderUploadTasks();
+    }
+
+    function retryTask(id) {
+      AppStore.updateUploadTask(id, { status: 'processing', statusText: '增强OCR解析中', progress: 22 });
+      showToast('已启用增强 OCR 重新解析', 'info');
+      setTimeout(() => {
+        AppStore.completeUploadTask(id);
+        renderUploadTasks();
+        showToast('增强 OCR 解析完成', 'success');
+      }, 1200);
+      renderUploadTasks();
+    }
+
+    function deleteTask(id) {
+      const task = AppStore.all().uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      confirmAction(`删除解析任务：${task.fileName}？`, () => {
+        AppStore.deleteUploadTask(id);
+        showToast('解析任务已删除', 'success');
+        renderUploadTasks();
+      });
+    }
+
+    renderUploadTasks();
+  </script>
+</body>
+</html>

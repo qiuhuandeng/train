@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI对话 - AI智能计调助手</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .chat-layout {
+      padding-top: var(--nav-height);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* 左侧栏 - 对话列表 */
+    .chat-sidebar {
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header .btn {
+      width: 100%;
+    }
+
+    .sidebar-search {
+      padding: 12px 16px;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      outline: none;
+      background: var(--bg-sidebar);
+    }
+
+    .sidebar-search input:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    .conversation-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .conversation-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .conversation-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .conversation-item.active {
+      background: var(--primary-bg);
+      border-left: 3px solid var(--primary);
+    }
+
+    .conversation-item .conv-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .conversation-item .conv-preview {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-item .conv-time {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .conversation-item .conv-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .conv-status.active { background: var(--success); }
+    .conv-status.pending { background: var(--warning); }
+    .conv-status.done { background: var(--primary); }
+    .conv-status.draft { background: var(--text-muted); }
+    .conv-status.rework { background: var(--warning); }
+    .conv-status.archived { background: var(--text-muted); }
+
+    .conv-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .stage-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--bg-sidebar);
+      color: var(--text-secondary);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .stage-pill.active {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stage-pill.pending,
+    .stage-pill.rework {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .stage-pill.done {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .stage-pill.draft,
+    .stage-pill.archived {
+      background: var(--bg-sidebar);
+      color: var(--text-muted);
+    }
+
+    /* 中间主对话区 */
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-header {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header .chat-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .chat-header .chat-status {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 消息气泡 */
+    .message {
+      display: flex;
+      gap: 12px;
+      max-width: 75%;
+      animation: slideUp 0.3s ease;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message .msg-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .message.ai .msg-avatar {
+      background: linear-gradient(135deg, var(--primary), var(--info));
+      color: white;
+    }
+
+    .message.user .msg-avatar {
+      background: var(--bg-sidebar);
+      color: var(--text-secondary);
+    }
+
+    .message .msg-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .message .msg-bubble {
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .message.ai .msg-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+    }
+
+    .message.user .msg-bubble {
+      background: var(--primary);
+      color: white;
+      border-top-right-radius: 4px;
+    }
+
+    .message .msg-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .message.user .msg-time {
+      text-align: right;
+    }
+
+    /* AI追问快捷按钮 */
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .quick-reply-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      background: var(--bg-card);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-primary);
+    }
+
+    .quick-reply-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-bg);
+    }
+
+    /* 线路推荐卡片 */
+    .route-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-top: 8px;
+      max-width: 480px;
+    }
+
+    .route-card .route-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .route-card .route-day {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+    }
+
+    .route-card .route-day:last-of-type {
+      border-bottom: none;
+    }
+
+    .route-card .day-num {
+      background: var(--primary-bg);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .route-card .route-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* 报价卡片 */
+    .quote-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-top: 8px;
+      max-width: 420px;
+    }
+
+    .quote-card .quote-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .quote-card table {
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .quote-card table td {
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .quote-card .quote-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid var(--border);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .compare-card,
+    .task-card,
+    .doc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      margin-top: 8px;
+      max-width: 520px;
+    }
+
+    .compare-card .compare-title,
+    .task-card .task-title,
+    .doc-card .doc-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .compare-option {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+    }
+
+    .compare-option:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .compare-option strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .compare-meta,
+    .task-meta,
+    .doc-meta {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .task-list span {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      background: var(--bg-sidebar);
+    }
+
+    /* 系统消息 */
+    .system-message {
+      align-self: center;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 6px 16px;
+      background: var(--bg-sidebar);
+      border-radius: 99px;
+    }
+
+    /* 输入加载动画 */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+    /* 输入区域 */
+    .chat-input-area {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+
+    .input-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .toolbar-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .input-wrapper textarea {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-family: var(--font-family);
+      resize: none;
+      outline: none;
+      max-height: 120px;
+      min-height: 44px;
+      line-height: 1.5;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-wrapper textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 指令菜单 */
+    .command-menu {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 8px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .command-menu.show {
+      display: block;
+      animation: slideUp 0.2s ease;
+    }
+
+    .command-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      transition: background 0.15s ease;
+    }
+
+    .command-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .command-item .cmd-name {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .command-item .cmd-desc {
+      color: var(--text-muted);
+    }
+
+    /* 右侧面板 */
+    .chat-panel {
+      width: 320px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .panel-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .requirement-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .requirement-item .req-label {
+      color: var(--text-secondary);
+    }
+
+    .requirement-item .req-value {
+      font-weight: 500;
+    }
+
+    .requirement-item .req-value.unconfirmed {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .panel-note {
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      background: var(--bg-sidebar);
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .panel-note.warning {
+      background: var(--warning-bg);
+      color: #92400E;
+    }
+
+    .context-empty {
+      padding: 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+      background: var(--bg-sidebar);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 8px 0;
+      font-size: 12px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -17px;
+      top: 13px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--primary-bg);
+    }
+
+    .timeline-item .tl-day {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .timeline-item .tl-desc {
+      color: var(--text-secondary);
+    }
+
+    .price-summary {
+      font-size: 13px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .price-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .price-row .price-label {
+      color: var(--text-secondary);
+    }
+
+    .price-row .price-source {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+
+    .price-row .source-local {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .price-row .source-api {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .price-row .source-warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .price-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      margin-top: 8px;
+      border-top: 2px solid var(--border);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .panel-actions {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-layout">
+    <!-- 左侧对话列表 -->
+    <div class="chat-sidebar">
+      <div class="sidebar-header">
+        <button class="btn btn-primary" onclick="newConversation()">
+          ＋ 新建对话
+        </button>
+      </div>
+      <div class="sidebar-search">
+        <input type="text" id="conversationSearch" placeholder="搜索客户、目的地、阶段..." oninput="renderConversationList()">
+      </div>
+      <ul class="conversation-list" id="conversationList"></ul>
+    </div>
+
+    <!-- 中间对话区 -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div>
+          <div class="chat-title" id="chatTitle"></div>
+          <div class="chat-status" id="chatStatus"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-secondary" onclick="exportConversation()">导出对话</button>
+          <button class="btn btn-sm btn-ghost" onclick="showConversationMenu()">⋯</button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <!-- 输入区 -->
+      <div class="chat-input-area">
+        <div class="input-toolbar">
+          <button class="toolbar-btn" title="上传文件" onclick="location.href='upload.html'">📎</button>
+          <button class="toolbar-btn" title="上传图片" onclick="mockAttachImage()">🖼</button>
+          <button class="toolbar-btn" title="语音输入" onclick="mockVoiceInput()">🎤</button>
+          <span style="flex:1"></span>
+          <span style="font-size:11px;color:var(--text-muted);">输入 / 查看可用指令</span>
+        </div>
+        <div class="input-wrapper" style="position:relative;">
+          <div class="command-menu" id="commandMenu">
+            <div class="command-item" onclick="insertCommand('/上传线路')">
+              <span>📄</span>
+              <span class="cmd-name">/上传线路</span>
+              <span class="cmd-desc">上传线路文件并解析入库</span>
+            </div>
+            <div class="command-item" onclick="insertCommand('/上价格')">
+              <span>💰</span>
+              <span class="cmd-name">/上价格</span>
+              <span class="cmd-desc">上传价格/库存表</span>
+            </div>
+            <div class="command-item" onclick="insertCommand('/生成海报')">
+              <span>🖼</span>
+              <span class="cmd-name">/生成海报</span>
+              <span class="cmd-desc">基于当前方案生成海报</span>
+            </div>
+            <div class="command-item" onclick="insertCommand('/生成PDF')">
+              <span>📑</span>
+              <span class="cmd-name">/生成PDF</span>
+              <span class="cmd-desc">生成行程单PDF文档</span>
+            </div>
+            <div class="command-item" onclick="insertCommand('/报价')">
+              <span>🧮</span>
+              <span class="cmd-name">/报价</span>
+              <span class="cmd-desc">对当前方案生成详细报价</span>
+            </div>
+          </div>
+          <textarea id="chatInput" placeholder="描述客户需求，或输入 / 使用指令..." rows="1" onkeydown="handleKeydown(event)" oninput="handleInput(event)"></textarea>
+          <button class="send-btn" onclick="sendMessage()" id="sendBtn">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧面板 -->
+    <div class="chat-panel" id="contextPanel"></div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    renderNavbar('chat');
+
+    const LEGACY_CHAT_KEY = 'aiTravelAssistant.chat.v2';
+    const LEGACY_CHAT_VERSION = 'multi-stage-20260729';
+    const chatInput = document.getElementById('chatInput');
+    let conversations = loadConversations();
+    const requestedConversationId = sessionStorage.getItem('openConversationId');
+    let activeConversationId = conversations.some(item => item.id === requestedConversationId) ? requestedConversationId : conversations[0].id;
+    sessionStorage.removeItem('openConversationId');
+
+    chatInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    function getDefaultConversations() {
+      return [
+        {
+          id: 'zhang-family',
+          title: '张先生一家 - 瑞法10日',
+          stage: '报价待确认',
+          stageClass: 'pending',
+          status: 'pending',
+          statusText: '对话进行中 · 已推荐方案并生成报价',
+          preview: 'AI：报价已生成，等待客户确认或微调',
+          time: '10分钟前',
+          startedAt: '对话开始于 今天 09:30',
+          requirements: [
+            { label: '客户', value: '张先生一家', confirmed: true },
+            { label: '人数', value: '2大1小（孩子5岁）', confirmed: true },
+            { label: '出发地', value: '上海', confirmed: true },
+            { label: '目的地', value: '瑞士 + 法国', confirmed: true },
+            { label: '天数', value: '10天9晚', confirmed: true },
+            { label: '预算', value: '人均 ¥15,000~20,000', confirmed: true },
+            { label: '住宿', value: '四星以上', confirmed: true },
+            { label: '偏好', value: '轻松节奏、亲子友好', confirmed: true }
+          ],
+          itineraryTitle: '已选线路（方案A）',
+          itinerary: [
+            ['Day1', '上海 → 苏黎世，抵达后休息'],
+            ['Day2', '苏黎世 → 卢塞恩，湖边游船'],
+            ['Day3', '卢塞恩 → 因特拉肯，少女峰'],
+            ['Day4', '因特拉肯自由活动'],
+            ['Day5', '金色快车 → 蒙特勒'],
+            ['Day6-7', 'TGV 前往巴黎，塞纳河与铁塔'],
+            ['Day8', '卢浮宫 + 蒙马特文化日'],
+            ['Day9', '巴黎迪士尼亲子日'],
+            ['Day10', '巴黎 → 上海']
+          ],
+          quote: {
+            title: '方案A 详细报价',
+            totalLabel: '预估总价',
+            total: '¥50,300',
+            perPerson: '人均 ¥16,767 · 儿童减免约 ¥3,000',
+            items: [
+              ['机票', '¥21,600', '实时', 'api'],
+              ['酒店', '¥9,900', '协议价', 'local'],
+              ['交通', '¥4,200', '协议价', 'local'],
+              ['门票', '¥5,800', '协议价', 'local'],
+              ['餐费', '¥6,300', '估算', 'warning'],
+              ['导游', '¥2,400', '协议价', 'local']
+            ]
+          },
+          notes: ['客户偏好慢节奏，行程中连续移动不要超过 2 天。', '报价有效期：机票实时价需二次确认。'],
+          messages: [
+            { role: 'system', text: '对话开始于 今天 09:30' },
+            { role: 'ai', time: '09:30', text: '您好！我是AI计调助手。请告诉我客户的目的地、出行时间、人数和预算，我来帮您组合线路方案。' },
+            { role: 'user', time: '09:31', text: '张先生一家三口想去瑞士和法国，大概10天左右，预算人均15000到20000，孩子5岁，希望行程轻松一点不要太赶。' },
+            {
+              role: 'ai',
+              time: '09:31',
+              text: '我已记录基础需求，还需要确认出发城市、住宿档次和孩子饮食要求。',
+              quickReplies: ['出发城市是上海', '四星酒店即可', '孩子不挑食', '希望少换酒店']
+            },
+            { role: 'user', time: '09:32', text: '上海出发，四星以上就行，孩子不挑食，中西餐都可以。' },
+            {
+              role: 'ai',
+              time: '09:33',
+              text: '基于亲子和慢节奏，我从知识库组合了一个更稳的瑞法方案。瑞士段减少折返，巴黎留出迪士尼整日。',
+              cards: [
+                {
+                  type: 'route',
+                  planId: 'A',
+                  title: '方案A：瑞士深度 + 巴黎经典（10天9晚）',
+                  days: [
+                    ['Day1', '上海 → 苏黎世，抵达休息'],
+                    ['Day2', '卢塞恩老城、湖边游船'],
+                    ['Day3', '少女峰 + 格林德瓦尔德'],
+                    ['Day4', '因特拉肯自由活动'],
+                    ['Day5', '金色快车 → 蒙特勒'],
+                    ['Day6-7', '巴黎经典景点与塞纳河'],
+                    ['Day8', '卢浮宫 + 蒙马特'],
+                    ['Day9', '迪士尼亲子日'],
+                    ['Day10', '巴黎 → 上海']
+                  ]
+                }
+              ]
+            },
+            { role: 'user', time: '09:35', text: '方案A很好，就这个吧。帮我算一下报价。' },
+            {
+              role: 'ai',
+              time: '09:36',
+              text: '已基于方案A生成详细报价。其中机票为实时查询价，酒店和地接项目优先使用协议价。',
+              cards: [
+                {
+                  type: 'quote',
+                  title: '方案A 详细报价',
+                  total: '¥50,300',
+                  note: '人均 ¥16,767（成人价）· 儿童减免约 ¥3,000',
+                  items: [
+                    ['机票（上海⇄巴黎）', '¥7,200 × 3人', '实时'],
+                    ['四星酒店 9 晚', '¥1,100 × 9晚', '协议价'],
+                    ['瑞士通票', '¥4,200', '协议价'],
+                    ['少女峰/卢浮宫/迪士尼门票', '¥5,800', '协议价'],
+                    ['餐费 9 天', '¥6,300', '估算'],
+                    ['当地导游 2 天', '¥2,400', '协议价']
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'li-honeymoon',
+          title: '李女士蜜月 - 马代6晚',
+          stage: '酒店比选中',
+          stageClass: 'active',
+          status: 'active',
+          statusText: '方案推荐中 · 等待确认岛屿和房型',
+          preview: '等待客户在两个岛之间做选择',
+          time: '1小时前',
+          startedAt: '对话开始于 今天 08:50',
+          requirements: [
+            { label: '客户', value: '李女士夫妻', confirmed: true },
+            { label: '人数', value: '2成人', confirmed: true },
+            { label: '出发地', value: '广州', confirmed: true },
+            { label: '目的地', value: '马尔代夫', confirmed: true },
+            { label: '天数', value: '6晚8天', confirmed: true },
+            { label: '预算', value: '总预算 ¥45,000 左右', confirmed: false },
+            { label: '住宿', value: '2晚沙屋 + 4晚水屋', confirmed: true },
+            { label: '偏好', value: '蜜月、浮潜、安静、不想频繁换岛', confirmed: true }
+          ],
+          itineraryTitle: '候选方案',
+          itinerary: [
+            ['方案1', '莉莉岛：一价全包，浮潜更好'],
+            ['方案2', '奥臻岛：房间更新，预算略高'],
+            ['待确认', '是否接受快艇岛或必须水飞']
+          ],
+          quote: null,
+          notes: ['尚未生成正式报价，需要先确认岛屿、餐标和交通方式。', '客户对“私密感”和“浮潜质量”权重高于网红拍照。'],
+          messages: [
+            { role: 'system', text: '客户来自婚礼渠道，要求 24 小时内给出初版方案' },
+            { role: 'user', time: '08:51', text: '李女士蜜月想去马尔代夫，预算四万多，两个人，想住水屋，最好浮潜好一点。' },
+            { role: 'ai', time: '08:52', text: '已识别为蜜月海岛场景。为了避免推荐过宽，我需要确认：出发城市、出行月份、餐标偏好，以及是否接受水飞。', quickReplies: ['广州出发', '9月出行', '希望一价全包', '可以接受水飞'] },
+            { role: 'user', time: '08:55', text: '广州出发，9月中旬，一价全包优先。水飞可以，但别太折腾。' },
+            {
+              role: 'ai',
+              time: '08:57',
+              text: '我先筛掉换岛复杂和交通时间过长的产品，保留两套更适合蜜月的候选。',
+              cards: [
+                {
+                  type: 'compare',
+                  title: '马代候选岛屿对比',
+                  options: [
+                    ['莉莉岛 Lily Beach', '约 ¥43,800 起 · 浮潜A级 · 一价全包', '优点是浮潜和餐饮稳定，适合第一次去马代；缺点是房型热度高，需要尽快确认库存。'],
+                    ['奥臻岛 OZEN Life Maadhoo', '约 ¥49,600 起 · 房间更新 · 服务更强', '体验更精致，蜜月仪式感更强；预算会超出原目标，适合客户愿意加价。']
+                  ]
+                }
+              ]
+            },
+            { role: 'user', time: '09:10', text: '客户说更看重浮潜和性价比，先按莉莉岛继续问库存。' },
+            { role: 'ai', time: '09:11', text: '已将莉莉岛设为主推方案。我建议下一步确认具体房型：2晚 Beach Villa + 4晚 Water Villa，或全程水屋。', quickReplies: ['按 2沙4水询价', '全程水屋询价', '保留奥臻备选'] }
+          ]
+        },
+        {
+          id: 'wang-business',
+          title: '王总商务团 - 日本5日',
+          stage: '待客户确认',
+          stageClass: 'pending',
+          status: 'pending',
+          statusText: '报价已生成 · 等待客户确认会议需求',
+          preview: '客户追加会议室和接送机要求',
+          time: '3小时前',
+          startedAt: '对话开始于 昨天 16:20',
+          requirements: [
+            { label: '客户', value: '王总公司商务团', confirmed: true },
+            { label: '人数', value: '18人', confirmed: true },
+            { label: '出发地', value: '北京', confirmed: true },
+            { label: '目的地', value: '东京 + 箱根', confirmed: true },
+            { label: '天数', value: '5天4晚', confirmed: true },
+            { label: '预算', value: '总预算 ¥220,000 内', confirmed: true },
+            { label: '住宿', value: '市区五星，需会议室', confirmed: false },
+            { label: '特殊', value: '接送机、发票、企业付款流程', confirmed: false }
+          ],
+          itineraryTitle: '商务行程框架',
+          itinerary: [
+            ['Day1', '北京 → 东京，专车接机，酒店入住'],
+            ['Day2', '上午客户拜访，下午银座商务接待'],
+            ['Day3', '东京会议室半日 + 晚宴'],
+            ['Day4', '箱根轻度团建，温泉酒店'],
+            ['Day5', '返程，专车送机']
+          ],
+          quote: {
+            title: '日本商务团报价',
+            totalLabel: '团费合计',
+            total: '¥206,400',
+            perPerson: '人均 ¥11,467 · 不含企业增值服务费',
+            items: [
+              ['国际机票', '¥81,000', '实时', 'api'],
+              ['五星酒店', '¥64,800', '协议价', 'local'],
+              ['专车与司导', '¥24,600', '协议价', 'local'],
+              ['会议室半日', '¥8,000', '待确认', 'warning'],
+              ['餐饮与晚宴', '¥23,000', '协议价', 'local'],
+              ['保险与杂费', '¥5,000', '估算', 'warning']
+            ]
+          },
+          notes: ['会议室费用暂按半日估算，需确认人数摆台和投影设备。', '客户可能需要对公合同和发票抬头信息。'],
+          messages: [
+            { role: 'system', text: '商务团需求已进入报价跟进阶段' },
+            { role: 'user', time: '16:20', text: '王总公司18个人去日本5天，东京为主，想加一天箱根，不要太旅游化，要商务一点。' },
+            { role: 'ai', time: '16:23', text: '我将行程定位为“商务拜访 + 轻团建”。东京段优先靠近客户拜访区域，箱根只保留一晚，避免拖慢整体节奏。' },
+            {
+              role: 'ai',
+              time: '16:30',
+              text: '已生成初版商务行程和团队报价，会议室费用目前是估算，需要继续确认。',
+              cards: [
+                {
+                  type: 'quote',
+                  title: '日本商务团初版报价',
+                  total: '¥206,400',
+                  note: '人均 ¥11,467 · 会议室和晚宴菜单需要二次确认',
+                  items: [
+                    ['国际机票', '¥81,000', '实时'],
+                    ['五星酒店 4 晚', '¥64,800', '协议价'],
+                    ['专车与司导', '¥24,600', '协议价'],
+                    ['会议室半日', '¥8,000', '待确认'],
+                    ['餐饮与晚宴', '¥23,000', '协议价']
+                  ]
+                }
+              ]
+            },
+            { role: 'user', time: '09:02', text: '客户刚补充，会议室要U型桌，带投影和茶歇，另外想要单独列出接送机费用。' },
+            {
+              role: 'ai',
+              time: '09:03',
+              text: '已记录变更。当前报价需要拆分“接送机”和“市内用车”，会议室报价也要重新询价。',
+              cards: [
+                {
+                  type: 'task',
+                  title: '待跟进事项',
+                  rows: [
+                    ['会议室', 'U型桌 + 投影 + 茶歇，待供应商确认'],
+                    ['用车拆分', '接送机单列，市内拜访另列'],
+                    ['报价状态', '总价暂不建议发客户最终版']
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'zhao-rework',
+          title: '赵女士亲子 - 新加坡7日',
+          stage: '持续修改中',
+          stageClass: 'rework',
+          status: 'rework',
+          statusText: '客户反复调整 · 正在追踪第3版方案',
+          preview: '客户想把环球影城换成动物园和夜间游',
+          time: '昨天',
+          startedAt: '对话开始于 2天前 14:10',
+          requirements: [
+            { label: '客户', value: '赵女士亲子家庭', confirmed: true },
+            { label: '人数', value: '2大2小（4岁、8岁）', confirmed: true },
+            { label: '出发地', value: '杭州', confirmed: true },
+            { label: '目的地', value: '新加坡', confirmed: true },
+            { label: '天数', value: '7天6晚', confirmed: true },
+            { label: '预算', value: '总预算 ¥62,000 内', confirmed: true },
+            { label: '住宿', value: '圣淘沙2晚 + 市区4晚', confirmed: true },
+            { label: '特殊', value: '低龄儿童午休时间、少排队', confirmed: true }
+          ],
+          itineraryTitle: '当前第3版行程',
+          itinerary: [
+            ['Day1', '杭州 → 新加坡，市区入住'],
+            ['Day2', '滨海湾花园 + 鱼尾狮，下午午休'],
+            ['Day3', '新加坡动物园 + 夜间野生动物园'],
+            ['Day4', '圣淘沙入住，海洋馆'],
+            ['Day5', '圣淘沙沙滩 + 轻松自由活动'],
+            ['Day6', '樟宜 Jewel + 亲子购物'],
+            ['Day7', '新加坡 → 杭州']
+          ],
+          quote: {
+            title: '第3版调整后报价',
+            totalLabel: '调整后预估',
+            total: '¥58,900',
+            perPerson: '较第2版降低 ¥2,700 · 门票结构已调整',
+            items: [
+              ['机票', '¥18,400', '实时', 'api'],
+              ['酒店', '¥25,200', '协议价', 'local'],
+              ['亲子门票', '¥6,900', '协议价', 'local'],
+              ['接送与用车', '¥4,600', '协议价', 'local'],
+              ['餐费', '¥3,800', '估算', 'warning']
+            ]
+          },
+          notes: ['客户已明确不去环球影城，避免低龄儿童排队压力。', '第3版需要发给客户确认，不建议继续堆景点。'],
+          messages: [
+            { role: 'system', text: '该客户已累计修改 3 次，系统正在保留版本轨迹' },
+            { role: 'user', time: '14:10', text: '赵女士一家四口去新加坡，两个孩子，一个4岁一个8岁，不想太累，但要亲子内容多一点。' },
+            { role: 'ai', time: '14:12', text: '已按低龄亲子场景生成初版，节奏上保留午休窗口，并将圣淘沙安排在后半段。' },
+            { role: 'user', time: '昨天 18:20', text: '客户觉得环球影城排队太累，想换成动物园和夜间野生动物园，能不能重新排一下？' },
+            {
+              role: 'ai',
+              time: '昨天 18:22',
+              text: '可以。我已把环球影城替换为“新加坡动物园 + 夜间野生动物园”，并把第二天上午控制在轻量城市游，避免连续高强度。',
+              cards: [
+                {
+                  type: 'task',
+                  title: '第3版变更记录',
+                  rows: [
+                    ['删除', '环球影城整日'],
+                    ['新增', '新加坡动物园 + 夜间野生动物园'],
+                    ['报价影响', '总价降低约 ¥2,700'],
+                    ['风险提示', '夜间动物园当天需安排午休']
+                  ]
+                }
+              ]
+            },
+            { role: 'user', time: '昨天 18:30', text: '好，先按这个版本整理，明天我发客户看。' },
+            { role: 'ai', time: '昨天 18:31', text: '已保存为第3版方案。建议发送给客户时突出“少排队、午休友好、动物园替换后预算下降”这三个点。', quickReplies: ['生成第3版行程单', '生成客户沟通话术', '再压缩预算'] }
+          ]
+        },
+        {
+          id: 'thai-done',
+          title: '公司团建 - 普吉岛',
+          stage: '已出行归档',
+          stageClass: 'archived',
+          status: 'archived',
+          statusText: '已完成出团 · 行程单和报价单已归档',
+          preview: '行程单、报价单、供应商确认单已生成',
+          time: '3天前',
+          startedAt: '对话开始于 6天前 10:00',
+          requirements: [
+            { label: '客户', value: '某科技公司团建', confirmed: true },
+            { label: '人数', value: '32人', confirmed: true },
+            { label: '出发地', value: '深圳', confirmed: true },
+            { label: '目的地', value: '泰国普吉岛', confirmed: true },
+            { label: '天数', value: '5天4晚', confirmed: true },
+            { label: '预算', value: '总价 ¥288,000', confirmed: true },
+            { label: '住宿', value: '海边五星会议酒店', confirmed: true },
+            { label: '特殊', value: '团建拓展、晚宴、航班分批', confirmed: true }
+          ],
+          itineraryTitle: '最终确认行程',
+          itinerary: [
+            ['Day1', '深圳 → 普吉岛，分批接机'],
+            ['Day2', '上午会议，下午沙滩团建'],
+            ['Day3', '皮皮岛一日游'],
+            ['Day4', '自由活动 + 海边晚宴'],
+            ['Day5', '返程送机']
+          ],
+          quote: {
+            title: '最终结算报价',
+            totalLabel: '确认总价',
+            total: '¥288,000',
+            perPerson: '人均 ¥9,000 · 已归档',
+            items: [
+              ['机票', '¥108,800', '已确认', 'local'],
+              ['酒店', '¥96,000', '已确认', 'local'],
+              ['地接与用车', '¥31,200', '已确认', 'local'],
+              ['团建活动', '¥28,000', '已确认', 'local'],
+              ['晚宴', '¥24,000', '已确认', 'local']
+            ]
+          },
+          notes: ['归档资料完整：行程单、报价单、供应商确认单、客户确认记录。', '可复制为后续企业团建模板。'],
+          messages: [
+            { role: 'system', text: '此方案已于 3 天前完成出团并归档' },
+            { role: 'ai', time: '10:00', text: '普吉岛团建方案已完成最终确认，所有供应商确认单均已上传。' },
+            {
+              role: 'ai',
+              time: '10:02',
+              text: '归档材料如下，后续可以直接复制成同类企业团建模板。',
+              cards: [
+                {
+                  type: 'doc',
+                  title: '归档文件',
+                  meta: '行程单 PDF · 报价单 XLS · 供应商确认单 · 客户确认记录',
+                  actions: ['查看行程单', '复制为新方案']
+                }
+              ]
+            }
+          ]
+        }
+      ];
+    }
+
+    function loadConversations() {
+      const workspace = AppStore.all();
+      if (Array.isArray(workspace.conversations) && workspace.conversations.length) {
+        return workspace.conversations;
+      }
+
+      try {
+        const saved = JSON.parse(localStorage.getItem(LEGACY_CHAT_KEY));
+        if (saved && saved.version === LEGACY_CHAT_VERSION && Array.isArray(saved.conversations)) {
+          AppStore.setConversations(saved.conversations);
+          return saved.conversations;
+        }
+      } catch (e) {}
+
+      const seeded = getDefaultConversations();
+      AppStore.setConversations(seeded);
+      return seeded;
+    }
+
+    function saveConversations() {
+      AppStore.setConversations(conversations);
+    }
+
+    function currentConversation() {
+      return conversations.find(c => c.id === activeConversationId) || conversations[0];
+    }
+
+    function parseMoney(value) {
+      const match = String(value || '').match(/[\d,]+(?:\.\d+)?/);
+      const num = match ? match[0].replace(/,/g, '') : '';
+      return Number(num || 0);
+    }
+
+    function routeFromConversation(conv) {
+      const values = (conv.requirements || []).find(item => item.label === '目的地')?.value || '';
+      const from = (conv.requirements || []).find(item => item.label === '出发地')?.value || '出发地';
+      if (conv.id === 'zhang-family') return ['上海', '苏黎世', '卢塞恩', '因特拉肯', '蒙特勒', '巴黎', '上海'];
+      if (conv.id === 'li-honeymoon') return ['广州', '马累', '莉莉岛', '广州'];
+      if (conv.id === 'wang-business') return ['北京', '东京', '箱根', '北京'];
+      if (conv.id === 'zhao-rework') return ['杭州', '新加坡', '圣淘沙', '杭州'];
+      if (conv.id === 'thai-done') return ['深圳', '普吉岛', '深圳'];
+      return [from, values || '目的地', from];
+    }
+
+    function syncConversationToPlan(conv, documentName, versionReason) {
+      if (!window.AppStore || !conv.quote) return null;
+      const data = AppStore.all();
+      const existing = data.plans.find(item => item.conversationId === conv.id);
+      const requirements = Object.fromEntries((conv.requirements || []).map(item => [item.label, item.value]));
+      const itinerary = (conv.itinerary || []).map(item => [item[0], item[1]]);
+      const quoteItems = (conv.quote.items || []).map(item => [item[0], parseMoney(item[1]), item[2]]);
+      const patch = {
+        conversationId: conv.id,
+        title: conv.title.replace(' - 未命名', ''),
+        route: routeFromConversation(conv),
+        status: conv.status === 'done' ? 'confirmed' : (conv.status === 'archived' ? 'archived' : 'pending'),
+        statusText: conv.status === 'done' ? '已确认' : (conv.status === 'archived' ? '已归档' : '待客户确认'),
+        people: requirements['人数'] || '待确认',
+        days: requirements['天数'] || '待确认',
+        hotel: requirements['住宿'] || '待确认',
+        total: parseMoney(conv.quote.total),
+        perPerson: parseMoney(conv.quote.perPerson) || Math.round(parseMoney(conv.quote.total) / 2),
+        summary: (conv.notes || [conv.statusText])[0],
+        itinerary,
+        quoteItems,
+        documents: []
+      };
+
+      if (existing) {
+        const docs = new Set(existing.documents || []);
+        if (documentName) docs.add(documentName);
+        patch.documents = Array.from(docs);
+        const updated = AppStore.updatePlan(existing.id, patch);
+        if (versionReason) {
+          AppStore.capturePlanVersion(existing.id, 'V' + ((updated.versions || []).length + 1) + ' ' + versionReason, versionReason);
+        }
+        return updated;
+      }
+
+      if (documentName) patch.documents = [documentName];
+      const created = AppStore.addPlan(patch);
+      if (versionReason) {
+        AppStore.capturePlanVersion(created.id, 'V' + ((created.versions || []).length + 1) + ' ' + versionReason, versionReason);
+      }
+      return created;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function nl2br(value) {
+      return escapeHtml(value).replace(/\n/g, '<br>');
+    }
+
+    function nowTime() {
+      const now = new Date();
+      return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    }
+
+    function renderAll() {
+      renderConversationList();
+      renderHeader();
+      renderMessages();
+      renderContextPanel();
+      saveConversations();
+    }
+
+    function renderConversationList() {
+      const keyword = (document.getElementById('conversationSearch')?.value || '').trim().toLowerCase();
+      const list = document.getElementById('conversationList');
+      const filtered = conversations.filter(conv => {
+        const haystack = [
+          conv.title,
+          conv.stage,
+          conv.preview,
+          ...(conv.requirements || []).map(item => item.value)
+        ].join(' ').toLowerCase();
+        return !keyword || haystack.includes(keyword);
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = '<li class="conversation-item"><div class="conv-preview">没有匹配的客户对话</div></li>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(conv => `
+        <li class="conversation-item ${conv.id === activeConversationId ? 'active' : ''}" onclick="switchConversation('${conv.id}')">
+          <div class="conv-title">
+            <span class="conv-status ${conv.status}"></span>
+            <span>${escapeHtml(conv.title)}</span>
+          </div>
+          <div class="conv-preview">${escapeHtml(conv.preview)}</div>
+          <div class="conv-meta">
+            <span class="stage-pill ${conv.stageClass}">${escapeHtml(conv.stage)}</span>
+          </div>
+          <span class="conv-time">${escapeHtml(conv.time)}</span>
+        </li>
+      `).join('');
+    }
+
+    function renderHeader() {
+      const conv = currentConversation();
+      document.getElementById('chatTitle').textContent = conv.title;
+      document.getElementById('chatStatus').innerHTML = `
+        <span class="stage-pill ${conv.stageClass}">${escapeHtml(conv.stage)}</span>
+        <span style="margin-left:8px;">${escapeHtml(conv.statusText)}</span>
+      `;
+    }
+
+    function renderMessages() {
+      const conv = currentConversation();
+      const messages = document.getElementById('chatMessages');
+      messages.innerHTML = (conv.messages || []).map(renderMessage).join('');
+      requestAnimationFrame(() => {
+        messages.scrollTop = messages.scrollHeight;
+      });
+    }
+
+    function renderMessage(message) {
+      if (message.role === 'system') {
+        return `<div class="system-message">${escapeHtml(message.text)}</div>`;
+      }
+
+      const avatar = message.role === 'ai' ? 'AI' : '李';
+      return `
+        <div class="message ${message.role}">
+          <div class="msg-avatar">${avatar}</div>
+          <div class="msg-content">
+            <div class="msg-bubble">${nl2br(message.text)}</div>
+            ${renderQuickReplies(message.quickReplies)}
+            ${renderCards(message.cards)}
+            <span class="msg-time">${escapeHtml(message.time || '')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuickReplies(replies) {
+      if (!replies || !replies.length) return '';
+      return `
+        <div class="quick-replies">
+          ${replies.map(reply => `<button class="quick-reply-btn" onclick="sendQuickReply('${escapeHtml(reply)}')">${escapeHtml(reply)}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    function renderCards(cards) {
+      if (!cards || !cards.length) return '';
+      return cards.map(card => {
+        if (card.type === 'route') return renderRouteCard(card);
+        if (card.type === 'quote') return renderQuoteCard(card);
+        if (card.type === 'compare') return renderCompareCard(card);
+        if (card.type === 'task') return renderTaskCard(card);
+        if (card.type === 'doc') return renderDocCard(card);
+        return '';
+      }).join('');
+    }
+
+    function renderRouteCard(card) {
+      return `
+        <div class="route-card">
+          <div class="route-title">${escapeHtml(card.title)}</div>
+          ${(card.days || []).map(day => `
+            <div class="route-day">
+              <span class="day-num">${escapeHtml(day[0])}</span>
+              <span>${escapeHtml(day[1])}</span>
+            </div>
+          `).join('')}
+          <div class="route-actions">
+            <button class="btn btn-sm btn-primary" onclick="selectPlan('${escapeHtml(card.planId || 'A')}')">选择此方案</button>
+            <button class="btn btn-sm btn-secondary" onclick="viewPlanDetail()">查看详情</button>
+            <button class="btn btn-sm btn-ghost" onclick="requestAdjustment()">调整行程</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuoteCard(card) {
+      return `
+        <div class="quote-card">
+          <div class="quote-title">💰 ${escapeHtml(card.title)}</div>
+          <table>
+            ${(card.items || []).map(item => `
+              <tr>
+                <td>${escapeHtml(item[0])}</td>
+                <td style="text-align:right"><strong>${escapeHtml(item[1])}</strong></td>
+                <td style="text-align:right;color:var(--text-muted);font-size:11px;">${escapeHtml(item[2] || '')}</td>
+              </tr>
+            `).join('')}
+          </table>
+          <div class="quote-total">
+            <span>总计</span>
+            <span style="color:var(--primary);">${escapeHtml(card.total)}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">${escapeHtml(card.note || '')}</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn btn-sm btn-primary" onclick="confirmQuote()">确认报价</button>
+            <button class="btn btn-sm btn-secondary" onclick="adjustQuote()">调整明细</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCompareCard(card) {
+      return `
+        <div class="compare-card">
+          <div class="compare-title">${escapeHtml(card.title)}</div>
+          ${(card.options || []).map((option, index) => `
+            <div class="compare-option">
+              <strong>${escapeHtml(option[0])}</strong>
+              <div class="compare-meta">${escapeHtml(option[1])}</div>
+              <div style="margin-top:4px;">${escapeHtml(option[2])}</div>
+              <button class="btn btn-sm btn-secondary" style="margin-top:8px;" onclick="selectHotelOption(${index})">选择这个</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderTaskCard(card) {
+      return `
+        <div class="task-card">
+          <div class="task-title">${escapeHtml(card.title)}</div>
+          <div class="task-list">
+            ${(card.rows || []).map(row => `<span><strong>${escapeHtml(row[0])}</strong><em>${escapeHtml(row[1])}</em></span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDocCard(card) {
+      return `
+        <div class="doc-card">
+          <div class="doc-title">📎 ${escapeHtml(card.title)}</div>
+          <div class="doc-meta">${escapeHtml(card.meta)}</div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            ${(card.actions || ['查看']).map(action => `<button class="btn btn-sm btn-secondary" onclick="handleDocCardAction('${escapeHtml(action)}')">${escapeHtml(action)}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderContextPanel() {
+      const conv = currentConversation();
+      const panel = document.getElementById('contextPanel');
+      panel.innerHTML = `
+        <div class="panel-section">
+          <div class="panel-section-title">📋 当前需求摘要</div>
+          ${renderRequirements(conv.requirements)}
+        </div>
+        <div class="panel-section">
+          <div class="panel-section-title">🗺️ ${escapeHtml(conv.itineraryTitle || '线路状态')}</div>
+          ${renderItinerary(conv.itinerary)}
+        </div>
+        <div class="panel-section">
+          <div class="panel-section-title">💰 报价状态</div>
+          ${renderQuoteSummary(conv.quote)}
+        </div>
+        <div class="panel-section">
+          <div class="panel-section-title">⚑ 跟进提醒</div>
+          ${renderNotes(conv.notes)}
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" onclick="handlePanelAction('pdf')">📑 生成行程单PDF</button>
+          <button class="btn btn-secondary" onclick="handlePanelAction('poster')">🖼 生成朋友圈海报</button>
+          <button class="btn btn-secondary" onclick="handlePanelAction('quote')">📊 导出报价单</button>
+        </div>
+      `;
+    }
+
+    function renderRequirements(requirements) {
+      if (!requirements || !requirements.length) {
+        return '<div class="context-empty">等待输入客户需求后自动提取字段</div>';
+      }
+
+      return requirements.map(item => `
+        <div class="requirement-item">
+          <span class="req-label">${escapeHtml(item.label)}</span>
+          <span class="req-value ${item.confirmed ? '' : 'unconfirmed'}">${escapeHtml(item.value)}${item.confirmed ? '' : ' ?'}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderItinerary(itinerary) {
+      if (!itinerary || !itinerary.length) {
+        return '<div class="context-empty">尚未生成线路，AI 会先追问关键信息</div>';
+      }
+
+      return `
+        <div class="timeline">
+          ${itinerary.map(item => `
+            <div class="timeline-item">
+              <div class="tl-day">${escapeHtml(item[0])}</div>
+              <div class="tl-desc">${escapeHtml(item[1])}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderQuoteSummary(quote) {
+      if (!quote) {
+        return '<div class="context-empty">报价未生成，需先确认方案或关键资源</div>';
+      }
+
+      return `
+        <div class="price-summary">
+          ${quote.items.map(item => `
+            <div class="price-row">
+              <span class="price-label">${escapeHtml(item[0])}</span>
+              <span>${escapeHtml(item[1])} <span class="price-source ${sourceClass(item[3])}">${escapeHtml(item[2])}</span></span>
+            </div>
+          `).join('')}
+          <div class="price-total">
+            <span>${escapeHtml(quote.totalLabel || '预估总价')}</span>
+            <span style="color:var(--primary);">${escapeHtml(quote.total)}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:right;">${escapeHtml(quote.perPerson || '')}</div>
+        </div>
+      `;
+    }
+
+    function sourceClass(type) {
+      if (type === 'api') return 'source-api';
+      if (type === 'warning') return 'source-warning';
+      return 'source-local';
+    }
+
+    function renderNotes(notes) {
+      if (!notes || !notes.length) return '<div class="context-empty">暂无特别提醒</div>';
+      return notes.map((note, index) => `<div class="panel-note ${index === 0 ? 'warning' : ''}" style="margin-bottom:8px;">${escapeHtml(note)}</div>`).join('');
+    }
+
+    function switchConversation(id) {
+      activeConversationId = id;
+      document.getElementById('commandMenu').classList.remove('show');
+      renderAll();
+    }
+
+    function handleInput(e) {
+      const val = e.target.value;
+      const menu = document.getElementById('commandMenu');
+      if (val.startsWith('/')) {
+        menu.classList.add('show');
+      } else {
+        menu.classList.remove('show');
+      }
+    }
+
+    function insertCommand(cmd) {
+      chatInput.value = cmd + ' ';
+      chatInput.focus();
+      document.getElementById('commandMenu').classList.remove('show');
+    }
+
+    function handleKeydown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendMessage() {
+      const input = chatInput.value.trim();
+      if (!input) return;
+
+      addMessage({ role: 'user', text: input, time: nowTime() });
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      document.getElementById('commandMenu').classList.remove('show');
+
+      if (handleCommand(input)) return;
+
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        addScenarioReply(input);
+      }, 900);
+    }
+
+    function sendQuickReply(text) {
+      chatInput.value = text;
+      sendMessage();
+    }
+
+    function addMessage(message) {
+      const conv = currentConversation();
+      conv.messages.push(message);
+      if (message.role === 'user') {
+        conv.preview = message.text;
+        conv.time = '刚刚';
+      } else if (message.role === 'ai') {
+        conv.preview = 'AI：' + message.text.slice(0, 24);
+        conv.time = '刚刚';
+      }
+      renderAll();
+    }
+
+    function showTyping() {
+      const messages = document.getElementById('chatMessages');
+      messages.insertAdjacentHTML('beforeend', `
+        <div class="message ai" id="typingMsg">
+          <div class="msg-avatar">AI</div>
+          <div class="msg-content">
+            <div class="msg-bubble">
+              <div class="typing-indicator"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+      `);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById('typingMsg');
+      if (typing) typing.remove();
+    }
+
+    function handleCommand(input) {
+      const command = input.split(/\s+/)[0];
+      if (!command.startsWith('/')) return false;
+
+      showTyping();
+      setTimeout(() => {
+        removeTyping();
+        if (command === '/上传线路') {
+          addMessage({
+            role: 'ai',
+            time: nowTime(),
+            text: '已切换到线路文件处理流程。您可以去文件管理页上传 PDF，解析完成后我会把待审核切段同步到知识库。',
+            cards: [{ type: 'task', title: '线路上传流程', rows: [['上传文件', 'PDF/Word/图片均可'], ['解析结果', '进入待审核队列'], ['入库后', '可直接用于线路推荐']] }]
+          });
+        } else if (command === '/上价格') {
+          addMessage({ role: 'ai', time: nowTime(), text: '已准备价格导入流程。建议上传 Excel/CSV 后先做字段映射，再统一设置有效期。', quickReplies: ['进入价格库', '查看即将过期价格'] });
+        } else if (command === '/报价') {
+          generateQuote();
+        } else if (command === '/生成PDF') {
+          handlePanelAction('pdf');
+        } else if (command === '/生成海报') {
+          handlePanelAction('poster');
+        } else {
+          addMessage({ role: 'ai', time: nowTime(), text: '这个指令暂未配置，我可以先按普通需求继续处理。' });
+        }
+      }, 700);
+      return true;
+    }
+
+    function addScenarioReply(input) {
+      const conv = currentConversation();
+      const text = input.toLowerCase();
+
+      if (conv.status === 'draft') {
+        hydrateDraftConversation(conv, input);
+        addMessage({
+          role: 'ai',
+          time: nowTime(),
+          text: '我已开始提取客户需求。现在还缺少出发城市、人数、预算和住宿偏好，确认后我就能组合第一版线路。',
+          quickReplies: ['上海出发', '2大1小', '预算人均2万', '四星酒店即可']
+        });
+        return;
+      }
+
+      if (text.includes('确认') && conv.quote) {
+        confirmQuote();
+        return;
+      }
+
+      if (text.includes('报价') || text.includes('价格') || text.includes('预算')) {
+        generateQuote();
+        return;
+      }
+
+      if (text.includes('换') || text.includes('调整') || text.includes('修改') || text.includes('不想')) {
+        conv.stage = '持续修改中';
+        conv.stageClass = 'rework';
+        conv.status = 'rework';
+        conv.statusText = '客户提出新变更 · AI 正在追踪版本差异';
+        conv.notes = ['刚收到新的修改需求，建议先判断是否影响报价和资源库存。', ...(conv.notes || []).slice(0, 1)];
+        syncConversationToPlan(conv, null, '客户变更');
+        addMessage({
+          role: 'ai',
+          time: nowTime(),
+          text: '收到，我会把这次变更记录到当前方案版本里，并检查它对行程节奏、报价和库存的影响。',
+          cards: [{ type: 'task', title: '变更影响检查', rows: [['行程', '检查是否需要调整前后天顺序'], ['报价', conv.quote ? '需要刷新受影响项目' : '暂未生成报价'], ['客户沟通', '建议标注本次修改原因']] }]
+        });
+        return;
+      }
+
+      if (conv.id === 'li-honeymoon') {
+        addMessage({
+          role: 'ai',
+          time: nowTime(),
+          text: '马代这单我建议继续围绕“莉莉岛主推 + 奥臻备选”推进。当前关键点是房型库存和水飞时间，一旦确认就能出正式报价。',
+          quickReplies: ['按 2沙4水询价', '全程水屋询价', '生成客户版对比']
+        });
+        return;
+      }
+
+      if (conv.status === 'archived') {
+        addMessage({
+          role: 'ai',
+          time: nowTime(),
+          text: '这是已归档方案。我可以帮您复制成新方案模板，或者查看归档文件，不会直接改动原始归档记录。',
+          quickReplies: ['复制为新方案', '查看归档文件']
+        });
+        return;
+      }
+
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '收到，我已把这条信息加入当前客户上下文。下一步可以继续补充需求、调整行程，或直接让我生成报价。',
+        quickReplies: ['生成报价', '调整行程', '生成行程单PDF']
+      });
+    }
+
+    function hydrateDraftConversation(conv, input) {
+      conv.title = input.includes('马代') || input.includes('马尔代夫') ? '新客户 - 马代咨询' : '新客户 - 需求收集中';
+      conv.stage = '需求收集中';
+      conv.stageClass = 'active';
+      conv.status = 'active';
+      conv.statusText = '新建对话 · 正在提取客户画像';
+      conv.requirements = [
+        { label: '客户', value: '新客户', confirmed: false },
+        { label: '人数', value: input.match(/\d+人/)?.[0] || '待确认', confirmed: /\d+人/.test(input) },
+        { label: '出发地', value: input.includes('上海') ? '上海' : '待确认', confirmed: input.includes('上海') },
+        { label: '目的地', value: detectDestination(input), confirmed: detectDestination(input) !== '待确认' },
+        { label: '天数', value: input.match(/\d+天/)?.[0] || '待确认', confirmed: /\d+天/.test(input) },
+        { label: '预算', value: input.includes('预算') ? '已提及，待量化' : '待确认', confirmed: false },
+        { label: '偏好', value: input.includes('亲子') ? '亲子友好' : '待确认', confirmed: input.includes('亲子') }
+      ];
+    }
+
+    function detectDestination(input) {
+      if (input.includes('瑞士') || input.includes('法国')) return '瑞士 + 法国';
+      if (input.includes('日本')) return '日本';
+      if (input.includes('新加坡')) return '新加坡';
+      if (input.includes('马代') || input.includes('马尔代夫')) return '马尔代夫';
+      if (input.includes('泰国') || input.includes('普吉')) return '泰国普吉岛';
+      return '待确认';
+    }
+
+    function selectPlan(plan) {
+      const conv = currentConversation();
+      conv.stage = '报价待生成';
+      conv.stageClass = 'pending';
+      conv.status = 'pending';
+      conv.statusText = '方案已选定 · 等待生成或刷新报价';
+      conv.itineraryTitle = '已选线路（方案' + plan + '）';
+      conv.notes = ['已选择方案' + plan + '，建议先刷新核心资源价格再发给客户。', ...(conv.notes || []).slice(0, 1)];
+      addMessage({
+        role: 'system',
+        text: '已选择方案' + plan + '，右侧线路状态已更新'
+      });
+      showToast('已选择方案' + plan + '，可继续生成报价', 'success');
+    }
+
+    function selectHotelOption(index) {
+      const conv = currentConversation();
+      const hotel = index === 0 ? '莉莉岛 Lily Beach' : '奥臻岛 OZEN Life Maadhoo';
+      conv.requirements = (conv.requirements || []).map(item => {
+        if (item.label === '住宿') return { ...item, value: hotel + '，房型待确认', confirmed: false };
+        return item;
+      });
+      conv.notes = ['已选择' + hotel + '作为主推酒店，下一步确认房型库存。', ...(conv.notes || []).slice(0, 1)];
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '已将“' + hotel + '”设为主推。现在还需要确认 2沙4水还是全程水屋，确认后可生成正式报价。',
+        quickReplies: ['按 2沙4水报价', '全程水屋报价']
+      });
+    }
+
+    function generateQuote() {
+      const conv = currentConversation();
+      if (!conv.itinerary || !conv.itinerary.length) {
+        addMessage({ role: 'ai', time: nowTime(), text: '现在还不能报价，因为方案还没有成型。请先补齐目的地、天数、人数和住宿要求。', quickReplies: ['补充人数', '补充预算', '补充出发城市'] });
+        return;
+      }
+
+      if (!conv.quote) {
+        conv.quote = {
+          title: '初版预估报价',
+          totalLabel: '预估总价',
+          total: conv.id === 'li-honeymoon' ? '¥43,800 起' : '待核价',
+          perPerson: conv.id === 'li-honeymoon' ? '2人蜜月价 · 房型库存待确认' : '供应商资源待确认',
+          items: conv.id === 'li-honeymoon'
+            ? [['国际机票', '¥9,600', '实时', 'api'], ['莉莉岛套餐', '¥31,800', '待确认', 'warning'], ['水飞交通', '¥2,400', '估算', 'warning']]
+            : [['机票', '待查询', '实时', 'api'], ['酒店', '待匹配', '待确认', 'warning'], ['地接', '待核价', '待确认', 'warning']]
+        };
+      }
+
+      conv.stage = '报价待确认';
+      conv.stageClass = 'pending';
+      conv.status = 'pending';
+      conv.statusText = '报价已生成 · 等待客户确认';
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '已根据当前方案生成报价。标记为“待确认”的资源建议在发送客户前再核一次库存和有效期。',
+        cards: [{
+          type: 'quote',
+          title: conv.quote.title,
+          total: conv.quote.total,
+          note: conv.quote.perPerson,
+          items: conv.quote.items.map(item => [item[0], item[1], item[2]])
+        }]
+      });
+    }
+
+    function confirmQuote() {
+      const conv = currentConversation();
+      if (!conv.quote) {
+        showToast('当前还没有报价可确认', 'warning');
+        return;
+      }
+
+      conv.stage = '报价已确认';
+      conv.stageClass = 'done';
+      conv.status = 'done';
+      conv.statusText = '客户已确认报价 · 可生成正式文档';
+      conv.preview = '报价已确认，可生成行程单';
+      conv.notes = ['报价已确认，下一步建议生成客户版行程单并保存到方案管理。', ...(conv.notes || []).slice(0, 1)];
+      syncConversationToPlan(conv, null, '报价确认');
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '报价已确认。我已把当前方案标记为“可出文档”，可以生成行程单 PDF、报价单或海报。',
+        cards: [{ type: 'doc', title: '可生成文档', meta: '客户版行程单 PDF · 内部报价单 · 朋友圈海报', actions: ['生成行程单PDF', '生成报价单', '生成海报'] }]
+      });
+      showToast('报价已确认，可以生成文档', 'success');
+    }
+
+    function newConversation() {
+      const id = 'new-' + Date.now();
+      const conv = {
+        id,
+        title: '新客户 - 未命名',
+        stage: '需求收集中',
+        stageClass: 'draft',
+        status: 'draft',
+        statusText: '新建对话 · 等待录入客户需求',
+        preview: '请先描述客户需求',
+        time: '刚刚',
+        startedAt: '刚刚创建',
+        requirements: [],
+        itineraryTitle: '线路状态',
+        itinerary: [],
+        quote: null,
+        notes: ['输入客户目的地、人数、天数和预算后，AI 会自动提取需求摘要。'],
+        messages: [
+          { role: 'system', text: '新对话已创建' },
+          { role: 'ai', time: nowTime(), text: '您好，请告诉我这个客户的基本需求。我会先抽取信息，再逐步生成线路和报价。', quickReplies: ['客户想去瑞士法国10天', '客户想做日本商务团', '客户想去马代蜜月'] }
+        ]
+      };
+      conversations.unshift(conv);
+      activeConversationId = id;
+      renderAll();
+      showToast('已创建新对话', 'info');
+    }
+
+    function viewPlanDetail() {
+      const conv = currentConversation();
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '我展开了当前方案的运营视角：重点看每日移动距离、资源确认状态和适合客户沟通的卖点。',
+        cards: [{ type: 'task', title: '方案详情摘要', rows: [['行程节奏', conv.itinerary?.length ? '已生成，可继续微调' : '尚未生成'], ['资源状态', conv.quote ? '已有报价，部分资源需复核' : '未生成报价'], ['沟通重点', conv.notes?.[0] || '待补充客户偏好']] }]
+      });
+    }
+
+    function requestAdjustment() {
+      chatInput.value = '客户想调整：';
+      chatInput.focus();
+      showToast('可以直接输入要替换、删除或增加的行程内容', 'info');
+    }
+
+    function adjustQuote() {
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text: '可以调整报价明细。请说明要改哪一项，例如“酒店降到四星”“机票改转机”“导游减少一天”。',
+        quickReplies: ['酒店降一档', '机票改转机', '减少导游天数']
+      });
+    }
+
+    function handlePanelAction(type) {
+      const conv = currentConversation();
+      if ((type === 'pdf' || type === 'quote') && !conv.quote) {
+        showToast('当前方案还没有报价，建议先生成报价', 'warning');
+        return;
+      }
+
+      const actionMap = {
+        pdf: ['行程单PDF', '已生成客户版行程单 PDF，包含行程亮点、每日安排和费用说明。'],
+        poster: ['朋友圈海报', '已生成朋友圈海报草稿，主图和卖点文案可继续微调。'],
+        quote: ['报价单', '已导出内部报价单，含成本价、销售价和供应商来源。']
+      };
+      const [label, text] = actionMap[type];
+      const plan = syncConversationToPlan(conv);
+      if (plan) {
+        AppStore.addDocumentToPlan(plan.id, {
+          name: label,
+          type,
+          status: '已生成'
+        });
+        showDocumentPreview(label, plan);
+      }
+      addMessage({
+        role: 'ai',
+        time: nowTime(),
+        text,
+        cards: [{ type: 'doc', title: label, meta: conv.title + ' · 模拟生成时间 ' + nowTime(), actions: ['预览', '下载', '保存到方案管理'] }]
+      });
+      showToast(label + '已生成', 'success');
+    }
+
+    function exportConversation() {
+      showToast('已导出当前对话记录（模拟）', 'success');
+    }
+
+    function showConversationMenu() {
+      showToast('可扩展：重命名、归档、删除、转交同事', 'info');
+    }
+
+    function mockAttachImage() {
+      addMessage({ role: 'system', text: '已上传 1 张客户参考图片（模拟）' });
+      showToast('图片已加入当前对话上下文', 'success');
+    }
+
+    function mockVoiceInput() {
+      chatInput.value = '客户语音转写：想要行程轻松一点，酒店位置方便，预算不要超太多';
+      chatInput.focus();
+      showToast('语音已转写到输入框', 'info');
+    }
+
+    function handleDocCardAction(action) {
+      if (action.includes('PDF') || action.includes('行程单')) {
+        handlePanelAction('pdf');
+        return;
+      }
+      if (action.includes('海报')) {
+        handlePanelAction('poster');
+        return;
+      }
+      if (action.includes('报价')) {
+        handlePanelAction('quote');
+        return;
+      }
+      if (action.includes('复制')) {
+        const plan = syncConversationToPlan(currentConversation());
+        if (plan) AppStore.duplicatePlan(plan.id);
+        showToast('已复制为新草稿方案', 'success');
+        return;
+      }
+      showToast(action + '完成（模拟）', 'success');
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>

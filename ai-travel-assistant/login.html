@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI智能计调助手 - 登录</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    body {
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .login-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 48px 40px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), #6366F1);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .login-form .form-group {
+      margin-bottom: 20px;
+    }
+
+    .login-form .form-input {
+      padding: 14px 16px;
+      font-size: 15px;
+      border-radius: var(--radius-lg);
+    }
+
+    .login-form .input-icon-wrapper {
+      position: relative;
+    }
+
+    .login-form .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    .login-form .input-icon-wrapper .form-input {
+      padding-left: 42px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--primary), #6366F1);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .login-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">✈</div>
+        <h1 class="login-title">AI智能计调助手</h1>
+        <p class="login-subtitle">旅行社智能线路定制与报价系统</p>
+      </div>
+      <form class="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <div class="input-icon-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" class="form-input" id="username" placeholder="请输入用户名" value="lijd">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-icon-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="form-input" id="password" placeholder="请输入密码" value="123456">
+          </div>
+        </div>
+        <button type="submit" class="login-btn">登 录</button>
+        <div class="login-options">
+          <label><input type="checkbox" checked> 记住登录</label>
+          <a href="#">忘记密码？</a>
+        </div>
+      </form>
+      <div class="login-footer">
+        © 2025 AI智能计调助手 · 内部使用
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('.login-btn');
+      btn.textContent = '登录中...';
+      btn.disabled = true;
+      setTimeout(() => {
+        window.location.href = 'chat.html';
+      }, 800);
+    }
+  </script>
+</body>
+</html>

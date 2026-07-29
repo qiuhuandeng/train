@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>知识库管理 - AI智能计调助手</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .knowledge-content {
+      padding-top: calc(var(--nav-height) + 24px);
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-bottom: 24px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-sidebar);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      font-family: var(--font-family);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .segment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .segment-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .segment-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .segment-card .seg-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .segment-card .seg-route {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .segment-card .seg-transport {
+      font-size: 12px;
+      padding: 2px 8px;
+      background: var(--primary-bg);
+      color: var(--primary);
+      border-radius: 99px;
+    }
+
+    .segment-card .seg-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .segment-card .seg-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .segment-card .seg-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .segment-card .seg-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: var(--bg-sidebar);
+      color: var(--text-secondary);
+    }
+
+    .segment-card .seg-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .segment-card .seg-source {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .segment-card .seg-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .review-card {
+      background: var(--bg-card);
+      border: 1px solid var(--warning);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+    }
+
+    .review-card::before {
+      content: '待审核';
+      position: absolute;
+      top: -1px;
+      right: 16px;
+      background: var(--warning);
+      color: white;
+      font-size: 11px;
+      padding: 2px 10px;
+      border-radius: 0 0 6px 6px;
+      font-weight: 500;
+    }
+
+    .review-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .review-original {
+      background: var(--bg-sidebar);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .review-extracted {
+      font-size: 13px;
+    }
+
+    .review-extracted .field {
+      margin-bottom: 8px;
+    }
+
+    .review-extracted .field-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .review-extracted .field-value {
+      font-weight: 500;
+    }
+
+    .review-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .pagination button {
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pagination button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .pagination button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="knowledge-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">知识库管理</h1>
+        <p class="page-subtitle">管理线路切段数据，共 486 个切段，覆盖 35 个目的地</p>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addSegmentModal')">＋ 手动添加切段</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this, 'all')">全部切段 (486)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'review')">待审核 (23)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'europe')">欧洲 (186)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'asia')">亚洲 (152)</button>
+      <button class="tab-btn" onclick="switchTab(this, 'others')">其他 (148)</button>
+    </div>
+
+    <div class="filter-bar">
+      <select class="form-select" style="width:140px;">
+        <option>所有状态</option>
+        <option>已审核</option>
+        <option>待审核</option>
+        <option>已弃用</option>
+      </select>
+      <select class="form-select" style="width:140px;">
+        <option>交通方式</option>
+        <option>飞机</option>
+        <option>火车</option>
+        <option>大巴</option>
+        <option>自驾</option>
+        <option>游船</option>
+      </select>
+      <select class="form-select" style="width:140px;">
+        <option>所有标签</option>
+        <option>亲子</option>
+        <option>蜜月</option>
+        <option>商务</option>
+        <option>老年</option>
+        <option>摄影</option>
+      </select>
+      <input type="text" class="form-input" style="width:200px;" placeholder="搜索城市/景点/关键词...">
+      <button class="btn btn-secondary">搜索</button>
+    </div>
+
+    <!-- 切段列表区 -->
+    <div class="segment-grid" id="segmentGrid">
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">巴黎 → 尼斯</span>
+          <span class="seg-transport">🚂 TGV</span>
+        </div>
+        <div class="seg-desc">乘坐TGV高铁穿越法国南部，途径薰衣草田园风光，抵达蔚蓝海岸尼斯。途中可在阿维尼翁短停游览教皇宫。</div>
+        <div class="seg-meta">
+          <span>⏱ 1天</span>
+          <span>🌡 6-9月最佳</span>
+          <span>👥 不限人群</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">蜜月</span>
+          <span class="seg-tag">摄影</span>
+          <span class="seg-tag">夏季</span>
+          <span class="seg-tag">火车</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：欧洲经典线路2024.pdf · P12</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">苏黎世 → 卢塞恩</span>
+          <span class="seg-transport">🚂 火车</span>
+        </div>
+        <div class="seg-desc">瑞士黄金线路起点，1小时火车抵达卢塞恩。游览卡佩尔桥、狮子纪念碑，乘船游卢塞恩湖，可选皮拉图斯山齿轮小火车。</div>
+        <div class="seg-meta">
+          <span>⏱ 1天</span>
+          <span>🌡 全年适宜</span>
+          <span>👥 亲子友好</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">亲子</span>
+          <span class="seg-tag">文化</span>
+          <span class="seg-tag">湖景</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：瑞士深度游.pdf · P8</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">卢塞恩 → 因特拉肯</span>
+          <span class="seg-transport">🚂 金色快车</span>
+        </div>
+        <div class="seg-desc">乘金色快车穿越瑞士中部高原，2小时车窗外尽是雪山湖泊牧场。抵达后可前往少女峰或格林德瓦尔德。</div>
+        <div class="seg-meta">
+          <span>⏱ 1天</span>
+          <span>🌡 5-10月最佳</span>
+          <span>👥 不限人群</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">雪山</span>
+          <span class="seg-tag">观光列车</span>
+          <span class="seg-tag">自然</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：瑞士深度游.pdf · P10</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">东京 → 箱根</span>
+          <span class="seg-transport">🚂 小田急</span>
+        </div>
+        <div class="seg-desc">从新宿乘小田急浪漫特快前往箱根温泉区。体验露天温泉、大涌谷地热奇景、芦之湖游船远眺富士山。</div>
+        <div class="seg-meta">
+          <span>⏱ 1-2天</span>
+          <span>🌡 全年适宜</span>
+          <span>👥 不限人群</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">温泉</span>
+          <span class="seg-tag">富士山</span>
+          <span class="seg-tag">休闲</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：日本精选线路.pdf · P22</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">大阪 → 京都</span>
+          <span class="seg-transport">🚂 JR新快速</span>
+        </div>
+        <div class="seg-desc">30分钟抵达千年古都京都。游览伏见稻荷大社、金阁寺、岚山竹林。和服体验推荐在祇园花见小路。</div>
+        <div class="seg-meta">
+          <span>⏱ 1天</span>
+          <span>🌡 3-5月/10-11月最佳</span>
+          <span>👥 不限人群</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">文化</span>
+          <span class="seg-tag">樱花</span>
+          <span class="seg-tag">红叶</span>
+          <span class="seg-tag">和服体验</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：日本精选线路.pdf · P18</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="segment-card">
+        <div class="seg-header">
+          <span class="seg-route">曼谷 → 芭提雅</span>
+          <span class="seg-transport">🚌 大巴</span>
+        </div>
+        <div class="seg-desc">2小时车程前往海滨度假城市芭提雅。可安排珊瑚岛浮潜、四方水上市场、人妖秀等活动。适合团队休闲。</div>
+        <div class="seg-meta">
+          <span>⏱ 2-3天</span>
+          <span>🌡 11月-3月最佳</span>
+          <span>👥 团建首选</span>
+        </div>
+        <div class="seg-tags">
+          <span class="seg-tag">海滨</span>
+          <span class="seg-tag">团建</span>
+          <span class="seg-tag">休闲</span>
+        </div>
+        <div class="seg-footer">
+          <span class="seg-source">来源：泰国线路汇总.pdf · P6</span>
+          <div class="seg-actions">
+            <button class="btn btn-sm btn-ghost">编辑</button>
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger)">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination">
+      <button>← 上一页</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>...</button>
+      <button>28</button>
+      <button>下一页 →</button>
+    </div>
+  </div>
+
+  <!-- 添加切段弹窗 -->
+  <div class="modal-overlay" id="addSegmentModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">手动添加切段</h3>
+        <button class="modal-close" onclick="closeModal('addSegmentModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">出发城市 *</label>
+          <input type="text" class="form-input" placeholder="如：巴黎">
+        </div>
+        <div class="form-group">
+          <label class="form-label">到达城市 *</label>
+          <input type="text" class="form-input" placeholder="如：尼斯">
+        </div>
+        <div class="form-group">
+          <label class="form-label">交通方式</label>
+          <select class="form-select">
+            <option>火车</option>
+            <option>飞机</option>
+            <option>大巴</option>
+            <option>自驾</option>
+            <option>游船</option>
+            <option>步行</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">建议天数</label>
+          <input type="text" class="form-input" placeholder="如：1天">
+        </div>
+        <div class="form-group">
+          <label class="form-label">详细描述 *</label>
+          <textarea class="form-textarea" rows="4" placeholder="描述这段行程的主要内容、景点、活动等..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">标签（逗号分隔）</label>
+          <input type="text" class="form-input" placeholder="如：亲子,文化,夏季">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('addSegmentModal')">取消</button>
+        <button class="btn btn-primary" onclick="addManualSegment()">确认添加</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    renderNavbar('knowledge');
+
+    let activeSegmentTab = 'all';
+
+    function esc(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function statusText(status) {
+      return { approved: '已审核', review: '待审核', rejected: '已弃用' }[status] || status;
+    }
+
+    function statusClass(status) {
+      return { approved: 'badge-success', review: 'badge-warning', rejected: 'badge-danger' }[status] || 'badge-info';
+    }
+
+    function renderSegmentTabs() {
+      const segments = AppStore.all().segments.filter(item => item.status !== 'rejected');
+      const tabs = [
+        ['all', '全部切段', segments.length],
+        ['review', '待审核', segments.filter(item => item.status === 'review').length],
+        ['europe', '欧洲', segments.filter(item => item.region === 'europe').length],
+        ['asia', '亚洲', segments.filter(item => item.region === 'asia').length],
+        ['others', '其他', segments.filter(item => !['europe', 'asia'].includes(item.region)).length]
+      ];
+      document.querySelector('.tabs').innerHTML = tabs.map(([id, label, count]) => `
+        <button class="tab-btn ${activeSegmentTab === id ? 'active' : ''}" onclick="switchTab(this, '${id}')">${label} (${count})</button>
+      `).join('');
+    }
+
+    function filteredSegments() {
+      const fields = document.querySelectorAll('.filter-bar .form-select, .filter-bar .form-input');
+      const statusValue = fields[0]?.value || '所有状态';
+      const transportValue = fields[1]?.value || '交通方式';
+      const tagValue = fields[2]?.value || '所有标签';
+      const keyword = (fields[3]?.value || '').trim().toLowerCase();
+
+      return AppStore.all().segments.filter(seg => {
+        if (activeSegmentTab === 'review' && seg.status !== 'review') return false;
+        if (activeSegmentTab === 'europe' && seg.region !== 'europe') return false;
+        if (activeSegmentTab === 'asia' && seg.region !== 'asia') return false;
+        if (activeSegmentTab === 'others' && ['europe', 'asia'].includes(seg.region)) return false;
+        if (statusValue === '已审核' && seg.status !== 'approved') return false;
+        if (statusValue === '待审核' && seg.status !== 'review') return false;
+        if (statusValue === '已弃用' && seg.status !== 'rejected') return false;
+        if (transportValue !== '交通方式' && !seg.transport.includes(transportValue)) return false;
+        if (tagValue !== '所有标签' && !(seg.tags || []).includes(tagValue)) return false;
+        if (keyword) {
+          const haystack = [seg.from, seg.to, seg.desc, seg.source, ...(seg.tags || [])].join(' ').toLowerCase();
+          if (!haystack.includes(keyword)) return false;
+        }
+        return seg.status !== 'rejected' || statusValue === '已弃用';
+      });
+    }
+
+    function renderSegments() {
+      const data = AppStore.all();
+      const segments = filteredSegments();
+      refreshNavBadges();
+      const approved = data.segments.filter(item => item.status === 'approved').length;
+      const destinations = new Set(data.segments.flatMap(item => [item.from, item.to])).size;
+      document.querySelector('.page-subtitle').textContent = `管理线路切段数据，共 ${approved} 个已审核切段，覆盖 ${destinations} 个城市/目的地`;
+      renderSegmentTabs();
+
+      const grid = document.getElementById('segmentGrid');
+      if (!segments.length) {
+        grid.innerHTML = '<div class="card empty-state"><div class="empty-icon">📚</div><div class="empty-title">没有匹配切段</div><div class="empty-desc">调整筛选条件，或从文件管理页审核新切段入库。</div></div>';
+        return;
+      }
+
+      grid.innerHTML = segments.map(seg => `
+        <div class="${seg.status === 'review' ? 'review-card' : 'segment-card'}" onclick="viewSegment('${seg.id}')">
+          <div class="seg-header">
+            <span class="seg-route">${esc(seg.from)} → ${esc(seg.to)}</span>
+            <span class="seg-transport">${esc(seg.transport)}</span>
+          </div>
+          <div class="seg-desc">${esc(seg.desc)}</div>
+          <div class="seg-meta">
+            <span>⏱ ${esc(seg.duration)}</span>
+            <span>🌡 ${esc(seg.season)}</span>
+            <span>👥 ${esc(seg.audience)}</span>
+          </div>
+          <div class="seg-tags">
+            ${(seg.tags || []).map(tag => `<span class="seg-tag">${esc(tag)}</span>`).join('')}
+          </div>
+          <div class="seg-footer">
+            <span class="seg-source">来源：${esc(seg.source)}</span>
+            <div class="seg-actions">
+              ${seg.status === 'review' ? `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();approveSegment('${seg.id}')">确认入库</button>` : ''}
+              <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation();editSegment('${seg.id}')">编辑</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger)" onclick="event.stopPropagation();deleteSegment('${seg.id}')">${seg.status === 'review' ? '拒绝' : '删除'}</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function switchTab(btn, tab) {
+      activeSegmentTab = tab;
+      renderSegments();
+    }
+
+    function viewSegment(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      showDetailModal(`${seg.from} → ${seg.to}`, `
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <span class="badge ${statusClass(seg.status)}">${statusText(seg.status)}</span>
+          <span class="badge badge-info">${esc(seg.transport)}</span>
+          <span class="badge badge-primary">${esc(seg.duration)}</span>
+        </div>
+        <p style="line-height:1.8;color:var(--text-secondary);margin-bottom:16px;">${esc(seg.desc)}</p>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:8px;font-size:13px;margin-bottom:16px;">
+          <strong>适合季节</strong><span>${esc(seg.season)}</span>
+          <strong>适合人群</strong><span>${esc(seg.audience)}</span>
+          <strong>标签</strong><span>${(seg.tags || []).map(tag => `<span class="badge badge-info" style="margin-right:6px;">${esc(tag)}</span>`).join('')}</span>
+          <strong>来源</strong><span>${esc(seg.source)}</span>
+        </div>
+        <div class="panel-note">${esc(seg.original || '暂无原文对照')}</div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">关闭</button>
+        ${seg.status === 'review' ? `<button class="btn btn-primary" onclick="approveSegment('${seg.id}');closeModal('globalDetailModal')">确认入库</button>` : `<button class="btn btn-primary" onclick="editSegment('${seg.id}')">编辑</button>`}
+      `);
+    }
+
+    function editSegment(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      showDetailModal('编辑切段', `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">出发城市</label><input class="form-input" id="editFrom" value="${esc(seg.from)}"></div>
+          <div class="form-group"><label class="form-label">到达城市</label><input class="form-input" id="editTo" value="${esc(seg.to)}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">描述</label><textarea class="form-textarea" id="editDesc" rows="4">${esc(seg.desc)}</textarea></div>
+        <div class="form-group"><label class="form-label">标签</label><input class="form-input" id="editTags" value="${esc((seg.tags || []).join(','))}"></div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveSegmentEdit('${seg.id}')">保存修改</button>
+      `);
+    }
+
+    function saveSegmentEdit(id) {
+      AppStore.updateSegment(id, {
+        from: document.getElementById('editFrom').value.trim(),
+        to: document.getElementById('editTo').value.trim(),
+        desc: document.getElementById('editDesc').value.trim(),
+        tags: document.getElementById('editTags').value.split(',').map(tag => tag.trim()).filter(Boolean)
+      });
+      closeModal('globalDetailModal');
+      showToast('切段已更新', 'success');
+      renderSegments();
+    }
+
+    function approveSegment(id) {
+      AppStore.approveSegment(id);
+      showToast('切段已确认入库', 'success');
+      renderSegments();
+    }
+
+    function deleteSegment(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      confirmAction(`${seg.status === 'review' ? '拒绝' : '删除'}切段：${seg.from} → ${seg.to}？`, () => {
+        if (seg.status === 'review') {
+          AppStore.rejectSegment(id);
+          showToast('已拒绝该切段', 'warning');
+        } else {
+          AppStore.deleteSegment(id);
+          showToast('切段已删除', 'success');
+        }
+        renderSegments();
+      });
+    }
+
+    function addManualSegment() {
+      const modal = document.getElementById('addSegmentModal');
+      const inputs = modal.querySelectorAll('input');
+      const select = modal.querySelector('select');
+      const textarea = modal.querySelector('textarea');
+      const from = inputs[0].value.trim();
+      const to = inputs[1].value.trim();
+      if (!from || !to || !textarea.value.trim()) {
+        showToast('请填写出发城市、到达城市和描述', 'warning');
+        return;
+      }
+      AppStore.addSegment({
+        region: ['巴黎', '尼斯', '苏黎世', '卢塞恩', '蒙特勒'].includes(from) ? 'europe' : 'asia',
+        status: 'approved',
+        from,
+        to,
+        transport: transportIcon(select.value) + ' ' + select.value,
+        duration: inputs[2].value.trim() || '1天',
+        season: '全年',
+        audience: '不限人群',
+        desc: textarea.value.trim(),
+        tags: inputs[3].value.split(',').map(tag => tag.trim()).filter(Boolean),
+        source: '手动添加 · ' + AppStore.todayText(),
+        original: '人工录入切段'
+      });
+      modal.querySelectorAll('input, textarea').forEach(el => el.value = '');
+      closeModal('addSegmentModal');
+      showToast('切段添加成功', 'success');
+      renderSegments();
+    }
+
+    function transportIcon(name) {
+      return { 火车: '🚂', 飞机: '✈️', 大巴: '🚌', 自驾: '🚗', 游船: '🚢', 步行: '🚶' }[name] || '📍';
+    }
+
+    document.querySelectorAll('.filter-bar .form-select, .filter-bar .form-input').forEach(el => {
+      el.addEventListener('input', renderSegments);
+      el.addEventListener('change', renderSegments);
+    });
+
+    renderSegments();
+  </script>
+</body>
+</html>

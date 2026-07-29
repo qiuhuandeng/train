@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>价格库管理 - AI智能计调助手</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .pricing-content {
+      padding-top: calc(var(--nav-height) + 24px);
+      padding-left: 24px;
+      padding-right: 24px;
+      padding-bottom: 24px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .mini-stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .mini-stat .stat-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .mini-stat .stat-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg-sidebar);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      font-family: var(--font-family);
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .price-table-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .price-table th {
+      background: var(--bg-sidebar);
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .price-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: middle;
+    }
+
+    .price-table tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    .price-table tr.expiring td {
+      background: #FFFBEB;
+    }
+
+    .price-table tr.expired td {
+      background: #FEF2F2;
+      opacity: 0.7;
+    }
+
+    .source-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .source-manual {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .source-api {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .status-valid {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status-expiring {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .status-expired {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .status-realtime {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 20px;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--primary-bg);
+    }
+
+    .upload-area .upload-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .upload-area .upload-text {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .upload-area .upload-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="pricing-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">价格库管理</h1>
+        <p class="page-subtitle">管理协议价格和实时API报价数据</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" onclick="openModal('uploadPriceModal')">📤 导入价格表</button>
+        <button class="btn btn-primary" onclick="openModal('addPriceModal')">＋ 添加价格</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="mini-stat">
+        <div class="stat-num">1,234</div>
+        <div class="stat-text">价格总条目</div>
+      </div>
+      <div class="mini-stat">
+        <div class="stat-num" style="color:var(--success);">1,089</div>
+        <div class="stat-text">有效价格</div>
+      </div>
+      <div class="mini-stat">
+        <div class="stat-num" style="color:var(--warning);">87</div>
+        <div class="stat-text">即将过期（30天内）</div>
+      </div>
+      <div class="mini-stat">
+        <div class="stat-num" style="color:var(--danger);">58</div>
+        <div class="stat-text">已过期</div>
+      </div>
+      <div class="mini-stat">
+        <div class="stat-num" style="color:var(--info);">156</div>
+        <div class="stat-text">API实时价格</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active">全部</button>
+      <button class="tab-btn">🏨 酒店 (423)</button>
+      <button class="tab-btn">✈️ 机票 (198)</button>
+      <button class="tab-btn">🚂 火车 (156)</button>
+      <button class="tab-btn">🎫 门票 (267)</button>
+      <button class="tab-btn">👤 导游 (89)</button>
+      <button class="tab-btn">🍽 餐费 (101)</button>
+    </div>
+
+    <div class="filter-bar">
+      <input type="text" class="form-input" style="width:180px;" placeholder="搜索项目名称...">
+      <select class="form-select" style="width:130px;">
+        <option>所有城市</option>
+        <option>巴黎</option>
+        <option>苏黎世</option>
+        <option>东京</option>
+        <option>曼谷</option>
+      </select>
+      <select class="form-select" style="width:130px;">
+        <option>所有来源</option>
+        <option>手工录入</option>
+        <option>API实时</option>
+      </select>
+      <select class="form-select" style="width:130px;">
+        <option>所有状态</option>
+        <option>有效</option>
+        <option>即将过期</option>
+        <option>已过期</option>
+      </select>
+      <button class="btn btn-secondary">筛选</button>
+    </div>
+
+    <div class="price-table-wrapper">
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>品类</th>
+            <th>城市</th>
+            <th>项目名称</th>
+            <th>供应商</th>
+            <th>单价</th>
+            <th>单位</th>
+            <th>有效期</th>
+            <th>来源</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🏨 酒店</td>
+            <td>巴黎</td>
+            <td><strong>万豪香榭丽舍 标准间</strong></td>
+            <td>万豪直连</td>
+            <td style="font-weight:600;">¥1,200</td>
+            <td>间/晚</td>
+            <td>2025.03 - 2025.09</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-valid">● 有效</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">编辑</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>🏨 酒店</td>
+            <td>苏黎世</td>
+            <td><strong>苏黎世凯悦 湖景房</strong></td>
+            <td>凯悦集团</td>
+            <td style="font-weight:600;">¥1,800</td>
+            <td>间/晚</td>
+            <td>2025.04 - 2025.10</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-valid">● 有效</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">编辑</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>✈️ 机票</td>
+            <td>上海-巴黎</td>
+            <td><strong>东航直飞 MU553</strong></td>
+            <td>中航信</td>
+            <td style="font-weight:600;">¥6,500</td>
+            <td>人/单程</td>
+            <td>实时</td>
+            <td><span class="source-badge source-api">API</span></td>
+            <td><span class="status-badge status-realtime">⟳ 实时</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">刷新</button>
+            </td>
+          </tr>
+          <tr class="expiring">
+            <td>🎫 门票</td>
+            <td>巴黎</td>
+            <td><strong>卢浮宫 成人票</strong></td>
+            <td>官方代理</td>
+            <td style="font-weight:600;">¥150</td>
+            <td>人/次</td>
+            <td>2025.01 - 2025.04</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-expiring">● 即将过期</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">续期</button>
+              <button class="btn btn-sm btn-ghost">编辑</button>
+            </td>
+          </tr>
+          <tr class="expiring">
+            <td>👤 导游</td>
+            <td>巴黎</td>
+            <td><strong>中文导游 全天</strong></td>
+            <td>巴黎地接A</td>
+            <td style="font-weight:600;">¥1,200</td>
+            <td>天</td>
+            <td>2025.01 - 2025.03</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-expiring">● 即将过期</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">续期</button>
+              <button class="btn btn-sm btn-ghost">编辑</button>
+            </td>
+          </tr>
+          <tr class="expired">
+            <td>🚂 火车</td>
+            <td>巴黎-尼斯</td>
+            <td><strong>TGV 二等座</strong></td>
+            <td>SNCF</td>
+            <td style="font-weight:600;">¥450</td>
+            <td>人/单程</td>
+            <td>2024.06 - 2024.12</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-expired">● 已过期</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">更新</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+            </td>
+          </tr>
+          <tr>
+            <td>🍽 餐费</td>
+            <td>巴黎</td>
+            <td><strong>中餐团餐 标准</strong></td>
+            <td>华人餐厅联盟</td>
+            <td style="font-weight:600;">¥80</td>
+            <td>人/餐</td>
+            <td>2025.01 - 2025.12</td>
+            <td><span class="source-badge source-manual">手工</span></td>
+            <td><span class="status-badge status-valid">● 有效</span></td>
+            <td>
+              <button class="btn btn-sm btn-ghost">编辑</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--danger);">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" style="margin-top:20px;">
+      <button>← 上一页</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>...</button>
+      <button>12</button>
+      <button>下一页 →</button>
+    </div>
+  </div>
+
+  <!-- 上传价格表弹窗 -->
+  <div class="modal-overlay" id="uploadPriceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">导入价格表</h3>
+        <button class="modal-close" onclick="closeModal('uploadPriceModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="upload-area" onclick="this.querySelector('input').click()">
+          <input type="file" hidden accept=".xlsx,.xls,.csv">
+          <div class="upload-icon">📊</div>
+          <div class="upload-text">点击或拖拽上传 Excel/CSV 文件</div>
+          <div class="upload-hint">支持 .xlsx、.xls、.csv 格式，单文件不超过 10MB</div>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">
+          <p style="font-weight:600;margin-bottom:8px;">文件格式要求：</p>
+          <p>表格应包含以下列：品类、城市、项目名称、供应商、单价、单位、有效期起、有效期止</p>
+          <p style="margin-top:8px;"><a href="#">📥 下载导入模板</a></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('uploadPriceModal')">取消</button>
+        <button class="btn btn-primary" onclick="importPriceTable()">开始导入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加价格弹窗 -->
+  <div class="modal-overlay" id="addPriceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">添加价格条目</h3>
+        <button class="modal-close" onclick="closeModal('addPriceModal')">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">品类 *</label>
+            <select class="form-select">
+              <option>酒店</option>
+              <option>机票</option>
+              <option>火车</option>
+              <option>门票</option>
+              <option>导游</option>
+              <option>餐费</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">城市 *</label>
+            <input type="text" class="form-input" placeholder="如：巴黎">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">项目名称 *</label>
+          <input type="text" class="form-input" placeholder="如：万豪香榭丽舍 标准间">
+        </div>
+        <div class="form-group">
+          <label class="form-label">供应商</label>
+          <input type="text" class="form-input" placeholder="如：万豪直连">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">单价 *</label>
+            <input type="number" class="form-input" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">计价单位 *</label>
+            <input type="text" class="form-input" placeholder="如：间/晚">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">有效期起</label>
+            <input type="date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">有效期止</label>
+            <input type="date" class="form-input">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('addPriceModal')">取消</button>
+        <button class="btn btn-primary" onclick="addPriceEntry()">确认添加</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    renderNavbar('pricing');
+
+    let activeCategory = '全部';
+
+    function esc(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function categoryIcon(category) {
+      return {
+        酒店: '🏨',
+        机票: '✈️',
+        火车: '🚂',
+        门票: '🎫',
+        导游: '👤',
+        餐费: '🍽',
+        其他: '📦'
+      }[category] || '📦';
+    }
+
+    function statusText(status) {
+      return {
+        valid: '有效',
+        expiring: '即将过期',
+        expired: '已过期',
+        realtime: '实时'
+      }[status] || status;
+    }
+
+    function statusClass(status) {
+      return {
+        valid: 'status-valid',
+        expiring: 'status-expiring',
+        expired: 'status-expired',
+        realtime: 'status-realtime'
+      }[status] || 'status-valid';
+    }
+
+    function renderStats() {
+      const prices = AppStore.all().prices;
+      const nums = document.querySelectorAll('.mini-stat .stat-num');
+      nums[0].textContent = prices.length.toLocaleString('zh-CN');
+      nums[1].textContent = prices.filter(item => item.status === 'valid').length.toLocaleString('zh-CN');
+      nums[2].textContent = prices.filter(item => item.status === 'expiring').length.toLocaleString('zh-CN');
+      nums[3].textContent = prices.filter(item => item.status === 'expired').length.toLocaleString('zh-CN');
+      nums[4].textContent = prices.filter(item => item.source === 'API' || item.status === 'realtime').length.toLocaleString('zh-CN');
+    }
+
+    function renderPriceTabs() {
+      const prices = AppStore.all().prices;
+      const categories = ['全部', '酒店', '机票', '火车', '门票', '导游', '餐费'];
+      document.querySelector('.tabs').innerHTML = categories.map(category => {
+        const count = category === '全部' ? prices.length : prices.filter(item => item.category === category).length;
+        const label = category === '全部' ? '全部' : `${categoryIcon(category)} ${category}`;
+        return `<button class="tab-btn ${activeCategory === category ? 'active' : ''}" onclick="switchCategory('${category}')">${label} (${count})</button>`;
+      }).join('');
+    }
+
+    function filteredPrices() {
+      const fields = document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select');
+      const keyword = (fields[0]?.value || '').trim().toLowerCase();
+      const city = fields[1]?.value || '所有城市';
+      const source = fields[2]?.value || '所有来源';
+      const status = fields[3]?.value || '所有状态';
+
+      return AppStore.all().prices.filter(price => {
+        if (activeCategory !== '全部' && price.category !== activeCategory) return false;
+        if (keyword && ![price.name, price.city, price.supplier].join(' ').toLowerCase().includes(keyword)) return false;
+        if (city !== '所有城市' && price.city !== city && !price.city.includes(city)) return false;
+        if (source === '手工录入' && price.source !== '手工') return false;
+        if (source === 'API实时' && price.source !== 'API') return false;
+        if (status === '有效' && price.status !== 'valid') return false;
+        if (status === '即将过期' && price.status !== 'expiring') return false;
+        if (status === '已过期' && price.status !== 'expired') return false;
+        return true;
+      });
+    }
+
+    function renderPriceTable() {
+      refreshNavBadges();
+      renderStats();
+      renderPriceTabs();
+      const prices = filteredPrices();
+      const tbody = document.querySelector('.price-table tbody');
+      if (!prices.length) {
+        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="empty-text">没有匹配价格</div><div class="empty-sub">调整筛选条件，或添加新的价格条目。</div></div></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = prices.map(price => `
+        <tr class="${price.status === 'expiring' ? 'expiring' : price.status === 'expired' ? 'expired' : ''}">
+          <td>${categoryIcon(price.category)} ${esc(price.category)}</td>
+          <td>${esc(price.city)}</td>
+          <td><strong>${esc(price.name)}</strong></td>
+          <td>${esc(price.supplier || '-')}</td>
+          <td style="font-weight:600;">${AppStore.money(price.price)}</td>
+          <td>${esc(price.unit)}</td>
+          <td>${esc(price.period)}</td>
+          <td><span class="source-badge ${price.source === 'API' ? 'source-api' : 'source-manual'}">${esc(price.source)}</span></td>
+          <td><span class="status-badge ${statusClass(price.status)}">● ${statusText(price.status)}</span></td>
+          <td>
+            ${price.status === 'expired' || price.status === 'expiring' ? `<button class="btn btn-sm btn-ghost" onclick="renewPrice('${price.id}')">续期</button>` : ''}
+            ${price.source === 'API' ? `<button class="btn btn-sm btn-ghost" onclick="refreshPrice('${price.id}')">刷新</button>` : `<button class="btn btn-sm btn-ghost" onclick="editPrice('${price.id}')">编辑</button>`}
+            <button class="btn btn-sm btn-ghost" style="color:var(--danger);" onclick="deletePrice('${price.id}')">删除</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function switchCategory(category) {
+      activeCategory = category;
+      renderPriceTable();
+    }
+
+    function addPriceEntry() {
+      const modal = document.getElementById('addPriceModal');
+      const selects = modal.querySelectorAll('select');
+      const inputs = modal.querySelectorAll('input');
+      const category = selects[0].value;
+      const city = inputs[0].value.trim();
+      const name = inputs[1].value.trim();
+      const supplier = inputs[2].value.trim();
+      const price = Number(inputs[3].value || 0);
+      const unit = inputs[4].value.trim();
+      const start = inputs[5].value;
+      const end = inputs[6].value;
+
+      if (!city || !name || !price || !unit) {
+        showToast('请填写城市、项目名称、单价和计价单位', 'warning');
+        return;
+      }
+
+      AppStore.addPrice({
+        category,
+        city,
+        name,
+        supplier,
+        price,
+        unit,
+        period: start && end ? `${start} - ${end}` : '长期有效',
+        source: '手工',
+        status: 'valid'
+      });
+      modal.querySelectorAll('input').forEach(input => input.value = '');
+      closeModal('addPriceModal');
+      showToast('价格添加成功', 'success');
+      renderPriceTable();
+    }
+
+    function importPriceTable() {
+      const imports = AppStore.addImportedPrices();
+      closeModal('uploadPriceModal');
+      showToast(`价格表解析完成，新增 ${imports.length} 条价格`, 'success');
+      renderPriceTable();
+    }
+
+    function editPrice(id) {
+      const price = AppStore.all().prices.find(item => item.id === id);
+      if (!price) return;
+      showDetailModal('编辑价格条目', `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group"><label class="form-label">城市</label><input class="form-input" id="editPriceCity" value="${esc(price.city)}"></div>
+          <div class="form-group"><label class="form-label">单价</label><input class="form-input" id="editPriceAmount" type="number" value="${esc(price.price)}"></div>
+        </div>
+        <div class="form-group"><label class="form-label">项目名称</label><input class="form-input" id="editPriceName" value="${esc(price.name)}"></div>
+        <div class="form-group"><label class="form-label">供应商</label><input class="form-input" id="editPriceSupplier" value="${esc(price.supplier)}"></div>
+        <div class="form-group"><label class="form-label">有效期</label><input class="form-input" id="editPricePeriod" value="${esc(price.period)}"></div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="savePriceEdit('${price.id}')">保存修改</button>
+      `);
+    }
+
+    function savePriceEdit(id) {
+      AppStore.updatePrice(id, {
+        city: document.getElementById('editPriceCity').value.trim(),
+        price: Number(document.getElementById('editPriceAmount').value || 0),
+        name: document.getElementById('editPriceName').value.trim(),
+        supplier: document.getElementById('editPriceSupplier').value.trim(),
+        period: document.getElementById('editPricePeriod').value.trim(),
+        status: 'valid'
+      });
+      closeModal('globalDetailModal');
+      showToast('价格已更新', 'success');
+      renderPriceTable();
+    }
+
+    function renewPrice(id) {
+      AppStore.updatePrice(id, { period: '2026.08 - 2027.08', status: 'valid' });
+      showToast('价格已续期至 2027.08', 'success');
+      renderPriceTable();
+    }
+
+    function refreshPrice(id) {
+      const price = AppStore.all().prices.find(item => item.id === id);
+      if (!price) return;
+      const next = Math.round(price.price * (0.98 + Math.random() * 0.06));
+      AppStore.updatePrice(id, { price: next, status: 'realtime', period: '实时' });
+      showToast('API实时价格已刷新', 'success');
+      renderPriceTable();
+    }
+
+    function deletePrice(id) {
+      const price = AppStore.all().prices.find(item => item.id === id);
+      if (!price) return;
+      confirmAction(`删除价格：${price.city} · ${price.name}？`, () => {
+        AppStore.deletePrice(id);
+        showToast('价格已删除', 'success');
+        renderPriceTable();
+      });
+    }
+
+    document.querySelectorAll('.filter-bar .form-input, .filter-bar .form-select').forEach(el => {
+      el.addEventListener('input', renderPriceTable);
+      el.addEventListener('change', renderPriceTable);
+    });
+
+    renderPriceTable();
+  </script>
+</body>
+</html>
