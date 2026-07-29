@@ -4,41 +4,42 @@
    ============================================ */
 
 :root {
-  --primary: #2563EB;
-  --primary-light: #3B82F6;
-  --primary-dark: #1D4ED8;
-  --primary-bg: #EFF6FF;
-  --success: #10B981;
-  --success-bg: #ECFDF5;
-  --warning: #F59E0B;
-  --warning-bg: #FFFBEB;
-  --danger: #EF4444;
-  --danger-bg: #FEF2F2;
-  --info: #6366F1;
-  --info-bg: #EEF2FF;
+  --primary: #2457D6;
+  --primary-light: #4C78E6;
+  --primary-dark: #1D46AF;
+  --primary-bg: #EEF4FF;
+  --success: #0E8F68;
+  --success-bg: #EAF8F1;
+  --warning: #B7791F;
+  --warning-bg: #FFF7E6;
+  --danger: #C2413A;
+  --danger-bg: #FFF0EF;
+  --info: #52708F;
+  --info-bg: #EEF4F8;
   
-  --bg-page: #F8FAFC;
+  --bg-page: #F5F7FA;
   --bg-card: #FFFFFF;
-  --bg-sidebar: #F1F5F9;
-  --bg-hover: #F1F5F9;
+  --bg-sidebar: #F7F9FC;
+  --bg-hover: #F2F5F9;
+  --bg-soft: #FAFBFD;
   
-  --text-primary: #1E293B;
-  --text-secondary: #64748B;
-  --text-muted: #94A3B8;
+  --text-primary: #172033;
+  --text-secondary: #5E6B7F;
+  --text-muted: #8C99AD;
   --text-white: #FFFFFF;
   
-  --border: #E2E8F0;
-  --border-light: #F1F5F9;
+  --border: #DCE3EE;
+  --border-light: #EDF1F6;
   
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 2px rgba(23, 32, 51, 0.04);
+  --shadow: 0 6px 18px rgba(23, 32, 51, 0.06);
+  --shadow-md: 0 12px 28px rgba(23, 32, 51, 0.08);
+  --shadow-lg: 0 22px 50px rgba(23, 32, 51, 0.16);
   
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-sm: 5px;
+  --radius: 7px;
+  --radius-lg: 9px;
+  --radius-xl: 12px;
   
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   
@@ -60,6 +61,8 @@ html, body {
   background: var(--bg-page);
   height: 100%;
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -78,13 +81,14 @@ a:hover {
   left: 0;
   right: 0;
   height: var(--nav-height);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   padding: 0 24px;
   z-index: 1000;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 0 rgba(23, 32, 51, 0.03);
+  backdrop-filter: blur(14px);
 }
 
 .navbar-brand {
@@ -92,7 +96,7 @@ a:hover {
   align-items: center;
   gap: 10px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 760;
   color: var(--primary);
   cursor: pointer;
   text-decoration: none;
@@ -105,7 +109,7 @@ a:hover {
 .navbar-brand .brand-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--info));
+  background: var(--primary);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -157,12 +161,12 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: var(--radius);
   color: var(--text-secondary);
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-weight: 650;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -176,6 +180,7 @@ a:hover {
 .navbar-nav .nav-link.active {
   background: var(--primary-bg);
   color: var(--primary);
+  box-shadow: inset 0 0 0 1px rgba(36, 87, 214, 0.08);
 }
 
 .nav-badge {
@@ -202,7 +207,7 @@ a:hover {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-light), var(--info));
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,25 +233,25 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 16px;
+  min-height: 36px;
+  padding: 7px 14px;
   border: 1px solid transparent;
   border-radius: var(--radius);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 680;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
   white-space: nowrap;
   font-family: var(--font-family);
   line-height: 1.5;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.08);
 }
 
 .btn:active {
-  transform: translateY(0);
+  box-shadow: none;
 }
 
 .btn.is-loading {
@@ -268,6 +273,7 @@ a:hover {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+  box-shadow: 0 1px 0 rgba(23, 32, 51, 0.08);
 }
 
 .btn-primary:hover {
@@ -281,7 +287,8 @@ a:hover {
 }
 
 .btn-secondary:hover {
-  background: var(--bg-hover);
+  background: var(--bg-soft);
+  border-color: #C9D3E2;
 }
 
 .btn-success {
@@ -313,6 +320,7 @@ a:hover {
 }
 
 .btn-sm {
+  min-height: 30px;
   padding: 4px 10px;
   font-size: 12px;
 }
@@ -334,13 +342,14 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 18px;
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  border-color: #CBD5E2;
+  box-shadow: var(--shadow);
 }
 
 .card-header {
@@ -366,8 +375,8 @@ a:hover {
 .form-label {
   display: block;
   margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 680;
   color: var(--text-secondary);
 }
 
@@ -375,14 +384,15 @@ a:hover {
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: 10px 14px;
+  min-height: 38px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: 14px;
   font-family: var(--font-family);
   color: var(--text-primary);
   background: var(--bg-card);
-  transition: all 0.2s ease;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
   outline: none;
 }
 
@@ -390,7 +400,7 @@ a:hover {
 .form-select:focus,
 .form-textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.1);
 }
 
 .form-input::placeholder,
@@ -407,10 +417,11 @@ a:hover {
 .badge {
   display: inline-flex;
   align-items: center;
+  min-height: 22px;
   padding: 2px 8px;
   border-radius: 99px;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 720;
   gap: 4px;
 }
 
@@ -444,6 +455,7 @@ a:hover {
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  background: var(--bg-card);
 }
 
 table {
@@ -453,23 +465,24 @@ table {
 
 table th,
 table td {
-  padding: 12px 16px;
+  padding: 11px 16px;
   text-align: left;
   border-bottom: 1px solid var(--border-light);
   font-size: 13px;
+  line-height: 1.55;
 }
 
 table th {
-  background: var(--bg-sidebar);
-  font-weight: 600;
+  background: #F6F8FB;
+  font-weight: 720;
   color: var(--text-secondary);
   font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 table tr:hover td {
-  background: var(--bg-hover);
+  background: #FAFCFF;
 }
 
 table tr:last-child td {
@@ -483,7 +496,7 @@ table tr:last-child td {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(23, 32, 51, 0.46);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -502,6 +515,7 @@ table tr:last-child td {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(220, 227, 238, 0.9);
   width: 90%;
   max-width: 560px;
   max-height: 80vh;
@@ -518,13 +532,13 @@ table tr:last-child td {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--border);
 }
 
 .modal-title {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 760;
 }
 
 .modal-close {
@@ -533,7 +547,7 @@ table tr:last-child td {
   border: none;
   background: none;
   cursor: pointer;
-  border-radius: 50%;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -548,21 +562,22 @@ table tr:last-child td {
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 22px;
 }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 16px 24px;
+  padding: 14px 22px;
   border-top: 1px solid var(--border);
 }
 
 .panel-note {
   padding: 10px 12px;
   border-radius: var(--radius);
-  background: var(--bg-sidebar);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-light);
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.6;
@@ -586,10 +601,10 @@ table tr:last-child td {
 
 .toast {
   padding: 12px 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--bg-card);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -635,14 +650,14 @@ table tr:last-child td {
 .progress-bar {
   width: 100%;
   height: 6px;
-  background: var(--border);
+  background: #E7EDF5;
   border-radius: 99px;
   overflow: hidden;
 }
 
 .progress-bar .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  background: var(--primary);
   border-radius: 99px;
   transition: width 0.3s ease;
 }
@@ -667,6 +682,7 @@ table tr:last-child td {
   width: 44px;
   height: 44px;
   color: var(--text-muted);
+  margin: 0 auto;
 }
 
 .section-title .icon-line,
@@ -703,9 +719,10 @@ table tr:last-child td {
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 780;
+  line-height: 1.25;
+  margin-bottom: 0;
   color: var(--text-primary);
 }
 
@@ -718,12 +735,12 @@ table tr:last-child td {
 .filter-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 20px;
+  gap: 10px;
+  padding: 12px 14px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 

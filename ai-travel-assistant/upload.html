@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/common.css">
   <style>
     .upload-content {
-      padding-top: calc(var(--nav-height) + 24px);
+      padding-top: calc(var(--nav-height) + 20px);
       padding-left: 24px;
       padding-right: 24px;
       padding-bottom: 24px;
@@ -16,14 +16,14 @@
     }
 
     .upload-zone {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-xl);
-      padding: 60px 40px;
+      border: 1px dashed #C7D2E3;
+      border-radius: var(--radius-lg);
+      padding: 44px 32px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
       background: var(--bg-card);
-      margin-bottom: 32px;
+      margin-bottom: 18px;
       position: relative;
     }
 
@@ -31,21 +31,22 @@
     .upload-zone.dragover {
       border-color: var(--primary);
       background: var(--primary-bg);
+      box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.08);
     }
 
     .upload-zone.dragover {
-      transform: scale(1.01);
+      box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.12);
     }
 
     .upload-zone .upload-icon {
-      font-size: 56px;
-      margin-bottom: 16px;
+      font-size: 48px;
+      margin-bottom: 12px;
       display: block;
     }
 
     .upload-zone .upload-title {
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 760;
       color: var(--text-primary);
       margin-bottom: 8px;
     }
@@ -72,9 +73,9 @@
     }
 
     .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      font-size: 15px;
+      font-weight: 780;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -90,12 +91,13 @@
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 20px 24px;
-      transition: all 0.2s ease;
+      padding: 16px 18px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
     }
 
     .file-card:hover {
-      box-shadow: var(--shadow-md);
+      border-color: #CBD5E2;
+      box-shadow: var(--shadow);
     }
 
     .file-card .file-header {
@@ -107,7 +109,7 @@
 
     .file-card .file-name {
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 760;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -138,7 +140,7 @@
       align-items: center;
       gap: 16px;
       padding: 12px 16px;
-      background: var(--bg-sidebar);
+      background: var(--bg-soft);
       border-radius: var(--radius);
       font-size: 13px;
       margin-bottom: 12px;
@@ -159,7 +161,7 @@
       padding: 4px 12px;
       border-radius: 99px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 720;
     }
 
     .file-status.processing {
@@ -196,8 +198,9 @@
     }
 
     .review-left {
-      background: var(--bg-sidebar);
+      background: var(--bg-soft);
       border-radius: var(--radius);
+      border: 1px solid var(--border-light);
       padding: 16px;
       max-height: 400px;
       overflow-y: auto;
