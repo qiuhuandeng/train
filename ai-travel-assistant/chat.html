@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/common.css">
   <style>
     .chat-layout {
-      padding-top: var(--nav-height);
+      padding-top: 0;
       height: 100vh;
       display: flex;
       overflow: hidden;
@@ -50,6 +50,78 @@
     .sidebar-search input:focus {
       border-color: var(--primary);
       background: white;
+    }
+
+    .sidebar-tools {
+      display: grid;
+      gap: 4px;
+      padding: 4px 16px 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .sidebar-tool {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 680;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease;
+    }
+
+    .sidebar-tool:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .sidebar-tool.active {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+    }
+
+    .sidebar-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 760;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 760;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .sidebar-user-role {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
     .conversation-list {
@@ -213,6 +285,8 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .message .msg-bubble {
@@ -275,8 +349,10 @@
       border-radius: var(--radius-lg);
       padding: 16px;
       margin-top: 8px;
+      width: min(480px, 100%);
       max-width: 480px;
       box-shadow: var(--shadow-sm);
+      box-sizing: border-box;
     }
 
     .route-card .route-title {
@@ -324,8 +400,10 @@
       border-radius: var(--radius-lg);
       padding: 16px;
       margin-top: 8px;
+      width: min(420px, 100%);
       max-width: 420px;
       box-shadow: var(--shadow-sm);
+      box-sizing: border-box;
     }
 
     .quote-card .quote-title {
@@ -348,9 +426,10 @@
     }
 
     .quote-card .quote-total {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
       align-items: center;
+      gap: 12px;
       margin-top: 12px;
       padding-top: 12px;
       border-top: 2px solid var(--border);
@@ -602,6 +681,30 @@
       flex-shrink: 0;
     }
 
+    .workspace-main {
+      flex: 1;
+      min-width: 0;
+      display: none;
+      background: var(--bg-main);
+    }
+
+    .workspace-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: var(--bg-main);
+    }
+
+    .chat-layout.workspace-mode .chat-main,
+    .chat-layout.workspace-mode .chat-panel {
+      display: none;
+    }
+
+    .chat-layout.workspace-mode .workspace-main {
+      display: block;
+    }
+
     .panel-section {
       padding: 16px;
       border-bottom: 1px solid var(--border);
@@ -787,9 +890,17 @@
     }
 
     @media (max-width: 768px) {
+      html,
+      body {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
       .chat-layout {
         display: flex;
         width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
       }
 
       .chat-sidebar,
@@ -800,6 +911,7 @@
       .chat-main {
         width: 100%;
         min-width: 0;
+        max-width: 100vw;
       }
 
       .chat-header {
@@ -821,10 +933,44 @@
       .chat-messages {
         padding: 12px;
         gap: 14px;
+        overflow-x: hidden;
       }
 
       .message {
-        max-width: 94%;
+        max-width: calc(100vw - 24px);
+        width: calc(100vw - 24px);
+      }
+
+      .message.ai {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 12px;
+        align-self: center;
+      }
+
+      .message.user {
+        display: block;
+        align-self: center;
+      }
+
+      .message.ai .msg-content,
+      .message.user .msg-content {
+        width: auto;
+        max-width: 100%;
+      }
+
+      .message.user .msg-avatar {
+        display: none;
+      }
+
+      .message.user .msg-content {
+        margin-left: auto;
+      }
+
+      .message .msg-bubble {
+        box-sizing: border-box;
+        max-width: 100%;
+        overflow-wrap: anywhere;
       }
 
       .route-card,
@@ -832,7 +978,31 @@
       .compare-card,
       .task-card,
       .doc-card {
+        width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .quote-card table {
+        table-layout: fixed;
+      }
+
+      .quote-card .quote-total span:last-child {
+        min-width: 0;
+        justify-self: end;
+        text-align: right;
+        overflow-wrap: anywhere;
+      }
+
+      .quote-card .quote-total {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .quote-card .quote-total span:last-child {
+        justify-self: start;
+        text-align: left;
       }
 
       .chat-input-area {
@@ -857,7 +1027,24 @@
       <div class="sidebar-search">
         <input type="text" id="conversationSearch" placeholder="搜索客户、目的地..." oninput="renderConversationList()">
       </div>
+      <div class="sidebar-tools">
+        <button class="sidebar-tool" type="button" data-workspace-link="resource" onclick="switchWorkspace('resource')">
+          <span data-icon="folder"></span>
+          <span>资源库</span>
+        </button>
+        <button class="sidebar-tool" type="button" data-workspace-link="plans" onclick="switchWorkspace('plans')">
+          <span data-icon="clipboard"></span>
+          <span>方案库</span>
+        </button>
+      </div>
       <ul class="conversation-list" id="conversationList"></ul>
+      <div class="sidebar-footer">
+        <div class="sidebar-avatar">李</div>
+        <div>
+          <div class="sidebar-user-name">李计调</div>
+          <div class="sidebar-user-role">欧洲部</div>
+        </div>
+      </div>
     </div>
 
     <!-- 中间对话区 -->
@@ -878,7 +1065,7 @@
       <!-- 输入区 -->
       <div class="chat-input-area">
         <div class="input-toolbar">
-          <button class="toolbar-btn" title="上传文件" onclick="location.href='upload.html'"><span data-icon="paperclip"></span></button>
+          <button class="toolbar-btn" title="上传文件" onclick="switchWorkspace('resource', 'files')"><span data-icon="paperclip"></span></button>
           <button class="toolbar-btn" title="上传图片" onclick="mockAttachImage()"><span data-icon="image"></span></button>
           <button class="toolbar-btn" title="语音输入" onclick="mockVoiceInput()"><span data-icon="mic"></span></button>
           <span style="flex:1"></span>
@@ -920,6 +1107,9 @@
 
     <!-- 右侧面板 -->
     <div class="chat-panel" id="contextPanel"></div>
+    <div class="workspace-main" id="workspaceMain">
+      <iframe class="workspace-frame" id="workspaceFrame" title="工作区"></iframe>
+    </div>
   </div>
 
   <div class="context-menu" id="conversationMenu"></div>
@@ -927,7 +1117,7 @@
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
   <script>
-    renderNavbar('chat');
+    installVisualCleanup();
 
     const LEGACY_CHAT_KEY = 'aiTravelAssistant.chat.v2';
     const LEGACY_CHAT_VERSION = 'multi-stage-20260729';
@@ -935,6 +1125,7 @@
     let conversations = simplifyConversations(loadConversations());
     const requestedConversationId = sessionStorage.getItem('openConversationId');
     let activeConversationId = conversations.some(item => item.id === requestedConversationId) ? requestedConversationId : 'new-intake';
+    let activeWorkspace = 'chat';
     sessionStorage.removeItem('openConversationId');
 
     chatInput.addEventListener('input', function() {
@@ -1006,7 +1197,7 @@
             {
               role: 'ai',
               time: '09:33',
-              text: '基于亲子和慢节奏，我从知识库组合了一个更稳的瑞法方案。瑞士段减少折返，巴黎留出迪士尼整日。',
+              text: '基于亲子和慢节奏，我从线路库组合了一个更稳的瑞法方案。瑞士段减少折返，巴黎留出迪士尼整日。',
               cards: [
                 {
                   type: 'route',
@@ -1348,7 +1539,7 @@
         type: 'quote',
         title: '日本商务团初版报价',
         total: AppStore.money(quote.total),
-        note: `人均 ${AppStore.money(quote.perPerson)} · 来源：知识库组件 + 资源成本库`,
+        note: `人均 ${AppStore.money(quote.perPerson)} · 来源：线路库 + 价格库`,
         items: quote.items.map(item => [item.name, AppStore.money(item.amount), item.status])
       };
     }
@@ -1644,6 +1835,29 @@
     function nowTime() {
       const now = new Date();
       return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    }
+
+    function switchWorkspace(workspace, section = '') {
+      activeWorkspace = workspace || 'chat';
+      const layout = document.querySelector('.chat-layout');
+      const frame = document.getElementById('workspaceFrame');
+      layout.classList.toggle('workspace-mode', activeWorkspace !== 'chat');
+      document.querySelectorAll('[data-workspace-link]').forEach(button => {
+        button.classList.toggle('active', button.dataset.workspaceLink === activeWorkspace);
+      });
+
+      if (activeWorkspace === 'chat') {
+        frame.removeAttribute('src');
+        renderAll();
+        return;
+      }
+
+      const query = new URLSearchParams({ embedded: '1' });
+      if (section) query.set('section', section);
+      frame.src = activeWorkspace === 'plans'
+        ? 'plans.html?' + query.toString()
+        : 'resource.html?' + query.toString();
+      frame.title = activeWorkspace === 'plans' ? '方案库' : '资源库';
     }
 
     function renderAll() {
@@ -1968,6 +2182,10 @@
     function switchConversation(id) {
       activeConversationId = id;
       document.getElementById('commandMenu').classList.remove('show');
+      if (activeWorkspace !== 'chat') {
+        switchWorkspace('chat');
+        return;
+      }
       renderAll();
     }
 
@@ -2013,6 +2231,19 @@
     }
 
     function sendQuickReply(text) {
+      if (text === '进入价格库') {
+        switchWorkspace('resource', 'prices');
+        return;
+      }
+      if (text === '进入资源库') {
+        switchWorkspace('resource', 'files');
+        return;
+      }
+      if (text === '查看即将过期价格') {
+        sessionStorage.setItem('resourcePriceStatus', '即将过期');
+        switchWorkspace('resource', 'prices');
+        return;
+      }
       chatInput.value = text;
       sendMessage();
     }
@@ -2061,11 +2292,11 @@
           addMessage({
             role: 'ai',
             time: nowTime(),
-            text: '已切换到线路文件处理流程。您可以去文件管理页上传 PDF，解析完成后我会把待审核切段同步到知识库。',
+            text: '已切换到线路文件处理流程。您可以进入资源库上传 PDF，解析完成后我会把待审核内容同步到线路库。',
             cards: [{ type: 'task', title: '线路上传流程', rows: [['上传文件', 'PDF/Word/图片均可'], ['解析结果', '进入待审核队列'], ['入库后', '可直接用于线路推荐']] }]
           });
         } else if (command === '/上价格') {
-          addMessage({ role: 'ai', time: nowTime(), text: '已准备价格导入流程。建议上传 Excel/CSV 后先做字段映射，再统一设置有效期。', quickReplies: ['进入价格库', '查看即将过期价格'] });
+          addMessage({ role: 'ai', time: nowTime(), text: '已准备价格导入流程。建议在资源库上传 Excel/CSV 后先做字段映射，再统一设置有效期。', quickReplies: ['进入资源库', '查看即将过期价格'] });
         } else if (command === '/报价') {
           generateQuote();
         } else if (command === '/生成PDF') {
@@ -2256,7 +2487,7 @@
       conv.status = 'done';
       conv.statusText = '客户已确认报价 · 可生成正式文档';
       conv.preview = '报价已确认，可生成行程单';
-      conv.notes = ['报价已确认，下一步建议生成客户版行程单并保存到方案管理。', ...(conv.notes || []).slice(0, 1)];
+      conv.notes = ['报价已确认，下一步建议生成客户版行程单并保存到方案库。', ...(conv.notes || []).slice(0, 1)];
       syncConversationToPlan(conv, null, '报价确认');
       addMessage({
         role: 'ai',
@@ -2277,6 +2508,11 @@
       }
       conversations = simplifyConversations(conversations);
       activeConversationId = fresh.id;
+      if (activeWorkspace !== 'chat') {
+        switchWorkspace('chat');
+        showToast('已打开新客户演示单', 'info');
+        return;
+      }
       renderAll();
       showToast('已打开新客户演示单', 'info');
     }
@@ -2456,7 +2692,7 @@
         role: 'ai',
         time: nowTime(),
         text,
-        cards: [{ type: 'doc', title: label, meta: conv.title + ' · 模拟生成时间 ' + nowTime(), actions: ['预览', '下载', '保存到方案管理'] }]
+        cards: [{ type: 'doc', title: label, meta: conv.title + ' · 模拟生成时间 ' + nowTime(), actions: ['预览', '下载', '保存到方案库'] }]
       });
       showToast(label + '已生成', 'success');
     }

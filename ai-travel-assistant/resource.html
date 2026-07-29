@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>资源库 - AI智能计调助手</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .resource-layout {
+      padding-top: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      overflow: hidden;
+      background: var(--bg-main);
+    }
+
+    body.embedded .resource-layout {
+      padding-top: 0;
+      height: 100vh;
+    }
+
+    .resource-main {
+      min-width: 0;
+      padding: 22px 24px 24px;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .header-actions,
+    .inline-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .resource-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    .resource-tab {
+      min-height: 36px;
+      padding: 7px 13px;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-family: var(--font-family);
+      font-weight: 720;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.16s ease, color 0.16s ease;
+    }
+
+    .resource-tab:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .resource-tab.active {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .workbench-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.85fr);
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 780;
+      color: var(--text-primary);
+    }
+
+    .panel-meta {
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      padding: 14px 16px;
+    }
+
+    .component-picker {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .component-option {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font-family);
+      color: var(--text-secondary);
+    }
+
+    .component-option:hover {
+      border-color: var(--primary-light);
+      background: var(--bg-hover);
+    }
+
+    .component-option.active {
+      border-color: var(--primary);
+      background: var(--primary-bg);
+      color: var(--text-primary);
+    }
+
+    .component-option strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .component-option span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .relation-table {
+      min-width: 900px;
+    }
+
+    .table-tight th,
+    .table-tight td {
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    .resource-chip,
+    .status-pill,
+    .type-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+      background: var(--bg-soft);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 720;
+      margin: 0 5px 5px 0;
+    }
+
+    .status-ready,
+    .status-valid,
+    .status-completed {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status-warning,
+    .status-expiring,
+    .status-pending {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .status-danger,
+    .status-expired,
+    .status-error {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .status-info,
+    .status-realtime,
+    .status-processing {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .amount {
+      font-weight: 780;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .subtext {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .quote-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .quote-item,
+    .task-line {
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: var(--bg-card);
+    }
+
+    .quote-row,
+    .task-row-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .quote-row strong,
+    .task-row-line strong {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .resource-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .mini-kpi {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 10px 12px;
+    }
+
+    .mini-kpi span {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .mini-kpi strong {
+      font-size: 20px;
+      color: var(--text-primary);
+    }
+
+    .upload-drop {
+      border: 1px dashed #C7D2E3;
+      border-radius: var(--radius-lg);
+      background: var(--bg-soft);
+      padding: 28px 20px;
+      text-align: center;
+      transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .upload-drop.dragover,
+    .upload-drop:hover {
+      border-color: var(--primary);
+      background: var(--primary-bg);
+      box-shadow: 0 0 0 3px rgba(36, 87, 214, 0.08);
+    }
+
+    .upload-title {
+      font-size: 15px;
+      font-weight: 760;
+      margin-top: 8px;
+      margin-bottom: 6px;
+    }
+
+    .upload-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .resource-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .workbench-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resource-kpis {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .resource-main {
+        padding: 16px;
+      }
+
+      .page-header,
+      .panel-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="resource-layout">
+    <main class="resource-main">
+      <div class="page-header">
+        <h1 class="page-title" id="pageTitle">资源库</h1>
+        <div class="header-actions" id="pageActions"></div>
+      </div>
+      <div class="resource-tabs" id="resourceTabs"></div>
+      <div id="resourceBody"></div>
+    </main>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    const EMBEDDED_MODE = new URLSearchParams(location.search).get('embedded') === '1';
+    if (EMBEDDED_MODE) {
+      document.body.classList.add('embedded');
+    }
+    installVisualCleanup();
+
+    const sections = [
+      { id: 'files', label: '导入资料', icon: 'folder' },
+      { id: 'components', label: '线路库', icon: 'map' },
+      { id: 'prices', label: '价格库', icon: 'tag' }
+    ];
+    const params = new URLSearchParams(location.search);
+    let requestedSection = params.get('section') === 'overview' ? 'files' : params.get('section');
+    let activeSection = sections.some(item => item.id === requestedSection) ? requestedSection : 'files';
+    let activeComponentId = sessionStorage.getItem('resourceComponentId') || 'seg-japan-business-5d';
+    let priceFilters = {
+      keyword: '',
+      category: '所有品类',
+      status: sessionStorage.getItem('resourcePriceStatus') || '所有状态'
+    };
+    sessionStorage.removeItem('resourcePriceStatus');
+
+    function esc(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function componentList() {
+      return AppStore.all().segments
+        .filter(seg => seg.status !== 'rejected')
+        .sort((a, b) => {
+          if (a.id === 'seg-japan-business-5d') return -1;
+          if (b.id === 'seg-japan-business-5d') return 1;
+          return String(a.from).localeCompare(String(b.from), 'zh-CN');
+        });
+    }
+
+    function componentName(seg) {
+      if (!seg) return '';
+      if (seg.id === 'seg-japan-business-5d') return '东京商务团 5天4晚';
+      return `${seg.from} -> ${seg.to}`;
+    }
+
+    function priceStatusText(status) {
+      return { valid: '有效', expiring: '即将过期', expired: '已过期', realtime: '实时' }[status] || status;
+    }
+
+    function taskStatusText(task) {
+      return task.statusText || {
+        processing: '解析中',
+        completed: '已入库',
+        pending: '待审核',
+        paused: '已暂停',
+        error: '解析失败'
+      }[task.status] || task.status;
+    }
+
+    function taskType(task) {
+      const name = task.fileName || '';
+      if (/\.(xlsx|xls|csv)$/i.test(name)) return /酒店|协议/.test(name) ? '酒店协议价' : '价格表';
+      if (/报价|地接|供应商/.test(name)) return '地接报价单';
+      if (/需求|客户/.test(name)) return '客户需求';
+      if (/酒店|协议/.test(name)) return '酒店协议价';
+      return '线路PDF';
+    }
+
+    function setSection(section) {
+      activeSection = section;
+      const query = new URLSearchParams();
+      query.set('section', section);
+      if (EMBEDDED_MODE) query.set('embedded', '1');
+      history.replaceState(null, '', '?' + query.toString());
+      renderAll();
+    }
+
+    function setComponent(id) {
+      activeComponentId = id;
+      sessionStorage.setItem('resourceComponentId', id);
+      showComponentResource(id);
+    }
+
+    function renderTabs() {
+      document.getElementById('resourceTabs').innerHTML = `
+        ${sections.map(item => `
+          <button class="resource-tab ${item.id === activeSection ? 'active' : ''}" onclick="setSection('${item.id}')">
+            <span data-icon="${item.icon}"></span>
+            <span>${item.label}</span>
+          </button>
+        `).join('')}
+      `;
+      hydrateLineIcons(document.getElementById('resourceTabs'));
+    }
+
+    function renderHeader(title, actions = '') {
+      document.getElementById('pageTitle').textContent = title;
+      document.getElementById('pageActions').innerHTML = actions;
+      hydrateLineIcons(document.getElementById('pageActions'));
+    }
+
+    function renderComponents() {
+      const components = componentList();
+      renderHeader('线路库', `
+        <button class="btn btn-secondary" onclick="showUploadRule()">拆解规则</button>
+        <button class="btn btn-primary" onclick="setSection('files')">导入资料</button>
+      `);
+      document.getElementById('resourceBody').innerHTML = `
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">线路台账</div>
+              <div class="panel-meta">线路必须声明资源需求，才能进入自动报价</div>
+            </div>
+          </div>
+          <div class="table-wrapper" style="border:0;border-radius:0;">
+            <table class="table-tight" style="min-width:980px;">
+              <thead>
+                <tr>
+                  <th>线路</th>
+                  <th>所需资源</th>
+                  <th>报价状态</th>
+                  <th>来源</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${components.map(seg => {
+                  const quote = AppStore.buildQuoteForComponent(seg.id, { people: 18 });
+                  return `
+                    <tr>
+                      <td>
+                        <strong>${esc(componentName(seg))}</strong>
+                        <div class="subtext">${esc(seg.duration || '')} · ${esc(seg.audience || '')}</div>
+                      </td>
+                      <td>${AppStore.componentNeeds(seg).map(need => `<span class="resource-chip">${esc(need.resource)} ${esc(need.quantity + need.unit)}</span>`).join('')}</td>
+                      <td>
+                        <span class="status-pill ${quote.missing.length ? 'status-warning' : 'status-ready'}">${quote.missing.length ? '缺价 ' + quote.missing.length : '可报价'}</span>
+                        <div class="subtext">匹配 ${quote.matchedCount}/${quote.totalNeeds} · ${AppStore.money(quote.total)}</div>
+                      </td>
+                      <td><div class="subtext">${esc(seg.source || '手工维护')}</div></td>
+                      <td>
+                        <div class="inline-actions">
+                          <button class="btn btn-sm btn-primary" onclick="showComponentResource('${esc(seg.id)}')">资源明细</button>
+                          <button class="btn btn-sm btn-secondary" onclick="openComponentEditModal('${esc(seg.id)}')">编辑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function openComponentEditModal(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      const needs = AppStore.componentNeeds(seg);
+      showDetailModal('编辑线路', `
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">起点</label>
+            <input class="form-input" id="editFrom" value="${esc(seg.from || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">终点</label>
+            <input class="form-input" id="editTo" value="${esc(seg.to || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">类型</label>
+            <input class="form-input" id="editType" value="${esc(seg.componentType || seg.transport || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">天数</label>
+            <input class="form-input" id="editDuration" value="${esc(seg.duration || '')}">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">客群</label>
+            <input class="form-input" id="editAudience" value="${esc(seg.audience || '')}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">客户文案</label>
+          <textarea class="form-textarea" id="editDesc" rows="4">${esc(seg.desc || '')}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">标签</label>
+          <input class="form-input" id="editTags" value="${esc((seg.tags || []).join('，'))}">
+        </div>
+        <div class="panel-note">
+          ${needs.length ? needs.map(need => `${esc(need.resource)} ${esc(need.quantity + need.unit)}`).join('，') : '暂无资源声明'}
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveComponentEdit('${esc(id)}')">保存</button>
+      `);
+    }
+
+    function saveComponentEdit(id) {
+      AppStore.updateSegment(id, {
+        from: document.getElementById('editFrom').value.trim() || '未命名线路',
+        to: document.getElementById('editTo').value.trim() || '待确认',
+        transport: document.getElementById('editType').value.trim() || '线路',
+        componentType: document.getElementById('editType').value.trim() || '线路',
+        duration: document.getElementById('editDuration').value.trim(),
+        audience: document.getElementById('editAudience').value.trim(),
+        desc: document.getElementById('editDesc').value.trim(),
+        tags: document.getElementById('editTags').value.split(/[，,]/).map(item => item.trim()).filter(Boolean)
+      });
+      closeModal('globalDetailModal');
+      showToast('线路已保存', 'success');
+      renderAll();
+    }
+
+    function showComponentResource(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
+      activeComponentId = id;
+      sessionStorage.setItem('resourceComponentId', id);
+      const quote = AppStore.buildQuoteForComponent(id, { people: 18 });
+      const rows = quote.lines.map(line => `
+        <tr>
+          <td>
+            <span class="resource-chip">${esc(line.need.resource)}</span>
+            <div class="subtext">${esc(line.need.quantity + line.need.unit)} · ${esc(line.need.detailLabel || line.need.label)}</div>
+          </td>
+          <td>
+            ${line.price ? `<strong>${esc(line.price.name)}</strong><div class="subtext">${esc(line.price.city)} · ${esc(line.price.supplier)} · ${AppStore.money(line.price.price)}/${esc(line.price.unit)}</div>` : '<strong style="color:var(--danger);">暂无可用价格</strong>'}
+          </td>
+          <td>
+            <strong>${esc(line.quoteQuantity + line.quoteUnit)}</strong>
+            ${line.adjustment ? `<div class="subtext">${esc(line.need.adjustmentLabel || '价格调整')} ${AppStore.money(line.adjustment)}</div>` : ''}
+          </td>
+          <td><span class="status-pill ${line.matched ? 'status-ready' : 'status-danger'}">${esc(line.status)}</span></td>
+          <td class="amount">${AppStore.money(line.amount)}</td>
+        </tr>
+      `).join('');
+      const quoteItems = quote.items.map(item => `
+        <div class="quote-item" style="margin-bottom:8px;">
+          <div class="quote-row">
+            <strong>${esc(item.name)}</strong>
+            <span class="amount">${AppStore.money(item.amount)}</span>
+          </div>
+          <div class="subtext">${esc(item.status)} · ${esc((item.details || []).slice(0, 1).join(''))}</div>
+        </div>
+      `).join('');
+
+      showDetailModal(componentName(seg), `
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px;">
+          <div class="mini-kpi"><span>资源需求</span><strong>${quote.totalNeeds}</strong></div>
+          <div class="mini-kpi"><span>匹配价格</span><strong>${quote.matchedCount}</strong></div>
+          <div class="mini-kpi"><span>报价小计</span><strong>${AppStore.money(quote.total)}</strong></div>
+        </div>
+        <div class="table-wrapper" style="margin-bottom:14px;">
+          <table class="table-tight" style="min-width:820px;">
+            <thead>
+              <tr>
+                <th>线路需求</th>
+                <th>价格匹配</th>
+                <th>报价口径</th>
+                <th>状态</th>
+                <th>金额</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <h4 style="margin:0 0 10px;">报价汇总</h4>
+        ${quoteItems}
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">关闭</button>
+        <button class="btn btn-primary" onclick="closeModal('globalDetailModal');setSection('prices')">维护价格</button>
+      `);
+    }
+
+    function filteredPrices() {
+      return AppStore.all().prices.filter(price => {
+        const status = priceStatusText(AppStore.priceStatus(price));
+        const haystack = [price.category, price.city, price.name, price.supplier, price.period].join(' ').toLowerCase();
+        if (priceFilters.keyword && !haystack.includes(priceFilters.keyword.toLowerCase())) return false;
+        if (priceFilters.category !== '所有品类' && price.category !== priceFilters.category) return false;
+        if (priceFilters.status !== '所有状态' && status !== priceFilters.status) return false;
+        return true;
+      });
+    }
+
+    function setPriceFilter(key, value) {
+      priceFilters[key] = value;
+      renderPrices();
+    }
+
+    function renderPrices() {
+      const prices = filteredPrices();
+      renderHeader('价格库', `
+        <button class="btn btn-secondary" onclick="openUploadModal('价格表')">导入价格表</button>
+        <button class="btn btn-primary" onclick="showFormulaGuide()">报价公式</button>
+      `);
+      document.getElementById('resourceBody').innerHTML = `
+        <div class="filter-bar">
+          <input class="form-input" style="width:220px;" placeholder="搜索资源、供应商、城市..." value="${esc(priceFilters.keyword)}" oninput="setPriceFilter('keyword', this.value)">
+          <select class="form-select" style="width:150px;" onchange="setPriceFilter('category', this.value)">
+            ${['所有品类', '酒店', '用车', '导游', '门票', '餐费', '保险', '机票', '火车', '会议室'].map(item => `<option ${item === priceFilters.category ? 'selected' : ''}>${item}</option>`).join('')}
+          </select>
+          <select class="form-select" style="width:150px;" onchange="setPriceFilter('status', this.value)">
+            ${['所有状态', '有效', '即将过期', '已过期', '实时'].map(item => `<option ${item === priceFilters.status ? 'selected' : ''}>${item}</option>`).join('')}
+          </select>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">资源成本台账</div>
+              <div class="panel-meta">共 ${prices.length} 条价格</div>
+            </div>
+          </div>
+          <div class="table-wrapper" style="border:0;border-radius:0;">
+            <table class="table-tight" style="min-width:980px;">
+              <thead>
+                <tr>
+                  <th>资源</th>
+                  <th>品类/城市</th>
+                  <th>价格</th>
+                  <th>供应商</th>
+                  <th>有效期</th>
+                  <th>报价规则</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${prices.map(price => {
+                  const status = AppStore.priceStatus(price);
+                  return `
+                    <tr>
+                      <td><strong>${esc(price.name)}</strong><div class="subtext">${esc(price.condition || '')}</div></td>
+                      <td><span class="type-pill">${esc(price.category)}</span><div class="subtext">${esc(price.city)}</div></td>
+                      <td><span class="amount">${AppStore.money(price.price)}</span><div class="subtext">/${esc(price.unit)}</div></td>
+                      <td><div class="subtext">${esc(price.supplier)}</div></td>
+                      <td><span class="status-pill status-${status}">${esc(priceStatusText(status))}</span><div class="subtext">${esc(price.period)}</div></td>
+                      <td><div class="subtext">${esc(price.formula || '按资源数量计算')}<br>${esc(price.markup || '')}</div></td>
+                    </tr>
+                  `;
+                }).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="empty-text">没有匹配价格</div></div></td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFiles() {
+      const tasks = AppStore.all().uploadTasks;
+      renderHeader('导入资料', `
+        <button class="btn btn-secondary" onclick="batchApproveFiles(this)">批量确认入库</button>
+        <button class="btn btn-primary" onclick="openUploadModal()"><span data-icon="upload"></span>上传文件</button>
+      `);
+      document.getElementById('resourceBody').innerHTML = `
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">解析任务台账</div>
+              <div class="panel-meta">共 ${tasks.length} 个文件 · ${tasks.reduce((sum, task) => sum + Number(task.pending || 0), 0)} 个待审核</div>
+            </div>
+          </div>
+          <div class="table-wrapper" style="border:0;border-radius:0;">
+            <table class="table-tight" style="min-width:980px;">
+              <thead>
+                <tr>
+                  <th>文件</th>
+                  <th>类型</th>
+                  <th>状态</th>
+                  <th>进度</th>
+                  <th>结果</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tasks.map(task => `
+                  <tr>
+                    <td><strong>${esc(task.fileName)}</strong><div class="subtext">${esc(task.size)} · ${esc(task.pages)} · ${esc(task.uploadedAt)}</div></td>
+                    <td><span class="type-pill">${esc(taskType(task))}</span></td>
+                    <td><span class="status-pill status-${esc(task.status)}">${esc(taskStatusText(task))}</span></td>
+                    <td><strong>${Number(task.progress || 0)}%</strong><div class="subtext">${task.status === 'processing' ? '正在结构化抽取' : esc(taskStatusText(task))}</div></td>
+                    <td><div class="subtext">识别 ${Number(task.recognized || 0)} · 待审 ${Number(task.pending || 0)}</div></td>
+                    <td>
+                      <div class="inline-actions">
+                        ${Number(task.pending || 0) > 0 ? `<button class="btn btn-sm btn-primary" onclick="approveTask('${esc(task.id)}')">确认入库</button>` : ''}
+                        <button class="btn btn-sm btn-secondary" onclick="showTaskDetail('${esc(task.id)}')">查看</button>
+                        <button class="btn btn-sm btn-ghost" onclick="retryTask('${esc(task.id)}', this)">重新解析</button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="empty-text">暂无解析任务</div></div></td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function retryTask(id, button) {
+      const task = AppStore.all().uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      runWithButtonLoading(button, '解析中...', () => {
+        AppStore.updateUploadTask(id, {
+          status: 'processing',
+          statusText: '解析中',
+          progress: 58,
+          original: task.original || '正在重新识别文件内容。'
+        });
+        renderAll();
+        setTimeout(() => {
+          const latest = AppStore.all().uploadTasks.find(item => item.id === id);
+          AppStore.updateUploadTask(id, {
+            status: latest && Number(latest.pending || 0) > 0 ? 'pending' : 'completed',
+            statusText: latest && Number(latest.pending || 0) > 0 ? '待审核' : '已入库',
+            progress: 100,
+            recognized: Math.max(1, Number(latest?.recognized || task.recognized || 1))
+          });
+          showToast('解析已刷新', 'success');
+          renderAll();
+        }, 700);
+      }, 450);
+    }
+
+    function openUploadModal(kind = '') {
+      showDetailModal(kind ? `导入${kind}` : '上传文件', `
+        <div class="upload-drop" id="resourceUploadDrop">
+          <input id="resourceFileInput" type="file" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.csv" style="display:none" onchange="handleResourceFiles(event);closeModal('globalDetailModal')">
+          <span data-icon="folder"></span>
+          <div class="upload-title">拖拽文件到这里，或选择本地文件</div>
+          <div class="upload-desc">系统会按线路、报价单、协议价和客户需求自动进入对应解析队列。</div>
+          <button class="btn btn-secondary" style="margin-top:14px;" onclick="document.getElementById('resourceFileInput').click()">选择文件</button>
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="document.getElementById('resourceFileInput').click()">选择文件</button>
+      `);
+      const drop = document.getElementById('resourceUploadDrop');
+      hydrateLineIcons(document.getElementById('globalDetailModal'));
+      drop.addEventListener('dragover', e => {
+        e.preventDefault();
+        drop.classList.add('dragover');
+      });
+      drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+      drop.addEventListener('drop', e => {
+        e.preventDefault();
+        drop.classList.remove('dragover');
+        addResourceFiles(e.dataTransfer.files);
+        closeModal('globalDetailModal');
+      });
+    }
+
+    function handleResourceFiles(event) {
+      addResourceFiles(event.target.files);
+      event.target.value = '';
+    }
+
+    function addResourceFiles(files) {
+      if (!files || !files.length) return;
+      Array.from(files).forEach(file => {
+        const task = AppStore.addUploadTask(file);
+        setTimeout(() => {
+          AppStore.updateUploadTask(task.id, { progress: 52, statusText: '解析中', recognized: 1 });
+          renderAll();
+        }, 500);
+        setTimeout(() => {
+          AppStore.completeUploadTask(task.id);
+          showToast(`${file.name} 解析完成，已进入待审核`, 'success');
+          activeSection = 'files';
+          renderAll();
+        }, 1400);
+      });
+      showToast(`已上传 ${files.length} 个文件`, 'success');
+      activeSection = 'files';
+      renderAll();
+    }
+
+    function approveTask(id) {
+      const task = AppStore.all().uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      (task.extracted || []).forEach(segId => {
+        const seg = AppStore.all().segments.find(item => item.id === segId);
+        if (seg && seg.status === 'review') AppStore.approveSegment(segId);
+      });
+      showToast('待审核内容已入库', 'success');
+      renderAll();
+    }
+
+    function batchApproveFiles(button) {
+      const reviewSegments = AppStore.all().segments.filter(seg => seg.status === 'review');
+      if (!reviewSegments.length) {
+        showToast('当前没有待审核内容', 'info');
+        return;
+      }
+      runWithButtonLoading(button, '入库中...', () => {
+        reviewSegments.forEach(seg => AppStore.approveSegment(seg.id));
+        showToast(`已入库 ${reviewSegments.length} 条内容`, 'success');
+        renderAll();
+      }, 650);
+    }
+
+    function showTaskDetail(id) {
+      const data = AppStore.all();
+      const task = data.uploadTasks.find(item => item.id === id);
+      if (!task) return;
+      const segments = (task.extracted || []).map(segId => data.segments.find(seg => seg.id === segId)).filter(Boolean);
+      showDetailModal(task.fileName, `
+        <div class="panel-note" style="margin-bottom:14px;">${esc(task.original || '暂无原文证据')}</div>
+        ${segments.map(seg => `
+          <div class="quote-item">
+            <div class="quote-row">
+              <strong>${esc(componentName(seg))}</strong>
+              <span class="status-pill ${seg.status === 'review' ? 'status-warning' : 'status-ready'}">${seg.status === 'review' ? '待审核' : '已入库'}</span>
+            </div>
+            <div class="subtext">${esc(seg.desc || '')}</div>
+          </div>
+        `).join('') || '<div class="empty-state"><div class="empty-text">暂无提取结果</div></div>'}
+      `);
+    }
+
+    function showUploadRule() {
+      showDetailModal('文件拆解规则', `
+        ${[
+          ['线路方案', '拆成城市衔接、住宿段、景点体验、自由活动等线路素材', '入线路库'],
+          ['地接报价单', '拆成用车、司导、酒店、餐、门票等资源成本', '入价格库'],
+          ['酒店协议价', '拆房型、餐标、有效期、取消规则、淡旺季', '入价格库'],
+          ['客户需求文档', '拆人数、预算、目的地、偏好和确认状态', '入对话上下文']
+        ].map(row => `
+          <div class="quote-item" style="margin-bottom:8px;">
+            <div class="quote-row"><strong>${esc(row[0])}</strong><span class="status-pill status-ready">${esc(row[2])}</span></div>
+            <div class="subtext">${esc(row[1])}</div>
+          </div>
+        `).join('')}
+        <div class="panel-note warning">只有声明了所需资源，并能匹配价格的线路，才能自动进入方案报价。</div>
+      `);
+    }
+
+    function showFormulaGuide() {
+      showDetailModal('报价公式', `
+        <div class="quote-item" style="margin-bottom:10px;">
+          <div class="quote-row"><strong>线路需求</strong><span class="status-pill status-info">数量口径</span></div>
+          <div class="subtext">例如酒店 4 晚会换算成 36 间夜，司导 5 天会换算成 5 天服务。</div>
+        </div>
+        <div class="quote-item" style="margin-bottom:10px;">
+          <div class="quote-row"><strong>匹配价格</strong><span class="status-pill status-ready">供应商价格</span></div>
+          <div class="subtext">按品类、城市、关键词和指定价格 ID 匹配可用资源价格。</div>
+        </div>
+        <div class="quote-item">
+          <div class="quote-row"><strong>方案报价</strong><span class="status-pill status-warning">可复核</span></div>
+          <div class="subtext">金额 = 单价 × 报价数量 + 调整项；缺价、过期和待确认资源会进入报价风险。</div>
+        </div>
+      `);
+    }
+
+    function renderAll() {
+      renderTabs();
+      if (activeSection === 'components') renderComponents();
+      else if (activeSection === 'prices') renderPrices();
+      else renderFiles();
+      hydrateLineIcons(document.getElementById('resourceBody'));
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>

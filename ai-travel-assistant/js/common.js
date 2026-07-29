@@ -138,13 +138,27 @@ function installVisualCleanup() {
 
 // 导航栏渲染
 function renderNavbar(activePage) {
-  const navPages = [
+  const legacyResourceMap = {
+    knowledge: 'components',
+    pricing: 'prices',
+    upload: 'files'
+  };
+  if (legacyResourceMap[activePage]) {
+    if (window.parent && window.parent !== window && typeof window.parent.switchWorkspace === 'function') {
+      window.parent.switchWorkspace('resource', legacyResourceMap[activePage]);
+    } else {
+      location.replace(`resource.html?section=${legacyResourceMap[activePage]}`);
+    }
+    return;
+  }
+
+  const primaryNavPages = [
     { id: 'chat', label: 'AI对话', icon: 'message', href: 'chat.html' },
-    { id: 'knowledge', label: '知识库', icon: 'book', href: 'knowledge.html' },
-    { id: 'pricing', label: '价格库', icon: 'tag', href: 'pricing.html' },
-    { id: 'upload', label: '文件管理', icon: 'folder', href: 'upload.html' },
-    { id: 'plans', label: '方案管理', icon: 'clipboard', href: 'plans.html' }
+    { id: 'resource', label: '资源库', icon: 'folder', href: 'resource.html' },
+    { id: 'plans', label: '方案库', icon: 'clipboard', href: 'plans.html' }
   ];
+  const resourcePages = ['knowledge', 'pricing', 'upload', 'resource'];
+  const navPages = activePage === 'chat' ? [] : primaryNavPages;
 
   const navHtml = `
     <nav class="navbar">
@@ -152,16 +166,21 @@ function renderNavbar(activePage) {
         <span class="brand-icon">${iconSvg('plane')}</span>
         <span>AI计调助手</span>
       </a>
-      <ul class="navbar-nav">
-        ${navPages.map(p => `
-          <li class="nav-item">
-            <a class="nav-link ${p.id === activePage ? 'active' : ''}" href="${p.href}">
-              <span class="nav-icon">${iconSvg(p.icon)}</span>
-              <span>${p.label}</span>
-            </a>
-          </li>
-        `).join('')}
-      </ul>
+      ${navPages.length ? `
+        <ul class="navbar-nav">
+          ${navPages.map(p => {
+            const active = p.id === activePage || (p.id === 'resource' && resourcePages.includes(activePage));
+            return `
+              <li class="nav-item">
+                <a class="nav-link ${active ? 'active' : ''}" href="${p.href}">
+                  <span class="nav-icon">${iconSvg(p.icon)}</span>
+                  <span>${p.label}</span>
+                </a>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      ` : ''}
       <div class="navbar-user">
         <div style="text-align:right">
           <div class="user-name">李计调</div>

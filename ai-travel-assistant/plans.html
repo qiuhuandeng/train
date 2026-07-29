@@ -3,16 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>方案管理 - AI智能计调助手</title>
+  <title>方案库 - AI智能计调助手</title>
   <link rel="stylesheet" href="css/common.css">
   <style>
     .plans-content {
-      padding-top: calc(var(--nav-height) + 20px);
+      padding-top: 20px;
       padding-left: 24px;
       padding-right: 24px;
       padding-bottom: 24px;
       height: 100vh;
       overflow-y: auto;
+    }
+
+    body.embedded .plans-content {
+      padding-top: 20px;
+      height: 100vh;
+    }
+
+    body.embedded .page-header .btn {
+      display: none;
     }
 
     .page-header {
@@ -237,7 +246,7 @@
 <body>
   <div class="plans-content">
     <div class="page-header">
-      <h1 class="page-title">方案管理</h1>
+      <h1 class="page-title">方案库</h1>
       <button class="btn btn-primary" onclick="location.href='chat.html'">回到 AI 对话</button>
     </div>
 
@@ -272,7 +281,11 @@
   <script src="js/store.js"></script>
   <script src="js/common.js"></script>
   <script>
-    renderNavbar('plans');
+    const EMBEDDED_MODE = new URLSearchParams(location.search).get('embedded') === '1';
+    if (EMBEDDED_MODE) {
+      document.body.classList.add('embedded');
+    }
+    installVisualCleanup();
 
     const CURRENT_CONVERSATION_ID = 'new-intake';
 
@@ -480,7 +493,11 @@
     function editPlan(id) {
       const plan = AppStore.all().plans.find(item => item.id === id) || ensureCurrentPlan();
       sessionStorage.setItem('openConversationId', plan.conversationId || CURRENT_CONVERSATION_ID);
-      location.href = 'chat.html';
+      if (EMBEDDED_MODE && window.parent && window.parent !== window && typeof window.parent.switchWorkspace === 'function') {
+        window.parent.switchWorkspace('chat');
+      } else {
+        location.href = 'chat.html';
+      }
     }
 
     function generatePlanDoc(id, type, button) {
