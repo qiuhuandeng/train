@@ -262,7 +262,7 @@
       {
         id: 'seg-review-montreux',
         region: 'europe',
-        status: 'review',
+        status: 'approved',
         from: '因特拉肯',
         to: '蒙特勒',
         transport: '🚆 金色快车',
@@ -270,14 +270,14 @@
         season: '5-10月最佳',
         audience: '亲子/摄影',
         desc: '金色山口快车衔接瑞士湖区，沿途风景好，适合从少女峰区域平稳过渡到法语区。',
-        tags: ['待审核', '火车景观', '瑞士'],
+        tags: ['火车景观', '瑞士'],
         source: '瑞士火车专题.pdf · P14',
         original: 'GoldenPass Express: Interlaken to Montreux, scenic rail route, recommended for family and photography itineraries.'
       },
       {
         id: 'seg-review-lily',
         region: 'asia',
-        status: 'review',
+        status: 'approved',
         from: '马累',
         to: '莉莉岛',
         transport: '✈️ 水飞',
@@ -285,7 +285,7 @@
         season: '9-11月性价比高',
         audience: '蜜月',
         desc: '一价全包岛，浮潜条件稳定，适合重视性价比和水下环境的蜜月客户。',
-        tags: ['待审核', '蜜月', '海岛'],
+        tags: ['蜜月', '海岛'],
         source: '马代岛屿资料.docx · P3',
         original: 'Lily Beach: all inclusive, strong reef, honeymoon friendly, high demand for 2BV+4WV package.'
       }
@@ -313,11 +313,11 @@
         size: '87MB',
         pages: '52页',
         uploadedAt: '今天 09:20',
-        status: 'processing',
-        statusText: '解析中',
-        progress: 72,
+        status: 'completed',
+        statusText: '已解析',
+        progress: 100,
         recognized: 38,
-        pending: 1,
+        pending: 0,
         original: 'Page 14: GoldenPass Express from Interlaken to Montreux. Scenic rail route suitable for family and photography itineraries.',
         extracted: ['seg-review-montreux']
       },
@@ -327,11 +327,11 @@
         size: '14MB',
         pages: '18页',
         uploadedAt: '今天 08:40',
-        status: 'pending',
-        statusText: '待审核',
+        status: 'completed',
+        statusText: '已解析',
         progress: 100,
         recognized: 12,
-        pending: 1,
+        pending: 0,
         original: 'Lily Beach all inclusive package: 2 Beach Villa + 4 Water Villa, strong reef, honeymoon friendly.',
         extracted: ['seg-review-lily']
       },
@@ -365,7 +365,7 @@
       }
     ],
     notifications: [
-      { id: 'notice-review', type: 'warning', text: '有 2 个切段待审核入库' },
+      { id: 'notice-review', type: 'info', text: '新资料解析后会自动同步到资源库' },
       { id: 'notice-price', type: 'warning', text: '2 条价格即将过期' }
     ],
     logs: []
@@ -853,7 +853,7 @@
             if ((task.extracted || []).includes(id)) {
               task.pending = Math.max(0, (task.pending || 0) - 1);
               task.status = task.pending ? 'pending' : 'completed';
-              task.statusText = task.pending ? '待审核' : '已入库';
+              task.statusText = '已解析';
             }
           });
           data.logs.unshift({ id: uid('log'), time: todayText(), action: '审核通过', detail: segment.from + ' → ' + segment.to });
@@ -936,7 +936,7 @@
         const segment = {
           id: uid('seg'),
           region: 'europe',
-          status: 'review',
+          status: 'approved',
           from: '米兰',
           to: '卢塞恩',
           transport: '🚆 火车',
@@ -944,16 +944,16 @@
           season: '5-10月最佳',
           audience: '亲子/轻奢',
           desc: '从意大利北部进入瑞士湖区，适合意瑞连线产品，建议控制当天活动强度。',
-          tags: ['待审核', '意瑞连线', '湖区'],
+          tags: ['意瑞连线', '湖区'],
           source: task.fileName + ' · AI解析',
           original: 'Milano to Lucerne rail connection, scenic lake arrival, suitable for family groups.'
         };
         data.segments.unshift(segment);
         task.progress = 100;
-        task.status = 'pending';
-        task.statusText = '待审核';
+        task.status = 'completed';
+        task.statusText = '已解析';
         task.recognized = 1;
-        task.pending = 1;
+        task.pending = 0;
         task.extracted = [segment.id];
         data.logs.unshift({ id: uid('log'), time: todayText(), action: '解析完成', detail: task.fileName });
         return task;

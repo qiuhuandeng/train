@@ -77,6 +77,7 @@ function stripUiEmojiText(root = document) {
   function inferIconName(el, originalText) {
     const text = String(originalText || '');
     if (el.querySelector('.icon-line') || el.querySelector('[data-icon]')) return '';
+    if (el.classList.contains('quick-reply-btn')) return '';
     if (el.classList.contains('upload-icon')) return text.includes('📊') ? 'chart' : 'folder';
     if (el.classList.contains('empty-icon')) {
       if (text.includes('📚')) return 'book';

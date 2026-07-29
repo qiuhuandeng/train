@@ -407,11 +407,22 @@
     function taskStatusText(task) {
       return task.statusText || {
         processing: '解析中',
-        completed: '已入库',
-        pending: '待审核',
+        completed: '已解析',
+        pending: '已解析',
         paused: '已暂停',
         error: '解析失败'
       }[task.status] || task.status;
+    }
+
+    function taskStatusClass(task) {
+      if (task.status === 'pending') return 'completed';
+      return task.status || 'completed';
+    }
+
+    function taskResultText(task) {
+      if (task.status === 'error') return `识别 ${Number(task.recognized || 0)} · 未同步`;
+      if (task.status === 'processing') return `识别 ${Number(task.recognized || 0)} · 自动同步中`;
+      return `识别 ${Number(task.recognized || 0)} · 已同步`;
     }
 
     function taskType(task) {
@@ -458,10 +469,7 @@
 
     function renderComponents() {
       const components = componentList();
-      renderHeader('线路库', `
-        <button class="btn btn-secondary" onclick="showUploadRule()">拆解规则</button>
-        <button class="btn btn-primary" onclick="setSection('files')">导入资料</button>
-      `);
+      renderHeader('线路库');
       document.getElementById('resourceBody').innerHTML = `
         <div class="panel">
           <div class="panel-head">
@@ -498,7 +506,7 @@
                       <td><div class="subtext">${esc(seg.source || '手工维护')}</div></td>
                       <td>
                         <div class="inline-actions">
-                          <button class="btn btn-sm btn-primary" onclick="showComponentResource('${esc(seg.id)}')">资源明细</button>
+                          <button class="btn btn-sm btn-primary" onclick="showComponentResource('${esc(seg.id)}')">查看</button>
                           <button class="btn btn-sm btn-secondary" onclick="openComponentEditModal('${esc(seg.id)}')">编辑</button>
                         </div>
                       </td>
@@ -547,8 +555,10 @@
           <label class="form-label">标签</label>
           <input class="form-input" id="editTags" value="${esc((seg.tags || []).join('，'))}">
         </div>
-        <div class="panel-note">
-          ${needs.length ? needs.map(need => `${esc(need.resource)} ${esc(need.quantity + need.unit)}`).join('，') : '暂无资源声明'}
+        <div class="form-group">
+          <label class="form-label">资源声明</label>
+          <textarea class="form-textarea" id="editNeeds" rows="7">${esc(formatNeedRows(needs))}</textarea>
+          <div class="subtext">每行：资源 | 需求数 | 需求单位 | 报价数 | 报价单位 | 报价分组 | 城市</div>
         </div>
       `, `
         <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
@@ -556,7 +566,61 @@
       `);
     }
 
+    function needCategory(resource) {
+      return {
+        司导: '导游',
+        专车: '用车',
+        晚宴: '餐费',
+        餐食: '餐费',
+        商务餐饮包: '餐费',
+        区间交通: '火车',
+        '门票/活动': '门票'
+      }[resource] || resource;
+    }
+
+    function formatNeedRows(needs) {
+      return (needs || []).map(need => [
+        need.resource,
+        need.quantity,
+        need.unit,
+        need.pricingQuantity,
+        need.pricingUnit,
+        need.quoteGroup || need.label || need.resource,
+        need.city || ''
+      ].join(' | ')).join('\n');
+    }
+
+    function parseNeedRows(value, seg) {
+      const oldNeeds = AppStore.componentNeeds(seg);
+      return String(value || '').split(/\n+/).map(row => row.trim()).filter(Boolean).map((row, index) => {
+        const parts = row.split('|').map(part => part.trim());
+        const resource = parts[0] || '资源';
+        const quoteGroup = parts[5] || parts[3] || resource;
+        const previous = oldNeeds.find(item => item.resource === resource && (item.quoteGroup || item.label || item.resource) === quoteGroup)
+          || oldNeeds.find(item => item.resource === resource)
+          || {};
+        const quantity = Number(parts[1] || previous.quantity || 1);
+        const pricingQuantity = Number(parts[3] || previous.pricingQuantity || quantity || 1);
+        return {
+          ...previous,
+          key: previous.key || `${resource}-${index}`,
+          resource,
+          category: previous.category || needCategory(resource),
+          city: parts[6] || previous.city || document.getElementById('editTo').value.trim() || seg.to || '',
+          label: previous.label || resource,
+          quoteGroup,
+          quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+          unit: parts[2] || previous.unit || '项',
+          pricingQuantity: Number.isFinite(pricingQuantity) && pricingQuantity > 0 ? pricingQuantity : 1,
+          pricingUnit: parts[4] || previous.pricingUnit || parts[2] || '项',
+          status: previous.status || ''
+        };
+      });
+    }
+
     function saveComponentEdit(id) {
+      const seg = AppStore.all().segments.find(item => item.id === id);
+      if (!seg) return;
       AppStore.updateSegment(id, {
         from: document.getElementById('editFrom').value.trim() || '未命名线路',
         to: document.getElementById('editTo').value.trim() || '待确认',
@@ -565,7 +629,8 @@
         duration: document.getElementById('editDuration').value.trim(),
         audience: document.getElementById('editAudience').value.trim(),
         desc: document.getElementById('editDesc').value.trim(),
-        tags: document.getElementById('editTags').value.split(/[，,]/).map(item => item.trim()).filter(Boolean)
+        tags: document.getElementById('editTags').value.split(/[，,]/).map(item => item.trim()).filter(Boolean),
+        requiredResources: parseNeedRows(document.getElementById('editNeeds').value, seg)
       });
       closeModal('globalDetailModal');
       showToast('线路已保存', 'success');
@@ -651,10 +716,7 @@
 
     function renderPrices() {
       const prices = filteredPrices();
-      renderHeader('价格库', `
-        <button class="btn btn-secondary" onclick="openUploadModal('价格表')">导入价格表</button>
-        <button class="btn btn-primary" onclick="showFormulaGuide()">报价公式</button>
-      `);
+      renderHeader('价格库');
       document.getElementById('resourceBody').innerHTML = `
         <div class="filter-bar">
           <input class="form-input" style="width:220px;" placeholder="搜索资源、供应商、城市..." value="${esc(priceFilters.keyword)}" oninput="setPriceFilter('keyword', this.value)">
@@ -673,7 +735,7 @@
             </div>
           </div>
           <div class="table-wrapper" style="border:0;border-radius:0;">
-            <table class="table-tight" style="min-width:980px;">
+            <table class="table-tight" style="min-width:1080px;">
               <thead>
                 <tr>
                   <th>资源</th>
@@ -682,6 +744,7 @@
                   <th>供应商</th>
                   <th>有效期</th>
                   <th>报价规则</th>
+                  <th>操作</th>
                 </tr>
               </thead>
               <tbody>
@@ -695,9 +758,14 @@
                       <td><div class="subtext">${esc(price.supplier)}</div></td>
                       <td><span class="status-pill status-${status}">${esc(priceStatusText(status))}</span><div class="subtext">${esc(price.period)}</div></td>
                       <td><div class="subtext">${esc(price.formula || '按资源数量计算')}<br>${esc(price.markup || '')}</div></td>
+                      <td>
+                        <div class="inline-actions">
+                          <button class="btn btn-sm btn-secondary" onclick="openPriceEditModal('${esc(price.id)}')">编辑</button>
+                        </div>
+                      </td>
                     </tr>
                   `;
-                }).join('') || '<tr><td colspan="6"><div class="empty-state"><div class="empty-text">没有匹配价格</div></div></td></tr>'}
+                }).join('') || '<tr><td colspan="7"><div class="empty-state"><div class="empty-text">没有匹配价格</div></div></td></tr>'}
               </tbody>
             </table>
           </div>
@@ -705,10 +773,82 @@
       `;
     }
 
+    function openPriceEditModal(id) {
+      const price = AppStore.all().prices.find(item => item.id === id);
+      if (!price) return;
+      const categories = ['酒店', '用车', '导游', '门票', '餐费', '保险', '机票', '火车', '会议室'];
+      showDetailModal('编辑价格', `
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">品类</label>
+            <select class="form-select" id="editPriceCategory">
+              ${categories.map(item => `<option ${item === price.category ? 'selected' : ''}>${item}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">城市/区间</label>
+            <input class="form-input" id="editPriceCity" value="${esc(price.city || '')}">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">资源名称</label>
+            <input class="form-input" id="editPriceName" value="${esc(price.name || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">供应商</label>
+            <input class="form-input" id="editPriceSupplier" value="${esc(price.supplier || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">单价</label>
+            <input class="form-input" id="editPriceAmount" type="number" min="0" value="${esc(price.price || 0)}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">单位</label>
+            <input class="form-input" id="editPriceUnit" value="${esc(price.unit || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">有效期</label>
+            <input class="form-input" id="editPricePeriod" value="${esc(price.period || '')}">
+          </div>
+          <div class="form-group" style="grid-column:1 / -1;">
+            <label class="form-label">适用条件</label>
+            <textarea class="form-textarea" id="editPriceCondition" rows="3">${esc(price.condition || '')}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">报价规则</label>
+            <input class="form-input" id="editPriceFormula" value="${esc(price.formula || '')}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">加价口径</label>
+            <input class="form-input" id="editPriceMarkup" value="${esc(price.markup || '')}">
+          </div>
+        </div>
+      `, `
+        <button class="btn btn-secondary" onclick="closeModal('globalDetailModal')">取消</button>
+        <button class="btn btn-primary" onclick="savePriceEdit('${esc(id)}')">保存</button>
+      `);
+    }
+
+    function savePriceEdit(id) {
+      AppStore.updatePrice(id, {
+        category: document.getElementById('editPriceCategory').value,
+        city: document.getElementById('editPriceCity').value.trim(),
+        name: document.getElementById('editPriceName').value.trim() || '未命名资源',
+        supplier: document.getElementById('editPriceSupplier').value.trim() || '待确认供应商',
+        price: Number(document.getElementById('editPriceAmount').value || 0),
+        unit: document.getElementById('editPriceUnit').value.trim() || '项',
+        period: document.getElementById('editPricePeriod').value.trim() || '长期有效',
+        condition: document.getElementById('editPriceCondition').value.trim(),
+        formula: document.getElementById('editPriceFormula').value.trim(),
+        markup: document.getElementById('editPriceMarkup').value.trim()
+      });
+      closeModal('globalDetailModal');
+      showToast('价格已保存', 'success');
+      renderAll();
+    }
+
     function renderFiles() {
       const tasks = AppStore.all().uploadTasks;
       renderHeader('导入资料', `
-        <button class="btn btn-secondary" onclick="batchApproveFiles(this)">批量确认入库</button>
         <button class="btn btn-primary" onclick="openUploadModal()"><span data-icon="upload"></span>上传文件</button>
       `);
       document.getElementById('resourceBody').innerHTML = `
@@ -716,7 +856,7 @@
           <div class="panel-head">
             <div>
               <div class="panel-title">解析任务台账</div>
-              <div class="panel-meta">共 ${tasks.length} 个文件 · ${tasks.reduce((sum, task) => sum + Number(task.pending || 0), 0)} 个待审核</div>
+              <div class="panel-meta">共 ${tasks.length} 个文件 · ${tasks.filter(task => Number(task.progress || 0) >= 100).length} 个已解析</div>
             </div>
           </div>
           <div class="table-wrapper" style="border:0;border-radius:0;">
@@ -736,14 +876,12 @@
                   <tr>
                     <td><strong>${esc(task.fileName)}</strong><div class="subtext">${esc(task.size)} · ${esc(task.pages)} · ${esc(task.uploadedAt)}</div></td>
                     <td><span class="type-pill">${esc(taskType(task))}</span></td>
-                    <td><span class="status-pill status-${esc(task.status)}">${esc(taskStatusText(task))}</span></td>
+                    <td><span class="status-pill status-${esc(taskStatusClass(task))}">${esc(taskStatusText(task))}</span></td>
                     <td><strong>${Number(task.progress || 0)}%</strong><div class="subtext">${task.status === 'processing' ? '正在结构化抽取' : esc(taskStatusText(task))}</div></td>
-                    <td><div class="subtext">识别 ${Number(task.recognized || 0)} · 待审 ${Number(task.pending || 0)}</div></td>
+                    <td><div class="subtext">${esc(taskResultText(task))}</div></td>
                     <td>
                       <div class="inline-actions">
-                        ${Number(task.pending || 0) > 0 ? `<button class="btn btn-sm btn-primary" onclick="approveTask('${esc(task.id)}')">确认入库</button>` : ''}
-                        <button class="btn btn-sm btn-secondary" onclick="showTaskDetail('${esc(task.id)}')">查看</button>
-                        <button class="btn btn-sm btn-ghost" onclick="retryTask('${esc(task.id)}', this)">重新解析</button>
+                        <button class="btn btn-sm btn-secondary" onclick="retryTask('${esc(task.id)}', this)">重新解析</button>
                       </div>
                     </td>
                   </tr>
@@ -767,12 +905,12 @@
         });
         renderAll();
         setTimeout(() => {
-          const latest = AppStore.all().uploadTasks.find(item => item.id === id);
           AppStore.updateUploadTask(id, {
-            status: latest && Number(latest.pending || 0) > 0 ? 'pending' : 'completed',
-            statusText: latest && Number(latest.pending || 0) > 0 ? '待审核' : '已入库',
+            status: 'completed',
+            statusText: '已解析',
             progress: 100,
-            recognized: Math.max(1, Number(latest?.recognized || task.recognized || 1))
+            recognized: Math.max(1, Number(task.recognized || 1)),
+            pending: 0
           });
           showToast('解析已刷新', 'success');
           renderAll();
@@ -823,7 +961,7 @@
         }, 500);
         setTimeout(() => {
           AppStore.completeUploadTask(task.id);
-          showToast(`${file.name} 解析完成，已进入待审核`, 'success');
+          showToast(`${file.name} 解析完成，已自动同步`, 'success');
           activeSection = 'files';
           renderAll();
         }, 1400);
@@ -831,49 +969,6 @@
       showToast(`已上传 ${files.length} 个文件`, 'success');
       activeSection = 'files';
       renderAll();
-    }
-
-    function approveTask(id) {
-      const task = AppStore.all().uploadTasks.find(item => item.id === id);
-      if (!task) return;
-      (task.extracted || []).forEach(segId => {
-        const seg = AppStore.all().segments.find(item => item.id === segId);
-        if (seg && seg.status === 'review') AppStore.approveSegment(segId);
-      });
-      showToast('待审核内容已入库', 'success');
-      renderAll();
-    }
-
-    function batchApproveFiles(button) {
-      const reviewSegments = AppStore.all().segments.filter(seg => seg.status === 'review');
-      if (!reviewSegments.length) {
-        showToast('当前没有待审核内容', 'info');
-        return;
-      }
-      runWithButtonLoading(button, '入库中...', () => {
-        reviewSegments.forEach(seg => AppStore.approveSegment(seg.id));
-        showToast(`已入库 ${reviewSegments.length} 条内容`, 'success');
-        renderAll();
-      }, 650);
-    }
-
-    function showTaskDetail(id) {
-      const data = AppStore.all();
-      const task = data.uploadTasks.find(item => item.id === id);
-      if (!task) return;
-      const segments = (task.extracted || []).map(segId => data.segments.find(seg => seg.id === segId)).filter(Boolean);
-      showDetailModal(task.fileName, `
-        <div class="panel-note" style="margin-bottom:14px;">${esc(task.original || '暂无原文证据')}</div>
-        ${segments.map(seg => `
-          <div class="quote-item">
-            <div class="quote-row">
-              <strong>${esc(componentName(seg))}</strong>
-              <span class="status-pill ${seg.status === 'review' ? 'status-warning' : 'status-ready'}">${seg.status === 'review' ? '待审核' : '已入库'}</span>
-            </div>
-            <div class="subtext">${esc(seg.desc || '')}</div>
-          </div>
-        `).join('') || '<div class="empty-state"><div class="empty-text">暂无提取结果</div></div>'}
-      `);
     }
 
     function showUploadRule() {

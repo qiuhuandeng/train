@@ -518,8 +518,10 @@ table tr:last-child td {
   border: 1px solid rgba(220, 227, 238, 0.9);
   width: 90%;
   max-width: 560px;
-  max-height: 80vh;
-  overflow-y: auto;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transform: scale(0.95);
   transition: transform 0.2s ease;
 }
@@ -534,6 +536,8 @@ table tr:last-child td {
   justify-content: space-between;
   padding: 18px 22px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -563,6 +567,10 @@ table tr:last-child td {
 
 .modal-body {
   padding: 22px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-footer {
@@ -571,6 +579,8 @@ table tr:last-child td {
   gap: 8px;
   padding: 14px 22px;
   border-top: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-shrink: 0;
 }
 
 .panel-note {
@@ -864,10 +874,12 @@ table tr:last-child td {
 
   .modal-body {
     padding: 16px;
+    min-height: 0;
   }
 
   .modal-footer {
     flex-wrap: wrap;
+    flex-shrink: 0;
   }
 
   .modal-footer .btn {
